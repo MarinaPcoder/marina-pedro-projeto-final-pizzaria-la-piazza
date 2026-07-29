@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "django_extensions",
 
     # Aplicações do La Piazza
-    "clientes",
+    "usuarios.apps.UsuariosConfig",
     "cardapio",
     "pedidos",
     "estoque",
@@ -77,6 +77,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Piazza.wsgi.application'
+
+AUTH_USER_MODEL = "usuarios.Usuario"
 
 
 # Database
