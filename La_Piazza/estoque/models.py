@@ -1,8 +1,8 @@
 from decimal import Decimal
 
-from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
+from usuarios.models import Usuario
 
 
 class CategoriaEstoque(models.Model):
@@ -147,7 +147,7 @@ class MovimentacaoEstoque(models.Model):
     )
 
     responsavel = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        Usuario,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

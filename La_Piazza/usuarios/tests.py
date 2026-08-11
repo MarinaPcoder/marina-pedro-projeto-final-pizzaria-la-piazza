@@ -1,12 +1,11 @@
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .models import EnderecoUsuario
+from .models import EnderecoUsuario, Usuario
 
 
 class UsuarioTests(TestCase):
     def test_usuario_guarda_dados_do_projeto(self):
-        usuario = get_user_model().objects.create_user(
+        usuario = Usuario.objects.create_user(
             username="cliente",
             password="senha-teste",
             telefone="71999999999",
@@ -17,7 +16,7 @@ class UsuarioTests(TestCase):
         self.assertEqual(usuario.cpf, "12345678901")
 
     def test_usuario_pode_ter_varios_enderecos(self):
-        usuario = get_user_model().objects.create_user(
+        usuario = Usuario.objects.create_user(
             username="cliente",
             password="senha-teste",
         )

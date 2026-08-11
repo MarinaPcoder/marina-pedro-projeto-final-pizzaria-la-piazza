@@ -7,7 +7,7 @@ from django.db import models, transaction
 
 from cardapio.models import Pizza
 from estoque.models import ItemEstoque, MovimentacaoEstoque
-from usuarios.models import EnderecoUsuario
+from usuarios.models import EnderecoUsuario, Usuario
 from usuarios.permissions import GRUPO_CLIENTE, GRUPO_FUNCIONARIO
 
 
@@ -26,7 +26,7 @@ class Pedido(models.Model):
         ENTREGA = "ENTREGA", "Entrega"
 
     usuario = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        Usuario,
         on_delete=models.PROTECT,
         related_name="pedidos",
         verbose_name="usuário",

@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -10,6 +9,7 @@ from estoque.models import (
     ItemEstoque,
     MovimentacaoEstoque,
 )
+from usuarios.models import Usuario
 from usuarios.permissions import GRUPO_CLIENTE
 
 from .models import ItemPedido, Pedido
@@ -17,11 +17,10 @@ from .models import ItemPedido, Pedido
 
 class PedidoUsuarioTests(TestCase):
     def setUp(self):
-        User = get_user_model()
         self.grupo_cliente, _ = Group.objects.get_or_create(
             name=GRUPO_CLIENTE,
         )
-        self.usuario = User.objects.create_user(
+        self.usuario = Usuario.objects.create_user(
             username="cliente",
             password="senha-teste",
         )
