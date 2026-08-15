@@ -1,0 +1,61 @@
+{% extends "_base.html" %}
+
+
+{% block title %}
+Remover pizza | La Piazza
+{% endblock %}
+
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>
+            Remover item
+        </h2>
+
+
+        <p>
+
+            Deseja remover
+
+            <strong>
+                {{ item.quantidade }}
+                ×
+                {{ item.pizza.nome }}
+            </strong>
+
+            do Pedido #{{ pedido.pk }}?
+
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+                Sim, remover
+            </button>
+
+
+            <a
+                href="{% url 'pedidos:pedido_detalhe' pedido.pk %}"
+                class="btn btn-secondary"
+            >
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

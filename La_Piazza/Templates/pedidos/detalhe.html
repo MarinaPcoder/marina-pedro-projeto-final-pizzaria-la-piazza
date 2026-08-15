@@ -1,0 +1,267 @@
+{% extends "_base.html" %}
+
+{% block title %}
+Pedido #{{ pedido.pk }} | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>
+            Pedido #{{ pedido.pk }}
+        </h2>
+
+
+        <p>
+            <strong>Cliente:</strong>
+            {{ pedido.usuario }}
+        </p>
+
+
+        <p>
+            <strong>Status:</strong>
+            {{ pedido.get_status_display }}
+        </p>
+
+
+        <p>
+            <strong>Atendimento:</strong>
+            {{ pedido.get_tipo_atendimento_display }}
+        </p>
+
+
+        {% if pedido.endereco_entrega %}
+
+            <p>
+                <strong>Endereço:</strong>
+                {{ pedido.endereco_entrega }}
+            </p>
+
+        {% endif %}
+
+
+        <p>
+            <strong>Observações:</strong>
+
+            {{ pedido.observacoes|default:"Nenhuma observação." }}
+        </p>
+
+
+        <p>
+            <strong>Criado em:</strong>
+
+            {{ pedido.criado_em|date:"d/m/Y H:i" }}
+        </p>
+
+
+        <p>
+            <strong>Estoque baixado:</strong>
+
+            {% if pedido.estoque_baixado %}
+                Sim
+            {% else %}
+                Não
+            {% endif %}
+        </p>
+
+
+        <hr>
+
+
+        <hr>
+
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h3>
+                Itens do pedido
+            </h3>
+
+
+            {% if not pedido.estoque_baixado %}
+
+                {% if perms.pedidos.add_itempedido %}
+
+                    <a
+                        href="{% url 'pedidos:item_adicionar' pedido.pk %}"
+                        class="btn btn-primary"
+                    >
+                        Adicionar pizza
+                    </a>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+
+        {% if pedido.itens.all %}
+
+            <div class="table-responsive">
+
+                <table class="table table-dark table-striped">
+
+                    <thead>
+
+                        <tr>
+                            <th>Pizza</th>
+                            <th>Quantidade</th>
+                            <th>Preço unitário</th>
+                            <th>Subtotal</th>
+                            <th>Ações</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in pedido.itens.all %}
+
+                            <tr>
+
+                                <td>
+                                    {{ item.pizza.nome }}
+                                </td>
+
+
+                                <td>
+                                    {{ item.quantidade }}
+                                </td>
+
+
+                                <td>
+                                    R$ {{ item.preco_unitario }}
+                                </td>
+
+
+                                <td>
+                                    R$ {{ item.subtotal }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if not pedido.estoque_baixado %}
+
+                                        {% if perms.pedidos.change_itempedido %}
+
+                                            <a
+                                                href="{% url 'pedidos:item_editar' pedido.pk item.pk %}"
+                                                class="btn btn-sm btn-warning"
+                                            >
+                                                Editar
+                                            </a>
+
+                                        {% endif %}
+
+
+                                        {% if perms.pedidos.delete_itempedido %}
+
+                                            <a
+                                                href="{% url 'pedidos:item_excluir' pedido.pk item.pk %}"
+                                                class="btn btn-sm btn-danger"
+                                            >
+                                                Remover
+                                            </a>
+
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <p>
+                Este pedido ainda não possui pizzas.
+            </p>
+
+        {% endif %}
+
+
+        <h4 class="mt-4">
+
+            Total:
+            R$ {{ pedido.valor_total }}
+
+        </h4>
+
+
+        {% for item in pedido.itens.all %}
+
+            <p>
+
+                {{ item.quantidade }}
+                ×
+                {{ item.pizza.nome }}
+
+                — R$ {{ item.subtotal }}
+
+            </p>
+
+        {% empty %}
+
+            <p>
+                Este pedido ainda não possui pizzas.
+            </p>
+
+        {% endfor %}
+
+
+        <h4>
+            Total: R$ {{ pedido.valor_total }}
+        </h4>
+
+
+        {% if perms.pedidos.change_pedido %}
+
+            <a
+                href="{% url 'pedidos:pedido_editar' pedido.pk %}"
+                class="btn btn-warning"
+            >
+                Editar
+            </a>
+
+        {% endif %}
+
+
+        {% if perms.pedidos.delete_pedido %}
+
+            <a
+                href="{% url 'pedidos:pedido_excluir' pedido.pk %}"
+                class="btn btn-danger"
+            >
+                Excluir
+            </a>
+
+        {% endif %}
+
+
+        <a
+            href="{% url 'pedidos:pedido_lista' %}"
+            class="btn btn-secondary"
+        >
+            Voltar
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

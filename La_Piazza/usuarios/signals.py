@@ -10,13 +10,8 @@ from .permissions import (
 
 @receiver(post_migrate)
 def configurar_grupos_padrao(sender, **kwargs):
-    """
-    Cria os grupos padrão do sistema e entrega
-    as permissões de gerenciamento do cardápio
-    ao grupo Funcionário.
-    """
 
-    grupo_cliente, _ = Group.objects.get_or_create(
+    Group.objects.get_or_create(
         name=GRUPO_CLIENTE
     )
 
@@ -24,14 +19,20 @@ def configurar_grupos_padrao(sender, **kwargs):
         name=GRUPO_FUNCIONARIO
     )
 
-    permissoes_cardapio = Permission.objects.filter(
-        content_type__app_label="cardapio",
+    permissoes_funcionario = Permission.objects.filter(
+        content_type__app_label__in=[
+            "cardapio",
+            "estoque",
+        ],
         content_type__model__in=[
             "categoriapizza",
             "pizza",
+            "categoriaestoque",
+            "itemestoque",
+            "movimentacaoestoque",
         ],
     )
 
     grupo_funcionario.permissions.add(
-        *permissoes_cardapio
+        *permissoes_funcionario
     )

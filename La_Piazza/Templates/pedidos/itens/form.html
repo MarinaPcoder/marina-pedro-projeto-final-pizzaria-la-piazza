@@ -1,0 +1,99 @@
+{% extends "_base.html" %}
+
+
+{% block title %}
+{{ titulo }} | La Piazza
+{% endblock %}
+
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-7">
+
+                <h2>
+                    {{ titulo }}
+                </h2>
+
+
+                <p>
+                    <strong>Cliente:</strong>
+                    {{ pedido.usuario }}
+                </p>
+
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-danger">
+
+                            {{ form.non_field_errors }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% for field in form %}
+
+                        <div class="form-group">
+
+                            <label for="{{ field.id_for_label }}">
+
+                                {{ field.label }}
+
+                            </label>
+
+                            {{ field }}
+
+
+                            {% for error in field.errors %}
+
+                                <div class="text-danger">
+
+                                    {{ error }}
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endfor %}
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Salvar
+                    </button>
+
+
+                    <a
+                        href="{% url 'pedidos:pedido_detalhe' pedido.pk %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancelar
+                    </a>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

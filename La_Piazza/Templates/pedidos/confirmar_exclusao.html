@@ -1,0 +1,60 @@
+{% extends "_base.html" %}
+
+{% block title %}
+Excluir pedido | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>
+            Excluir Pedido #{{ pedido.pk }}
+        </h2>
+
+
+        <p>
+
+            Tem certeza que deseja excluir o pedido de
+
+            <strong>
+                {{ pedido.usuario }}
+            </strong>?
+
+        </p>
+
+
+        <p class="text-danger">
+            Esta ação não poderá ser desfeita.
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+                Sim, excluir
+            </button>
+
+
+            <a
+                href="{% url 'pedidos:pedido_detalhe' pedido.pk %}"
+                class="btn btn-secondary"
+            >
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

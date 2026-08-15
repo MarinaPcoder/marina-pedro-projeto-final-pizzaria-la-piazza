@@ -24,6 +24,17 @@ urlpatterns = [
         "conta/",
         include("usuarios.urls"),
     ),
+
+    path(
+    "gerenciamento/estoque/",
+    include("estoque.urls"),
+    ),
+
+    path(
+    "gerenciamento/pedidos/",
+    include("pedidos.urls"),
+    ),
+
 ]
 
 
@@ -32,3 +43,4 @@ if settings.DEBUG:
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT,
     )
+
