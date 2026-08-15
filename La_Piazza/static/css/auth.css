@@ -1,0 +1,109 @@
+.auth-section {
+    min-height: 78vh;
+    display: flex;
+    align-items: center;
+    padding: 70px 0;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.auth-card {
+    background: rgba(18, 18, 18, 0.96);
+    border: 1px solid rgba(250, 197, 100, 0.25);
+    padding: 42px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45);
+}
+
+.auth-brand {
+    font-family: "Nothing You Could Do", cursive;
+    color: #fac564;
+    font-size: 1.45rem;
+    margin-bottom: 4px;
+}
+
+.auth-card h1 {
+    color: #ffffff;
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.auth-description {
+    color: #bfbfbf;
+    margin-bottom: 30px;
+}
+
+.auth-card label {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.auth-card .form-control {
+    height: 52px;
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 0;
+}
+
+.auth-card .form-control:focus {
+    background: transparent;
+    color: #ffffff;
+    border-color: #fac564;
+    box-shadow: none;
+}
+
+.auth-card .form-control::placeholder {
+    color: #8d8d8d;
+}
+
+.auth-button {
+    width: 100%;
+    min-height: 52px;
+    border: 1px solid #fac564;
+    background: #fac564;
+    color: #111111;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+
+.auth-button:hover {
+    background: transparent;
+    color: #fac564;
+}
+
+.auth-link {
+    color: #fac564;
+}
+
+.auth-link:hover {
+    color: #ffffff;
+}
+
+.auth-error {
+    margin-top: 6px;
+    color: #ff8e8e;
+    font-size: 0.88rem;
+}
+
+.auth-divider {
+    margin: 28px 0 20px;
+    border-top: 1px solid #333333;
+}
+
+.auth-footer-text {
+    color: #aaaaaa;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+    .auth-section {
+        padding: 40px 0;
+    }
+
+    .auth-card {
+        padding: 28px 22px;
+    }
+}

@@ -1,0 +1,134 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}
+    Criar conta | La Piazza
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/auth.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+
+<section
+    class="auth-section"
+    style="
+        background-image:
+        linear-gradient(
+            rgba(0, 0, 0, 0.75),
+            rgba(0, 0, 0, 0.9)
+        ),
+        url('{% static "images/bg_4.jpg" %}');
+    "
+>
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-7 col-md-9">
+
+                <div class="auth-card">
+
+                    <div class="text-center">
+                        <div class="auth-brand">
+                            La Piazza
+                        </div>
+
+                        <h1>
+                            Crie sua conta
+                        </h1>
+
+                        <p class="auth-description">
+                            Cadastre-se para fazer seus pedidos.
+                        </p>
+                    </div>
+
+                    <form
+                        method="post"
+                        novalidate
+                    >
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+
+                            {% for field in form %}
+
+                                <div
+                                    class="
+                                        form-group
+                                        {% if field.name == 'first_name' or field.name == 'last_name' %}
+                                            col-md-6
+                                        {% else %}
+                                            col-md-12
+                                        {% endif %}
+                                    "
+                                >
+                                    <label for="{{ field.id_for_label }}">
+                                        {{ field.label }}
+                                    </label>
+
+                                    {{ field }}
+
+                                    {% if field.help_text %}
+                                        <small
+                                            class="form-text text-muted"
+                                        >
+                                            {{ field.help_text }}
+                                        </small>
+                                    {% endif %}
+
+                                    {% for error in field.errors %}
+                                        <div class="auth-error">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="auth-button"
+                        >
+                            Criar minha conta
+                        </button>
+
+                    </form>
+
+                    <div class="auth-divider"></div>
+
+                    <p class="auth-footer-text">
+                        Já possui uma conta?
+
+                        <a
+                            href="{% url 'usuarios:login' %}"
+                            class="auth-link"
+                        >
+                            Entrar
+                        </a>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

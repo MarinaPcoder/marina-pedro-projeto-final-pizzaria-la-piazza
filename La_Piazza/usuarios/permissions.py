@@ -1,0 +1,2 @@
+GRUPO_CLIENTE = "Cliente"
+GRUPO_FUNCIONARIO = "Funcionario"

@@ -1,0 +1,131 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}
+    Entrar | La Piazza
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/auth.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+
+<section
+    class="auth-section"
+    style="
+        background-image:
+        linear-gradient(
+            rgba(0, 0, 0, 0.75),
+            rgba(0, 0, 0, 0.88)
+        ),
+        url('{% static "images/bg_4.jpg" %}');
+    "
+>
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-5 col-md-7">
+
+                <div class="auth-card">
+
+                    <div class="text-center">
+                        <div class="auth-brand">
+                            La Piazza
+                        </div>
+
+                        <h1>
+                            Bem-vindo de volta
+                        </h1>
+
+                        <p class="auth-description">
+                            Entre para acessar sua conta.
+                        </p>
+                    </div>
+
+                    <form
+                        method="post"
+                        novalidate
+                    >
+                        {% csrf_token %}
+
+                        {% if next %}
+                            <input
+                                type="hidden"
+                                name="next"
+                                value="{{ next }}"
+                            >
+                        {% endif %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}">
+                                Usuário
+                            </label>
+
+                            {{ form.username }}
+
+                            {% for error in form.username.errors %}
+                                <div class="auth-error">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.password.id_for_label }}">
+                                Senha
+                            </label>
+
+                            {{ form.password }}
+
+                            {% for error in form.password.errors %}
+                                <div class="auth-error">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="auth-button"
+                        >
+                            Entrar
+                        </button>
+
+                    </form>
+
+                    <div class="auth-divider"></div>
+
+                    <p class="auth-footer-text">
+                        Ainda não possui uma conta?
+
+                        <a
+                            href="{% url 'usuarios:cadastro' %}"
+                            class="auth-link"
+                        >
+                            Cadastre-se
+                        </a>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
