@@ -1,0 +1,64 @@
+{% extends "_base.html" %}
+
+{% block title %}
+{{ categoria.nome }} | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>
+            {{ categoria.nome }}
+        </h2>
+
+        <p>
+            {{ categoria.descricao|default:"Sem descrição." }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+
+            {% if categoria.ativa %}
+                Ativa
+            {% else %}
+                Inativa
+            {% endif %}
+        </p>
+
+        {% if perms.cardapio.change_categoriapizza %}
+
+            <a
+                href="{% url 'categoria_editar' categoria.pk %}"
+                class="btn btn-warning"
+            >
+                Editar
+            </a>
+
+        {% endif %}
+
+        {% if perms.cardapio.delete_categoriapizza %}
+
+            <a
+                href="{% url 'categoria_excluir' categoria.pk %}"
+                class="btn btn-danger"
+            >
+                Excluir
+            </a>
+
+        {% endif %}
+
+        <a
+            href="{% url 'categoria_lista' %}"
+            class="btn btn-secondary"
+        >
+            Voltar
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

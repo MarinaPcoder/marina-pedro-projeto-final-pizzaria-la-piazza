@@ -1,4 +1,4 @@
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
@@ -9,14 +9,29 @@ from .permissions import (
 
 
 @receiver(post_migrate)
-def criar_grupos_padrao(sender, **kwargs):
-    if sender.name != "usuarios":
-        return
+def configurar_grupos_padrao(sender, **kwargs):
+    """
+    Cria os grupos padrão do sistema e entrega
+    as permissões de gerenciamento do cardápio
+    ao grupo Funcionário.
+    """
 
-    Group.objects.get_or_create(
-        name=GRUPO_CLIENTE,
+    grupo_cliente, _ = Group.objects.get_or_create(
+        name=GRUPO_CLIENTE
     )
 
-    Group.objects.get_or_create(
-        name=GRUPO_FUNCIONARIO,
+    grupo_funcionario, _ = Group.objects.get_or_create(
+        name=GRUPO_FUNCIONARIO
+    )
+
+    permissoes_cardapio = Permission.objects.filter(
+        content_type__app_label="cardapio",
+        content_type__model__in=[
+            "categoriapizza",
+            "pizza",
+        ],
+    )
+
+    grupo_funcionario.permissions.add(
+        *permissoes_cardapio
     )

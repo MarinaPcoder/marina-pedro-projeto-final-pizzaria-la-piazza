@@ -1,0 +1,114 @@
+{% extends "_base.html" %}
+
+{% block title %}
+{{ pizza.nome }} | La Piazza
+{% endblock %}
+
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-5">
+
+                {% if pizza.imagem %}
+
+                    <img
+                        src="{{ pizza.imagem.url }}"
+                        alt="{{ pizza.nome }}"
+                        class="img-fluid"
+                    >
+
+                {% else %}
+
+                    <p>Esta pizza não possui imagem.</p>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="col-md-7">
+
+                <h2>
+                    {{ pizza.nome }}
+                </h2>
+
+
+                <p>
+                    <strong>Categoria:</strong>
+                    {{ pizza.categoria.nome }}
+                </p>
+
+
+                <p>
+                    <strong>Descrição:</strong>
+                </p>
+
+                <p>
+                    {{ pizza.descricao|default:"Sem descrição." }}
+                </p>
+
+
+                <p>
+                    <strong>Preço:</strong>
+                    R$ {{ pizza.preco }}
+                </p>
+
+
+                <p>
+                    <strong>Status:</strong>
+
+                    {% if pizza.disponivel %}
+                        Disponível
+                    {% else %}
+                        Indisponível
+                    {% endif %}
+
+                </p>
+
+
+                {% if perms.cardapio.change_pizza %}
+
+                    <a
+                        href="{% url 'pizza_editar' pizza.pk %}"
+                        class="btn btn-warning"
+                    >
+                        Editar
+                    </a>
+
+                {% endif %}
+
+
+                {% if perms.cardapio.delete_pizza %}
+
+                    <a
+                        href="{% url 'pizza_excluir' pizza.pk %}"
+                        class="btn btn-danger"
+                    >
+                        Excluir
+                    </a>
+
+                {% endif %}
+
+
+                <a
+                    href="{% url 'pizza_lista' %}"
+                    class="btn btn-secondary"
+                >
+                    Voltar
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
