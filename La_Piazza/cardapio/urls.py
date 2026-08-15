@@ -93,4 +93,40 @@ urlpatterns = [
         views.pizza_excluir,
         name="pizza_excluir",
     ),
+
+        # =========================
+    # RECEITAS DAS PIZZAS
+    # =========================
+
+    path(
+        "gerenciamento/pizzas/<int:pizza_pk>/receita/",
+        views.receita_lista,
+        name="receita_lista",
+    ),
+
+    path(
+        "gerenciamento/pizzas/<int:pizza_pk>/receita/adicionar/",
+        views.receita_adicionar,
+        name="receita_adicionar",
+    ),
+
+    path(
+        (
+            "gerenciamento/pizzas/"
+            "<int:pizza_pk>/receita/"
+            "<int:receita_pk>/editar/"
+        ),
+        views.receita_editar,
+        name="receita_editar",
+    ),
+
+    path(
+        (
+            "gerenciamento/pizzas/"
+            "<int:pizza_pk>/receita/"
+            "<int:receita_pk>/excluir/"
+        ),
+        views.receita_excluir,
+        name="receita_excluir",
+    ),
 ]

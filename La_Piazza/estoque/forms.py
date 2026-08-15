@@ -1,7 +1,15 @@
 from django import forms
 
-from .models import CategoriaEstoque, ItemEstoque
+from .models import (
+    CategoriaEstoque,
+    ItemEstoque,
+    MovimentacaoEstoque,
+)
 
+
+# =========================================================
+# FORMULÁRIO - CATEGORIA DE ESTOQUE
+# =========================================================
 
 class CategoriaEstoqueForm(forms.ModelForm):
 
@@ -38,13 +46,13 @@ class CategoriaEstoqueForm(forms.ModelForm):
         }
 
     def clean_nome(self):
-
         nome = self.cleaned_data["nome"].strip()
 
         categorias = CategoriaEstoque.objects.filter(
             nome__iexact=nome
         )
 
+        # Na edição, ignora a própria categoria.
         if self.instance.pk:
             categorias = categorias.exclude(
                 pk=self.instance.pk
@@ -58,6 +66,10 @@ class CategoriaEstoqueForm(forms.ModelForm):
         return nome
 
 
+# =========================================================
+# FORMULÁRIO - ITEM DE ESTOQUE
+# =========================================================
+
 class ItemEstoqueForm(forms.ModelForm):
 
     class Meta:
@@ -67,7 +79,6 @@ class ItemEstoqueForm(forms.ModelForm):
             "categoria",
             "nome",
             "unidade_medida",
-            "quantidade_atual",
             "estoque_minimo",
             "preco_custo",
             "data_validade",
@@ -91,15 +102,6 @@ class ItemEstoqueForm(forms.ModelForm):
             "unidade_medida": forms.Select(
                 attrs={
                     "class": "form-control",
-                }
-            ),
-
-            "quantidade_atual": forms.NumberInput(
-                attrs={
-                    "class": "form-control",
-                    "step": "0.001",
-                    "min": "0",
-                    "placeholder": "Ex.: 15.500",
                 }
             ),
 
@@ -142,6 +144,7 @@ class ItemEstoqueForm(forms.ModelForm):
             nome__iexact=nome
         )
 
+        # Na edição, ignora o próprio item.
         if self.instance.pk:
             itens = itens.exclude(
                 pk=self.instance.pk
@@ -154,18 +157,10 @@ class ItemEstoqueForm(forms.ModelForm):
 
         return nome
 
-    def clean_quantidade_atual(self):
-        quantidade = self.cleaned_data["quantidade_atual"]
-
-        if quantidade < 0:
-            raise forms.ValidationError(
-                "A quantidade não pode ser negativa."
-            )
-
-        return quantidade
-
     def clean_estoque_minimo(self):
-        estoque_minimo = self.cleaned_data["estoque_minimo"]
+        estoque_minimo = self.cleaned_data[
+            "estoque_minimo"
+        ]
 
         if estoque_minimo < 0:
             raise forms.ValidationError(
@@ -175,7 +170,9 @@ class ItemEstoqueForm(forms.ModelForm):
         return estoque_minimo
 
     def clean_preco_custo(self):
-        preco = self.cleaned_data["preco_custo"]
+        preco = self.cleaned_data[
+            "preco_custo"
+        ]
 
         if preco < 0:
             raise forms.ValidationError(
@@ -183,3 +180,79 @@ class ItemEstoqueForm(forms.ModelForm):
             )
 
         return preco
+
+
+# =========================================================
+# FORMULÁRIO - MOVIMENTAÇÃO DE ESTOQUE
+# =========================================================
+
+class MovimentacaoEstoqueForm(forms.ModelForm):
+
+    class Meta:
+        model = MovimentacaoEstoque
+
+        fields = [
+            "item",
+            "tipo",
+            "quantidade",
+            "motivo",
+        ]
+
+        widgets = {
+            "item": forms.Select(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "tipo": forms.Select(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "quantidade": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "step": "0.001",
+                    "min": "0.001",
+                    "placeholder": "Ex.: 5.000",
+                }
+            ),
+
+            "motivo": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": (
+                        "Ex.: Compra de fornecedor, "
+                        "produto vencido, correção de inventário..."
+                    ),
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            *args,
+            **kwargs
+        )
+
+        # Apenas itens ativos podem receber movimentações.
+        self.fields["item"].queryset = (
+            ItemEstoque.objects
+            .filter(ativo=True)
+            .order_by("nome")
+        )
+
+    def clean_quantidade(self):
+        quantidade = self.cleaned_data[
+            "quantidade"
+        ]
+
+        if quantidade <= 0:
+            raise forms.ValidationError(
+                "A quantidade deve ser maior que zero."
+            )
+
+        return quantidade

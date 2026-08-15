@@ -105,6 +105,17 @@
 
             </div>
 
+            {% if perms.cardapio.view_receitapizza %}
+
+                <a
+                    href="{% url 'receita_lista' pizza.pk %}"
+                    class="btn btn-info"
+                >
+                    Gerenciar receita
+                </a>
+
+            {% endif %}
+
         </div>
 
     </div>

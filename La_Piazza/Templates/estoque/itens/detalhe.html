@@ -90,6 +90,17 @@
             {% endif %}
         </p>
 
+        {% if perms.estoque.add_movimentacaoestoque %}
+
+            <a
+                href="{% url 'estoque:movimentacao_criar' %}?item={{ item.pk }}"
+                class="btn btn-primary"
+            >
+                Registrar movimentação
+            </a>
+
+        {% endif %}
+
 
         {% if perms.estoque.change_itemestoque %}
 

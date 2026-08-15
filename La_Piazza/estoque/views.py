@@ -12,9 +12,20 @@ from django.shortcuts import (
     render,
 )
 
-from .forms import CategoriaEstoqueForm, ItemEstoqueForm
-from .models import CategoriaEstoque, ItemEstoque
+from .forms import (
+    CategoriaEstoqueForm,
+    ItemEstoqueForm,
+    MovimentacaoEstoqueForm,
+)
 
+from .models import (
+    CategoriaEstoque,
+    ItemEstoque,
+    MovimentacaoEstoque,
+)
+
+from django.core.exceptions import ValidationError
+from .services import registrar_movimentacao
 
 @login_required
 @permission_required(
@@ -462,5 +473,160 @@ def item_excluir(request, pk):
         "estoque/itens/confirmar_exclusao.html",
         {
             "item": item,
+        },
+    )
+
+@login_required
+@permission_required(
+    "estoque.view_movimentacaoestoque",
+    raise_exception=True,
+)
+def movimentacao_lista(request):
+
+    busca = request.GET.get(
+        "q",
+        "",
+    ).strip()
+
+    tipo = request.GET.get(
+        "tipo",
+        "",
+    )
+
+    movimentacoes = (
+        MovimentacaoEstoque.objects
+        .select_related(
+            "item",
+            "responsavel",
+        )
+        .all()
+    )
+
+    if busca:
+
+        movimentacoes = movimentacoes.filter(
+            Q(
+                item__nome__icontains=busca
+            )
+            | Q(
+                motivo__icontains=busca
+            )
+        )
+
+    if tipo:
+
+        movimentacoes = movimentacoes.filter(
+            tipo=tipo
+        )
+
+    movimentacoes = movimentacoes.order_by(
+        "-criada_em"
+    )
+
+    paginator = Paginator(
+        movimentacoes,
+        20,
+    )
+
+    page_obj = paginator.get_page(
+        request.GET.get("page")
+    )
+
+    return render(
+        request,
+        "estoque/movimentacoes/lista.html",
+        {
+            "page_obj": page_obj,
+            "busca": busca,
+            "tipo_selecionado": tipo,
+            "tipos": MovimentacaoEstoque.TipoMovimentacao.choices,
+        },
+    )
+
+@login_required
+@permission_required(
+    "estoque.add_movimentacaoestoque",
+    raise_exception=True,
+)
+def movimentacao_criar(request):
+
+    if request.method == "POST":
+
+        form = MovimentacaoEstoqueForm(
+            request.POST
+        )
+
+        if form.is_valid():
+
+            try:
+
+                movimentacao = registrar_movimentacao(
+                    item=form.cleaned_data[
+                    "item"
+                ],
+                    tipo=form.cleaned_data[
+                        "tipo"
+                    ],
+                    quantidade=form.cleaned_data[
+                        "quantidade"
+                    ],
+                    responsavel=request.user,
+                    motivo=form.cleaned_data[
+                        "motivo"
+                    ],
+                )
+
+            except ValidationError as erro:
+
+                messages.error(
+                    request,
+                    " ".join(erro.messages),
+                )
+
+            else:
+
+                messages.success(
+                    request,
+                    (
+                        "Movimentação registrada "
+                        "com sucesso."
+                    ),
+                )
+
+                return redirect(
+                    "estoque:item_detalhe",
+                    pk=movimentacao.item_estoque.pk,
+                )
+
+    else:
+
+        item_id = request.GET.get(
+            "item"
+        )
+
+        initial = {}
+
+        if item_id:
+
+            item = get_object_or_404(
+                ItemEstoque,
+                pk=item_id,
+                ativo=True,
+            )
+
+            initial[
+                "item"
+            ] = item
+
+        form = MovimentacaoEstoqueForm(
+            initial=initial
+        )
+
+
+    return render(
+        request,
+        "estoque/movimentacoes/form.html",
+        {
+            "form": form,
         },
     )

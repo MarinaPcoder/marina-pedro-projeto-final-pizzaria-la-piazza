@@ -1,7 +1,7 @@
 from django import forms
 
-from .models import CategoriaPizza, Pizza
-
+from .models import CategoriaPizza, Pizza, ReceitaPizza
+from estoque.models import ItemEstoque
 
 class CategoriaPizzaForm(forms.ModelForm):
 
@@ -132,3 +132,104 @@ class PizzaForm(forms.ModelForm):
             )
 
         return nome
+
+class ItemEstoqueChoiceField(forms.ModelChoiceField):
+
+    def label_from_instance(self, item):
+
+        return (
+            f"{item.nome} "
+            f"({item.get_unidade_medida_display()})"
+        )
+
+
+class ReceitaPizzaForm(forms.ModelForm):
+
+    item_estoque = ItemEstoqueChoiceField(
+        queryset=ItemEstoque.objects.none(),
+        label="Ingrediente",
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+    )
+
+    class Meta:
+        model = ReceitaPizza
+
+        fields = [
+            "item_estoque",
+            "quantidade_utilizada",
+        ]
+
+        widgets = {
+            "quantidade_utilizada": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "step": "0.001",
+                    "min": "0.001",
+                    "placeholder": "Ex.: 0.300",
+                }
+            ),
+        }
+
+        labels = {
+            "quantidade_utilizada": "Quantidade utilizada",
+        }
+
+    def __init__(
+        self,
+        *args,
+        pizza=None,
+        **kwargs,
+    ):
+
+        super().__init__(
+            *args,
+            **kwargs,
+        )
+
+        self.pizza = pizza
+
+        itens = ItemEstoque.objects.filter(
+            ativo=True
+        ).order_by(
+            "nome"
+        )
+
+        if pizza:
+
+            ingredientes_usados = ReceitaPizza.objects.filter(
+                pizza=pizza
+            )
+
+            if self.instance.pk:
+
+                ingredientes_usados = ingredientes_usados.exclude(
+                    pk=self.instance.pk
+                )
+
+            itens = itens.exclude(
+                pk__in=ingredientes_usados.values(
+                    "item_estoque_id"
+                )
+            )
+
+        self.fields[
+            "item_estoque"
+        ].queryset = itens
+
+    def clean_quantidade_utilizada(self):
+
+        quantidade = self.cleaned_data[
+            "quantidade_utilizada"
+        ]
+
+        if quantidade <= 0:
+
+            raise forms.ValidationError(
+                "A quantidade precisa ser maior que zero."
+            )
+
+        return quantidade

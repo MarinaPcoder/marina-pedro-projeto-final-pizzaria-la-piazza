@@ -12,9 +12,17 @@ from django.shortcuts import (
     render,
 )
 
-from .forms import CategoriaPizzaForm, PizzaForm
-from .models import CategoriaPizza, Pizza
+from .forms import (
+    CategoriaPizzaForm,
+    PizzaForm,
+    ReceitaPizzaForm,
+)
 
+from .models import (
+    CategoriaPizza,
+    Pizza,
+    ReceitaPizza,
+)
 
 def index(request):
     context = {
@@ -474,5 +482,208 @@ def pizza_excluir(request, pk):
         "cardapio/pizzas/confirmar_exclusao.html",
         {
             "pizza": pizza,
+        },
+    )
+
+@login_required
+@permission_required(
+    "cardapio.view_receitapizza",
+    raise_exception=True,
+)
+def receita_lista(request, pizza_pk):
+
+    pizza = get_object_or_404(
+        Pizza,
+        pk=pizza_pk,
+    )
+
+    receita = (
+        ReceitaPizza.objects
+        .filter(
+            pizza=pizza
+        )
+        .select_related(
+            "item_estoque"
+        )
+        .order_by(
+            "item_estoque__nome"
+        )
+    )
+
+    return render(
+        request,
+        "cardapio/receitas/lista.html",
+        {
+            "pizza": pizza,
+            "receita": receita,
+        },
+    )
+
+
+@login_required
+@permission_required(
+    "cardapio.add_receitapizza",
+    raise_exception=True,
+)
+def receita_adicionar(request, pizza_pk):
+
+    pizza = get_object_or_404(
+        Pizza,
+        pk=pizza_pk,
+    )
+
+    if request.method == "POST":
+
+        form = ReceitaPizzaForm(
+            request.POST,
+            pizza=pizza,
+        )
+
+        if form.is_valid():
+
+            ingrediente = form.save(
+                commit=False
+            )
+
+            ingrediente.pizza = pizza
+
+            ingrediente.save()
+
+            messages.success(
+                request,
+                "Ingrediente adicionado à receita.",
+            )
+
+            return redirect(
+                "receita_lista",
+                pizza_pk=pizza.pk,
+            )
+
+    else:
+
+        form = ReceitaPizzaForm(
+            pizza=pizza
+        )
+
+    return render(
+        request,
+        "cardapio/receitas/form.html",
+        {
+            "form": form,
+            "pizza": pizza,
+            "titulo": (
+                f"Adicionar ingrediente — {pizza.nome}"
+            ),
+        },
+    )
+
+
+@login_required
+@permission_required(
+    "cardapio.change_receitapizza",
+    raise_exception=True,
+)
+def receita_editar(
+    request,
+    pizza_pk,
+    receita_pk,
+):
+
+    pizza = get_object_or_404(
+        Pizza,
+        pk=pizza_pk,
+    )
+
+    ingrediente = get_object_or_404(
+        ReceitaPizza,
+        pk=receita_pk,
+        pizza=pizza,
+    )
+
+    if request.method == "POST":
+
+        form = ReceitaPizzaForm(
+            request.POST,
+            instance=ingrediente,
+            pizza=pizza,
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Ingrediente atualizado.",
+            )
+
+            return redirect(
+                "receita_lista",
+                pizza_pk=pizza.pk,
+            )
+
+    else:
+
+        form = ReceitaPizzaForm(
+            instance=ingrediente,
+            pizza=pizza,
+        )
+
+    return render(
+        request,
+        "cardapio/receitas/form.html",
+        {
+            "form": form,
+            "pizza": pizza,
+            "ingrediente": ingrediente,
+            "titulo": (
+                f"Editar ingrediente — {pizza.nome}"
+            ),
+        },
+    )
+
+
+@login_required
+@permission_required(
+    "cardapio.delete_receitapizza",
+    raise_exception=True,
+)
+def receita_excluir(
+    request,
+    pizza_pk,
+    receita_pk,
+):
+
+    pizza = get_object_or_404(
+        Pizza,
+        pk=pizza_pk,
+    )
+
+    ingrediente = get_object_or_404(
+        ReceitaPizza,
+        pk=receita_pk,
+        pizza=pizza,
+    )
+
+    if request.method == "POST":
+
+        ingrediente.delete()
+
+        messages.success(
+            request,
+            "Ingrediente removido da receita.",
+        )
+
+        return redirect(
+            "receita_lista",
+            pizza_pk=pizza.pk,
+        )
+
+    return render(
+        request,
+        "cardapio/receitas/confirmar_exclusao.html",
+        {
+            "pizza": pizza,
+            "ingrediente": ingrediente,
         },
     )

@@ -1,0 +1,139 @@
+{% extends "_base.html" %}
+
+
+{% block title %}
+Receita de {{ pizza.nome }} | La Piazza
+{% endblock %}
+
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2>
+                    Receita — {{ pizza.nome }}
+                </h2>
+
+                <p>
+                    Ingredientes utilizados em uma unidade da pizza.
+                </p>
+
+            </div>
+
+
+            {% if perms.cardapio.add_receitapizza %}
+
+                <a
+                    href="{% url 'receita_adicionar' pizza.pk %}"
+                    class="btn btn-primary"
+                >
+                    Adicionar ingrediente
+                </a>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-dark table-striped">
+
+                <thead>
+
+                    <tr>
+                        <th>Ingrediente</th>
+                        <th>Quantidade</th>
+                        <th>Ações</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for ingrediente in receita %}
+
+                        <tr>
+
+                            <td>
+                                {{ ingrediente.item_estoque.nome }}
+                            </td>
+
+
+                            <td>
+
+                                {{ ingrediente.quantidade_utilizada }}
+
+                                {{ ingrediente.item_estoque.get_unidade_medida_display }}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if perms.cardapio.change_receitapizza %}
+
+                                    <a
+                                        href="{% url 'receita_editar' pizza.pk ingrediente.pk %}"
+                                        class="btn btn-sm btn-warning"
+                                    >
+                                        Editar
+                                    </a>
+
+                                {% endif %}
+
+
+                                {% if perms.cardapio.delete_receitapizza %}
+
+                                    <a
+                                        href="{% url 'receita_excluir' pizza.pk ingrediente.pk %}"
+                                        class="btn btn-sm btn-danger"
+                                    >
+                                        Remover
+                                    </a>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="3">
+                                Esta pizza ainda não possui uma receita cadastrada.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <a
+            href="{% url 'pizza_detalhe' pizza.pk %}"
+            class="btn btn-secondary"
+        >
+            Voltar para pizza
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

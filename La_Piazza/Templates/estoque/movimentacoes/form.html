@@ -1,0 +1,118 @@
+{% extends "_base.html" %}
+
+
+{% block title %}
+Nova movimentação | La Piazza
+{% endblock %}
+
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-7">
+
+                <h2>
+                    Nova movimentação de estoque
+                </h2>
+
+
+                <div class="mb-4">
+
+                    <p>
+                        <strong>Entrada:</strong>
+                        adiciona produtos ao estoque.
+                    </p>
+
+                    <p>
+                        <strong>Saída:</strong>
+                        remove produtos do estoque.
+                    </p>
+
+                    <p>
+                        <strong>Perda:</strong>
+                        registra produtos perdidos,
+                        vencidos ou danificados.
+                    </p>
+
+                    <p>
+                        <strong>Ajuste:</strong>
+                        define a quantidade correta
+                        encontrada em uma conferência.
+                    </p>
+
+                </div>
+
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-danger">
+
+                            {{ form.non_field_errors }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% for field in form %}
+
+                        <div class="form-group">
+
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+
+                            {% for error in field.errors %}
+
+                                <div class="text-danger">
+
+                                    {{ error }}
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endfor %}
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Registrar movimentação
+                    </button>
+
+
+                    <a
+                        href="{% url 'estoque:movimentacao_lista' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancelar
+                    </a>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

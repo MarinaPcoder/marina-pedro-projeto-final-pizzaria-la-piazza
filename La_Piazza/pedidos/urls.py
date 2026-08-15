@@ -58,4 +58,10 @@ urlpatterns = [
         views.item_excluir,
         name="item_excluir",
     ),
+
+    path(
+    "<int:pk>/confirmar/",
+    views.pedido_confirmar,
+    name="pedido_confirmar",
+    ),
 ]

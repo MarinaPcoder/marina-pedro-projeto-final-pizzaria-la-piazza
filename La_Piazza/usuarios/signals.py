@@ -30,6 +30,7 @@ def configurar_grupos_padrao(sender, **kwargs):
             "categoriaestoque",
             "itemestoque",
             "movimentacaoestoque",
+            "receitapizza",
         ],
     )
 

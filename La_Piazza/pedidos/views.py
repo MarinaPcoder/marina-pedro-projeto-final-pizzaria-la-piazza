@@ -1,5 +1,9 @@
 from functools import wraps
 
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.views.decorators.http import require_POST
+
 from django.contrib import messages
 from django.contrib.auth.decorators import (
     login_required,
@@ -524,4 +528,102 @@ def item_excluir(request, pedido_pk, item_pk):
             "pedido": pedido,
             "item": item,
         },
+    )
+
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.change_pedido",
+    raise_exception=True,
+)
+@permission_required(
+    "estoque.add_movimentacaoestoque",
+    raise_exception=True,
+)
+@require_POST
+def pedido_confirmar(request, pk):
+
+    pedido = get_object_or_404(
+        Pedido,
+        pk=pk,
+    )
+
+    if pedido.estoque_baixado:
+
+        messages.warning(
+            request,
+            "O estoque deste pedido já foi baixado.",
+        )
+
+        return redirect(
+            "pedidos:pedido_detalhe",
+            pk=pedido.pk,
+        )
+
+    if not pedido.itens.exists():
+
+        messages.error(
+            request,
+            "Não é possível confirmar um pedido sem pizzas.",
+        )
+
+        return redirect(
+            "pedidos:pedido_detalhe",
+            pk=pedido.pk,
+        )
+
+    try:
+
+        with transaction.atomic():
+
+            pedido.baixar_estoque(
+                responsavel=request.user
+            )
+
+            pedido.status = (
+                Pedido.StatusPedido.CONFIRMADO
+            )
+
+            pedido.save(
+                update_fields=[
+                    "status",
+                    "atualizado_em",
+                ]
+            )
+
+    except ValidationError as erro:
+
+        messages.error(
+            request,
+            " ".join(erro.messages),
+        )
+
+        return redirect(
+            "pedidos:pedido_detalhe",
+            pk=pedido.pk,
+        )
+
+    except ValueError as erro:
+
+        messages.error(
+            request,
+            str(erro),
+        )
+
+        return redirect(
+            "pedidos:pedido_detalhe",
+            pk=pedido.pk,
+        )
+
+    messages.success(
+        request,
+        (
+            "Pedido confirmado e estoque "
+            "baixado com sucesso."
+        ),
+    )
+
+    return redirect(
+        "pedidos:pedido_detalhe",
+        pk=pedido.pk,
     )

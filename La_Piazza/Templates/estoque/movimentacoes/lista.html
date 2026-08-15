@@ -1,0 +1,179 @@
+{% extends "_base.html" %}
+
+{% block title %}
+Movimentações de Estoque | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+
+        {% if perms.estoque.add_movimentacaoestoque %}
+
+            <a
+                href="{% url 'estoque:movimentacao_criar' %}"
+                class="btn btn-primary mb-4"
+            >
+                Nova movimentação
+            </a>
+
+        {% endif %}
+
+        <h2 class="mb-4">
+            Movimentações de Estoque
+        </h2>
+
+
+        <form method="get" class="mb-4">
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ busca }}"
+                        class="form-control"
+                        placeholder="Pesquisar item ou motivo"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <select
+                        name="tipo"
+                        class="form-control"
+                    >
+
+                        <option value="">
+                            Todos os tipos
+                        </option>
+
+                        {% for valor, nome in tipos %}
+
+                            <option
+                                value="{{ valor }}"
+                                {% if tipo_selecionado == valor %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ nome }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Filtrar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-dark table-striped">
+
+                <thead>
+
+                    <tr>
+                        <th>Data</th>
+                        <th>Item</th>
+                        <th>Tipo</th>
+                        <th>Quantidade</th>
+                        <th>Responsável</th>
+                        <th>Motivo</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for movimentacao in page_obj %}
+
+                        <tr>
+
+                            <td>
+                                {{ movimentacao.criada_em|date:"d/m/Y H:i" }}
+                            </td>
+
+                            <td>
+                                {{ movimentacao.item.nome }}
+                            </td>
+
+                            <td>
+                                {{ movimentacao.get_tipo_display }}
+                            </td>
+
+                            <td>
+
+                                {{ movimentacao.quantidade }}
+
+                                {{ movimentacao.item.get_unidade_medida_display }}
+
+                            </td>
+
+                            <td>
+
+                                {% if movimentacao.responsavel %}
+
+                                    {{ movimentacao.responsavel }}
+
+                                {% else %}
+
+                                    Sistema
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ movimentacao.motivo }}
+                            </td>
+
+                        </tr>
+
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="6">
+                                Nenhuma movimentação encontrada.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

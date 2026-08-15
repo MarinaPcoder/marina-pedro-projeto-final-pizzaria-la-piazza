@@ -70,4 +70,17 @@ urlpatterns = [
         views.item_excluir,
         name="item_excluir",
     ),
+
+    path(
+    "movimentacoes/",
+    views.movimentacao_lista,
+    name="movimentacao_lista",
+    ),
+
+    path(
+    "movimentacoes/nova/",
+    views.movimentacao_criar,
+    name="movimentacao_criar",
+    ),
+
 ]
