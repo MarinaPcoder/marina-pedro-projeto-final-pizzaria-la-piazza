@@ -1,0 +1,1167 @@
+{% extends "_base.html" %}
+{% load static %}
+
+
+{% block title %}
+Painel Administrativo | La Piazza
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/dashboard.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+{{ dados_iniciais|json_script:"dashboard-initial-data" }}
+
+
+<div
+    class="dashboard"
+    id="dashboard"
+    data-endpoint="{% url 'painel:dados' %}"
+>
+
+
+    <!-- ==================================================
+         CABEÇALHO
+    =================================================== -->
+
+    <section class="dashboard-hero lp-reveal">
+
+        <div class="dashboard-hero-copy">
+
+            <div class="dashboard-eyebrow">
+
+                <span class="dashboard-live-dot"></span>
+
+                Central de operações
+
+            </div>
+
+
+            <h1>
+
+                <span
+                    id="dashboardGreeting"
+                >
+                    Bem-vindo
+                </span>,
+
+                <strong>
+                    {{ request.user.nome|default:"Administrador" }}
+                </strong>.
+
+            </h1>
+
+
+            <p>
+
+                Uma visão completa da operação da
+                La Piazza em tempo real.
+
+            </p>
+
+        </div>
+
+
+        <div class="dashboard-time-panel">
+
+            <div
+                class="dashboard-clock"
+                id="dashboardClock"
+            >
+                --:--
+            </div>
+
+            <div
+                class="dashboard-date"
+                id="dashboardDate"
+            >
+            </div>
+
+            <div class="dashboard-update-status">
+
+                <i class="bi bi-arrow-repeat"></i>
+
+                <span id="lastUpdate">
+                    Atualizado agora
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         BARRA DE CONTROLE
+    =================================================== -->
+
+    <section class="dashboard-toolbar lp-reveal">
+
+        <div class="dashboard-search">
+
+            <i class="bi bi-search"></i>
+
+            <input
+                type="search"
+                id="dashboardSearch"
+                placeholder="Pesquisar no painel..."
+                autocomplete="off"
+            >
+
+            <kbd>/</kbd>
+
+        </div>
+
+
+        <div class="dashboard-period">
+
+            <span>
+                Período dos gráficos
+            </span>
+
+
+            <div class="dashboard-period-buttons">
+
+                <button
+                    type="button"
+                    class="period-button active"
+                    data-period="7"
+                >
+                    7 dias
+                </button>
+
+                <button
+                    type="button"
+                    class="period-button"
+                    data-period="15"
+                >
+                    15 dias
+                </button>
+
+                <button
+                    type="button"
+                    class="period-button"
+                    data-period="30"
+                >
+                    30 dias
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="dashboard-refresh"
+            id="dashboardRefresh"
+            title="Atualizar dados"
+        >
+
+            <i class="bi bi-arrow-clockwise"></i>
+
+        </button>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         KPIs
+    =================================================== -->
+
+    <section class="dashboard-kpis">
+
+
+        <article
+            class="dashboard-kpi lp-reveal"
+            data-search="pedidos hoje"
+        >
+
+            <div class="kpi-icon kpi-orders">
+
+                <i class="bi bi-receipt"></i>
+
+            </div>
+
+
+            <div class="kpi-content">
+
+                <span class="kpi-label">
+                    Pedidos hoje
+                </span>
+
+                <strong
+                    class="kpi-number"
+                    data-counter="{{ pedidos_hoje }}"
+                >
+                    0
+                </strong>
+
+                <small>
+                    Pedidos registrados no dia
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <article
+            class="dashboard-kpi lp-reveal"
+            data-search="faturamento vendas receita hoje"
+        >
+
+            <div class="kpi-icon kpi-revenue">
+
+                <i class="bi bi-cash-stack"></i>
+
+            </div>
+
+
+            <div class="kpi-content">
+
+                <span class="kpi-label">
+                    Faturamento hoje
+                </span>
+
+                <strong
+                    class="kpi-number"
+                    data-counter="{{ faturamento_hoje|stringformat:'f' }}"
+                    data-currency="true"
+                >
+                    R$ 0,00
+                </strong>
+
+                <small>
+                    Pedidos não cancelados
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <article
+            class="dashboard-kpi lp-reveal"
+            data-search="ticket medio pedido"
+        >
+
+            <div class="kpi-icon kpi-ticket">
+
+                <i class="bi bi-graph-up-arrow"></i>
+
+            </div>
+
+
+            <div class="kpi-content">
+
+                <span class="kpi-label">
+                    Ticket médio
+                </span>
+
+                <strong
+                    class="kpi-number"
+                    data-counter="{{ ticket_medio_hoje|stringformat:'f' }}"
+                    data-currency="true"
+                >
+                    R$ 0,00
+                </strong>
+
+                <small>
+                    Média por pedido hoje
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <article
+            class="dashboard-kpi lp-reveal"
+            data-search="pizzas cardapio disponíveis"
+        >
+
+            <div class="kpi-icon kpi-pizza">
+
+                <i class="bi bi-circle"></i>
+
+            </div>
+
+
+            <div class="kpi-content">
+
+                <span class="kpi-label">
+                    Pizzas disponíveis
+                </span>
+
+                <strong
+                    class="kpi-number"
+                    data-counter="{{ pizzas_disponiveis }}"
+                >
+                    0
+                </strong>
+
+                <small>
+                    Disponíveis para venda
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <article
+            class="dashboard-kpi {% if estoque_baixo %}is-alert{% endif %} lp-reveal"
+            data-search="estoque baixo crítico alerta"
+        >
+
+            <div class="kpi-icon kpi-stock">
+
+                <i class="bi bi-box-seam"></i>
+
+            </div>
+
+
+            <div class="kpi-content">
+
+                <span class="kpi-label">
+                    Estoque em alerta
+                </span>
+
+                <strong
+                    class="kpi-number"
+                    data-counter="{{ estoque_baixo }}"
+                >
+                    0
+                </strong>
+
+                <small>
+                    Itens no mínimo ou abaixo
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <article
+            class="dashboard-kpi lp-reveal"
+            data-search="movimentações estoque hoje"
+        >
+
+            <div class="kpi-icon kpi-movement">
+
+                <i class="bi bi-arrow-left-right"></i>
+
+            </div>
+
+
+            <div class="kpi-content">
+
+                <span class="kpi-label">
+                    Movimentações hoje
+                </span>
+
+                <strong
+                    class="kpi-number"
+                    data-counter="{{ movimentacoes_hoje }}"
+                >
+                    0
+                </strong>
+
+                <small>
+                    Entradas, saídas e ajustes
+                </small>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         AÇÕES RÁPIDAS
+    =================================================== -->
+
+    <section class="dashboard-quick-actions lp-reveal">
+
+        <div>
+
+            <span class="section-kicker">
+                Acesso rápido
+            </span>
+
+            <h2>
+                O que você deseja fazer?
+            </h2>
+
+        </div>
+
+
+        <div class="quick-action-grid">
+
+            <a
+                href="{% url 'pizza_criar' %}"
+                class="quick-action"
+            >
+
+                <i class="bi bi-plus-circle"></i>
+
+                <span>
+                    Nova pizza
+                </span>
+
+            </a>
+
+
+            <a
+                href="{% url 'pedidos:pedido_criar' %}"
+                class="quick-action"
+            >
+
+                <i class="bi bi-bag-plus"></i>
+
+                <span>
+                    Novo pedido
+                </span>
+
+            </a>
+
+
+            <a
+                href="{% url 'estoque:movimentacao_criar' %}"
+                class="quick-action"
+            >
+
+                <i class="bi bi-box-arrow-in-down"></i>
+
+                <span>
+                    Movimentar estoque
+                </span>
+
+            </a>
+
+
+            <a
+                href="{% url 'pizza_lista' %}"
+                class="quick-action"
+            >
+
+                <i class="bi bi-grid"></i>
+
+                <span>
+                    Gerenciar cardápio
+                </span>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         GRÁFICOS
+    =================================================== -->
+
+    <section class="dashboard-charts">
+
+        <div class="dashboard-section-header lp-reveal">
+
+            <div>
+
+                <span class="section-kicker">
+                    Inteligência operacional
+                </span>
+
+                <h2>
+                    Análises e indicadores
+                </h2>
+
+            </div>
+
+
+            <div class="chart-live-indicator">
+
+                <span></span>
+
+                Dados do sistema
+
+            </div>
+
+        </div>
+
+
+
+        <!-- LINHA -->
+
+        <article
+            class="dashboard-chart-card chart-wide lp-reveal"
+            data-search="pedidos evolução linha gráfico"
+        >
+
+            <div class="chart-card-header">
+
+                <div>
+
+                    <span class="chart-kicker">
+                        Demanda
+                    </span>
+
+                    <h3>
+                        Evolução de pedidos
+                    </h3>
+
+                    <p>
+                        Quantidade de pedidos registrados por dia.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="chart-expand"
+                    aria-label="Expandir gráfico"
+                >
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+
+            </div>
+
+
+            <div class="chart-wrapper chart-large">
+
+                <canvas id="ordersChart"></canvas>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- DOUGHNUT -->
+
+        <article
+            class="dashboard-chart-card lp-reveal"
+            data-search="status pedidos donut gráfico"
+        >
+
+            <div class="chart-card-header">
+
+                <div>
+
+                    <span class="chart-kicker">
+                        Operação
+                    </span>
+
+                    <h3>
+                        Status dos pedidos
+                    </h3>
+
+                    <p>
+                        Distribuição do fluxo operacional.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="chart-expand"
+                >
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="statusChart"></canvas>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- BARRAS -->
+
+        <article
+            class="dashboard-chart-card lp-reveal"
+            data-search="pizza vendida ranking barras gráfico"
+        >
+
+            <div class="chart-card-header">
+
+                <div>
+
+                    <span class="chart-kicker">
+                        Cardápio
+                    </span>
+
+                    <h3>
+                        Pizzas mais vendidas
+                    </h3>
+
+                    <p>
+                        Ranking por quantidade comercializada.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="chart-expand"
+                >
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="pizzasChart"></canvas>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- MIXED -->
+
+        <article
+            class="dashboard-chart-card chart-wide lp-reveal"
+            data-search="faturamento ticket médio barras linha vendas"
+        >
+
+            <div class="chart-card-header">
+
+                <div>
+
+                    <span class="chart-kicker">
+                        Financeiro
+                    </span>
+
+                    <h3>
+                        Faturamento × ticket médio
+                    </h3>
+
+                    <p>
+                        Receita diária comparada ao valor médio dos pedidos.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="chart-expand"
+                >
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+
+            </div>
+
+
+            <div class="chart-wrapper chart-large">
+
+                <canvas id="revenueChart"></canvas>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- RADAR -->
+
+        <article
+            class="dashboard-chart-card lp-reveal"
+            data-search="saúde operacional radar desempenho"
+        >
+
+            <div class="chart-card-header">
+
+                <div>
+
+                    <span class="chart-kicker">
+                        Performance
+                    </span>
+
+                    <h3>
+                        Saúde operacional
+                    </h3>
+
+                    <p>
+                        Indicadores normalizados de 0 a 100%.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="chart-expand"
+                >
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="healthChart"></canvas>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- POLAR -->
+
+        <article
+            class="dashboard-chart-card lp-reveal"
+            data-search="estoque categorias polar gráfico"
+        >
+
+            <div class="chart-card-header">
+
+                <div>
+
+                    <span class="chart-kicker">
+                        Estoque
+                    </span>
+
+                    <h3>
+                        Composição do estoque
+                    </h3>
+
+                    <p>
+                        Itens ativos agrupados por categoria.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="chart-expand"
+                >
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="stockChart"></canvas>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         DADOS OPERACIONAIS
+    =================================================== -->
+
+    <section class="dashboard-bottom-grid">
+
+
+        <!-- PEDIDOS -->
+
+        <article
+            class="dashboard-data-card lp-reveal"
+            data-search="últimos pedidos clientes"
+        >
+
+            <div class="data-card-header">
+
+                <div>
+
+                    <span class="section-kicker">
+                        Agora
+                    </span>
+
+                    <h3>
+                        Últimos pedidos
+                    </h3>
+
+                </div>
+
+
+                <a
+                    href="{% url 'pedidos:pedido_lista' %}"
+                >
+                    Ver todos
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <div class="dashboard-table">
+
+                {% for pedido in ultimos_pedidos %}
+
+                    <a
+                        href="{% url 'pedidos:pedido_detalhe' pedido.pk %}"
+                        class="dashboard-order-row dashboard-searchable"
+                        data-search="
+                            pedido
+                            {{ pedido.pk }}
+                            {{ pedido.usuario.nome }}
+                            {{ pedido.get_status_display }}
+                        "
+                    >
+
+                        <div class="order-number">
+
+                            #{{ pedido.pk }}
+
+                        </div>
+
+
+                        <div class="order-customer">
+
+                            <strong>
+                                {{ pedido.usuario.nome }}
+                            </strong>
+
+                            <span>
+                                {{ pedido.criado_em|date:"H:i" }}
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="dashboard-status"
+                            data-status="{{ pedido.get_status_display }}"
+                        >
+
+                            {{ pedido.get_status_display }}
+
+                        </div>
+
+
+                        <div class="order-price">
+
+                            R$ {{ pedido.valor_total|floatformat:2 }}
+
+                        </div>
+
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+
+                {% empty %}
+
+                    <div class="dashboard-empty">
+
+                        <i class="bi bi-receipt"></i>
+
+                        Nenhum pedido registrado.
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </article>
+
+
+
+        <!-- ESTOQUE BAIXO -->
+
+        <article
+            class="dashboard-data-card lp-reveal"
+            data-search="estoque crítico baixo alerta"
+        >
+
+            <div class="data-card-header">
+
+                <div>
+
+                    <span class="section-kicker">
+                        Atenção
+                    </span>
+
+                    <h3>
+                        Estoque em alerta
+                    </h3>
+
+                </div>
+
+
+                <a
+                    href="{% url 'estoque:item_lista' %}?status=baixo"
+                >
+                    Ver estoque
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <div class="stock-alert-list">
+
+                {% for item in itens_estoque_baixo %}
+
+                    <a
+                        href="{% url 'estoque:item_detalhe' item.pk %}"
+                        class="stock-alert-item dashboard-searchable"
+                        data-search="
+                            {{ item.nome }}
+                            {{ item.categoria.nome }}
+                            estoque
+                        "
+                    >
+
+                        <div class="stock-alert-icon">
+
+                            <i class="bi bi-exclamation-triangle"></i>
+
+                        </div>
+
+
+                        <div class="stock-alert-info">
+
+                            <strong>
+                                {{ item.nome }}
+                            </strong>
+
+                            <span>
+                                {{ item.categoria.nome }}
+                            </span>
+
+
+                            <div class="stock-progress">
+
+                                <div
+                                    class="stock-progress-bar"
+                                    data-stock-current="{{ item.quantidade_atual|stringformat:'f' }}"
+                                    data-stock-minimum="{{ item.estoque_minimo|stringformat:'f' }}"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="stock-alert-value">
+
+                            <strong>
+                                {{ item.quantidade_atual }}
+                            </strong>
+
+                            <span>
+                                {{ item.get_unidade_medida_display }}
+                            </span>
+
+                        </div>
+
+                    </a>
+
+
+                {% empty %}
+
+                    <div class="dashboard-empty success">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        Nenhum item em nível crítico.
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </article>
+
+
+
+        <!-- MOVIMENTAÇÕES -->
+
+        <article
+            class="dashboard-data-card dashboard-movements lp-reveal"
+            data-search="movimentações recentes estoque"
+        >
+
+            <div class="data-card-header">
+
+                <div>
+
+                    <span class="section-kicker">
+                        Histórico
+                    </span>
+
+                    <h3>
+                        Movimentações recentes
+                    </h3>
+
+                </div>
+
+
+                <a
+                    href="{% url 'estoque:movimentacao_lista' %}"
+                >
+                    Histórico
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <div class="movement-timeline">
+
+                {% for movimentacao in movimentacoes_recentes %}
+
+                    <div
+                        class="movement-item dashboard-searchable"
+                        data-search="
+                            {{ movimentacao.item.nome }}
+                            {{ movimentacao.get_tipo_display }}
+                            {{ movimentacao.motivo }}
+                        "
+                    >
+
+                        <div
+                            class="movement-dot"
+                            data-movement="{{ movimentacao.get_tipo_display }}"
+                        ></div>
+
+
+                        <div class="movement-content">
+
+                            <div>
+
+                                <strong>
+                                    {{ movimentacao.item.nome }}
+                                </strong>
+
+                                <span>
+                                    {{ movimentacao.get_tipo_display }}
+                                </span>
+
+                            </div>
+
+
+                            <p>
+
+                                {{ movimentacao.motivo|default:"Movimentação de estoque" }}
+
+                            </p>
+
+
+                            <small>
+
+                                {{ movimentacao.criada_em|date:"d/m/Y H:i" }}
+
+                            </small>
+
+                        </div>
+
+
+                        <div class="movement-value">
+
+                            {{ movimentacao.quantidade }}
+
+                            <span>
+                                {{ movimentacao.item.get_unidade_medida_display }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                {% empty %}
+
+                    <div class="dashboard-empty">
+
+                        Nenhuma movimentação registrada.
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <div
+        class="dashboard-no-results"
+        id="dashboardNoResults"
+        hidden
+    >
+
+        <i class="bi bi-search"></i>
+
+        <h3>
+            Nada encontrado
+        </h3>
+
+        <p>
+            Tente pesquisar outro termo.
+        </p>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
+></script>
+
+<script
+    src="{% static 'js/dashboard.js' %}"
+></script>
+
+{% endblock %}

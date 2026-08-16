@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     "cardapio",
     "estoque",
     "pedidos",
+    "painel",
+
 ]
 
 

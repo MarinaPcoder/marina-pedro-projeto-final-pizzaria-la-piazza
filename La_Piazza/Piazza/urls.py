@@ -35,6 +35,11 @@ urlpatterns = [
     include("pedidos.urls"),
     ),
 
+    path(
+    "painel/",
+    include("painel.urls"),
+    ),
+
 ]
 
 
