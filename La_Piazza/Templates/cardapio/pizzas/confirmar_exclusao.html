@@ -1,57 +1,95 @@
 {% extends "_base.html" %}
+{% load static %}
+
 
 {% block title %}
-Excluir pizza | La Piazza
+Excluir {{ pizza.nome }} | La Piazza
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/pizzas.css' %}"
+>
+
 {% endblock %}
 
 
 {% block content %}
 
-<section class="ftco-section">
-
-    <div class="container">
-
-        <h2>
-            Excluir pizza
-        </h2>
+<section class="pizza-delete-card lp-reveal">
 
 
-        <p>
-            Tem certeza que deseja excluir
-            <strong>{{ pizza.nome }}</strong>?
-        </p>
+    <div class="pizza-delete-icon">
+
+        <i class="bi bi-trash3"></i>
+
+    </div>
 
 
-        <p class="text-danger">
+    <div class="pizza-eyebrow"
+         style="justify-content:center;">
 
-            Esta ação não poderá ser desfeita.
+        Ação irreversível
 
-        </p>
+    </div>
 
 
-        <form method="post">
+    <h1>
+        Excluir pizza?
+    </h1>
 
-            {% csrf_token %}
+
+    <p>
+
+        Você está prestes a excluir
+
+        <span class="pizza-delete-name">
+
+            {{ pizza.nome }}
+
+        </span>.
+
+        Essa operação não poderá ser desfeita.
+
+    </p>
+
+
+    <form method="post">
+
+        {% csrf_token %}
+
+
+        <div class="pizza-delete-actions">
+
+            <a
+                href="{% url 'pizza_detalhe' pizza.pk %}"
+                class="btn btn-secondary"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                Cancelar
+
+            </a>
 
 
             <button
                 type="submit"
                 class="btn btn-danger"
             >
-                Sim, excluir
+
+                <i class="bi bi-trash3"></i>
+
+                Excluir definitivamente
+
             </button>
 
+        </div>
 
-            <a
-                href="{% url 'pizza_detalhe' pizza.pk %}"
-                class="btn btn-secondary"
-            >
-                Cancelar
-            </a>
-
-        </form>
-
-    </div>
+    </form>
 
 </section>
 

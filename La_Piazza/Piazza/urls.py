@@ -42,6 +42,8 @@ urlpatterns = [
 
 ]
 
+handler403 = "Piazza.views.erro_403"
+handler404 = "Piazza.views.erro_404"
 
 if settings.DEBUG:
     urlpatterns += static(

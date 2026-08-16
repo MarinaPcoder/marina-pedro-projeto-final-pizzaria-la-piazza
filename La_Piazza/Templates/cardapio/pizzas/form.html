@@ -1,106 +1,160 @@
 {% extends "_base.html" %}
+{% load static %}
+
 
 {% block title %}
-{{ titulo }} | La Piazza
+{{ titulo|default:"Pizza" }} | La Piazza
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/pizzas.css' %}"
+>
+
 {% endblock %}
 
 
 {% block content %}
 
-<section class="ftco-section">
+<div class="pizza-page">
 
-    <div class="container">
 
-        <div class="row justify-content-center">
+    <section class="pizza-hero lp-reveal">
 
-            <div class="col-md-7">
+        <div class="pizza-hero-copy">
 
-                <h2 class="mb-4">
-                    {{ titulo }}
+            <div class="pizza-eyebrow">
+                Gerenciamento do cardápio
+            </div>
+
+            <h1>
+                {{ titulo|default:"Pizza" }}
+            </h1>
+
+            <p>
+                Defina as informações que serão utilizadas
+                no cardápio e no gerenciamento da pizzaria.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <div class="pizza-form-layout">
+
+
+        <section class="pizza-form-card lp-reveal">
+
+            <div class="pizza-form-heading">
+
+                <h2>
+                    Informações da pizza
                 </h2>
 
+                <p>
+                    Preencha os campos abaixo para continuar.
+                </p>
 
-                {% if pizza and pizza.imagem %}
+            </div>
 
-                    <div class="mb-4">
 
-                        <p>Imagem atual:</p>
+            <form
+                method="post"
+                enctype="multipart/form-data"
+            >
 
-                        <img
-                            src="{{ pizza.imagem.url }}"
-                            alt="{{ pizza.nome }}"
-                            width="200"
-                            style="max-height: 200px; object-fit: cover;"
-                        >
+                {% csrf_token %}
+
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger">
+
+                        {{ form.non_field_errors }}
 
                     </div>
 
                 {% endif %}
 
 
-                <form
-                    method="post"
-                    enctype="multipart/form-data"
-                >
-
-                    {% csrf_token %}
-
-
-                    {% if form.non_field_errors %}
-
-                        <div class="alert alert-danger">
-
-                            {{ form.non_field_errors }}
-
-                        </div>
-
-                    {% endif %}
+                <div class="pizza-form-grid">
 
 
                     {% for field in form %}
 
-                        <div class="form-group">
+                        <div
+                            class="
+                                pizza-form-field
 
-                            {% if field.name == "disponivel" %}
+                                {% if field.name == 'descricao' or field.name == 'imagem' %}
+                                    full
+                                {% endif %}
+                            "
+                        >
 
-                                <div class="form-check">
+                            <label for="{{ field.id_for_label }}">
 
-                                    {{ field }}
+                                {% if field.name == "nome" %}
 
-                                    <label
-                                        class="form-check-label"
-                                        for="{{ field.id_for_label }}"
-                                    >
-                                        {{ field.label }}
-                                    </label>
+                                    <i class="bi bi-type"></i>
+
+                                {% elif field.name == "categoria" %}
+
+                                    <i class="bi bi-tags"></i>
+
+                                {% elif field.name == "preco" %}
+
+                                    <i class="bi bi-currency-dollar"></i>
+
+                                {% elif field.name == "descricao" %}
+
+                                    <i class="bi bi-card-text"></i>
+
+                                {% elif field.name == "imagem" %}
+
+                                    <i class="bi bi-image"></i>
+
+                                {% elif field.name == "disponivel" %}
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                {% endif %}
+
+                                {{ field.label }}
+
+                            </label>
+
+
+                            {{ field }}
+
+
+                            {% if field.name == "descricao" %}
+
+                                <div class="pizza-field-help">
+
+                                    <span>
+                                        Descrição exibida no cardápio
+                                    </span>
+
+                                    <span id="pizzaDescriptionCount">
+                                        0 caracteres
+                                    </span>
 
                                 </div>
-
-                            {% else %}
-
-                                <label for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-
-                                {{ field }}
-
-                            {% endif %}
-
-
-                            {% if field.help_text %}
-
-                                <small class="form-text text-muted">
-
-                                    {{ field.help_text }}
-
-                                </small>
 
                             {% endif %}
 
 
                             {% for error in field.errors %}
 
-                                <div class="text-danger">
+                                <div class="pizza-field-error">
+
+                                    <i class="bi bi-exclamation-circle"></i>
 
                                     {{ error }}
 
@@ -113,13 +167,10 @@
                     {% endfor %}
 
 
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        Salvar
-                    </button>
+                </div>
 
+
+                <div class="pizza-form-actions">
 
                     <a
                         href="{% url 'pizza_lista' %}"
@@ -128,14 +179,130 @@
                         Cancelar
                     </a>
 
-                </form>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="bi bi-check-lg"></i>
+
+                        Salvar pizza
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+
+        <aside class="pizza-preview-card lp-reveal">
+
+
+            <div
+                class="pizza-preview-image"
+                id="previewPizzaImage"
+            >
+
+                {% if form.instance.imagem %}
+
+                    <img
+                        src="{{ form.instance.imagem.url }}"
+                        alt="{{ form.instance.nome }}"
+                    >
+
+                {% else %}
+
+                    <div class="pizza-preview-placeholder">
+
+                        <i class="bi bi-image"></i>
+
+                    </div>
+
+                {% endif %}
 
             </div>
 
-        </div>
+
+            <div class="pizza-preview-content">
+
+                <span
+                    class="pizza-preview-label"
+                    id="previewPizzaCategory"
+                >
+                    Categoria
+                </span>
+
+
+                <h3 id="previewPizzaName">
+
+                    {% if form.instance.nome %}
+
+                        {{ form.instance.nome }}
+
+                    {% else %}
+
+                        Nome da pizza
+
+                    {% endif %}
+
+                </h3>
+
+
+                <div
+                    class="pizza-preview-description"
+                    id="previewPizzaDescription"
+                >
+
+                    {% if form.instance.descricao %}
+
+                        {{ form.instance.descricao }}
+
+                    {% else %}
+
+                        A descrição aparecerá aqui.
+
+                    {% endif %}
+
+                </div>
+
+
+                <strong
+                    class="pizza-preview-price"
+                    id="previewPizzaPrice"
+                >
+
+                    {% if form.instance.preco %}
+
+                        R$ {{ form.instance.preco|floatformat:2 }}
+
+                    {% else %}
+
+                        R$ 0,00
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </aside>
 
     </div>
 
-</section>
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'js/pizzas.js' %}"
+></script>
 
 {% endblock %}
