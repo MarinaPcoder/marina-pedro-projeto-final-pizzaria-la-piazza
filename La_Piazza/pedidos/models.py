@@ -13,7 +13,6 @@ from usuarios.permissions import (
     GRUPO_FUNCIONARIO,
 )
 
-
 class Pedido(models.Model):
     class StatusPedido(models.TextChoices):
         PENDENTE = "PENDENTE", "Pendente"
