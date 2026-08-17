@@ -1,0 +1,44 @@
+{% extends "_base.html" %}
+
+{% block title %}
+Excluir categoria | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>Excluir categoria</h2>
+
+        <p>
+            Tem certeza que deseja excluir
+            <strong>{{ categoria.nome }}</strong>?
+        </p>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+                Sim, excluir
+            </button>
+
+            <a
+                href="{% url 'categoria_detalhe' categoria.pk %}"
+                class="btn btn-secondary"
+            >
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

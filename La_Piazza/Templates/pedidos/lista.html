@@ -1,0 +1,283 @@
+{% extends "_base.html" %}
+
+{% block title %}
+Pedidos | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h2>Pedidos</h2>
+
+            {% if perms.pedidos.add_pedido %}
+
+                <a
+                    href="{% url 'pedidos:pedido_criar' %}"
+                    class="btn btn-primary"
+                >
+                    Novo pedido
+                </a>
+
+            {% endif %}
+
+        </div>
+
+
+        <form method="get" class="mb-4">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ busca }}"
+                        class="form-control"
+                        placeholder="Número ou cliente"
+                    >
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <select
+                        name="status"
+                        class="form-control"
+                    >
+
+                        <option value="">
+                            Todos os status
+                        </option>
+
+                        {% for valor, nome in status_opcoes %}
+
+                            <option
+                                value="{{ valor }}"
+                                {% if status_selecionado == valor %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ nome }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <select
+                        name="tipo"
+                        class="form-control"
+                    >
+
+                        <option value="">
+                            Todos os atendimentos
+                        </option>
+
+                        {% for valor, nome in tipo_opcoes %}
+
+                            <option
+                                value="{{ valor }}"
+                                {% if tipo_selecionado == valor %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ nome }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Filtrar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-dark table-striped">
+
+                <thead>
+
+                    <tr>
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th>Atendimento</th>
+                        <th>Total</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for pedido in page_obj %}
+
+                        <tr>
+
+                            <td>
+                                #{{ pedido.pk }}
+                            </td>
+
+                            <td>
+                                {{ pedido.usuario }}
+                            </td>
+
+                            <td>
+                                {{ pedido.get_status_display }}
+                            </td>
+
+                            <td>
+                                {{ pedido.get_tipo_atendimento_display }}
+                            </td>
+
+                            <td>
+                                R$ {{ pedido.valor_total }}
+                            </td>
+
+                            <td>
+                                {{ pedido.criado_em|date:"d/m/Y H:i" }}
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'pedidos:pedido_detalhe' pedido.pk %}"
+                                    class="btn btn-sm btn-info"
+                                >
+                                    Ver
+                                </a>
+
+                                {% if perms.pedidos.change_pedido %}
+
+                                    <a
+                                        href="{% url 'pedidos:pedido_editar' pedido.pk %}"
+                                        class="btn btn-sm btn-warning"
+                                    >
+                                        Editar
+                                    </a>
+
+                                {% endif %}
+
+                                {% if perms.pedidos.delete_pedido %}
+
+                                    <a
+                                        href="{% url 'pedidos:pedido_excluir' pedido.pk %}"
+                                        class="btn btn-sm btn-danger"
+                                    >
+                                        Excluir
+                                    </a>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="7">
+                                Nenhum pedido encontrado.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% if page_obj.has_other_pages %}
+
+            <nav>
+
+                <ul class="pagination">
+
+                    {% if page_obj.has_previous %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="?page={{ page_obj.previous_page_number }}&q={{ busca }}&status={{ status_selecionado }}&tipo={{ tipo_selecionado }}"
+                            >
+                                Anterior
+                            </a>
+
+                        </li>
+
+                    {% endif %}
+
+
+                    <li class="page-item disabled">
+
+                        <span class="page-link">
+                            Página {{ page_obj.number }}
+                            de {{ page_obj.paginator.num_pages }}
+                        </span>
+
+                    </li>
+
+
+                    {% if page_obj.has_next %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="?page={{ page_obj.next_page_number }}&q={{ busca }}&status={{ status_selecionado }}&tipo={{ tipo_selecionado }}"
+                            >
+                                Próxima
+                            </a>
+
+                        </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </nav>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

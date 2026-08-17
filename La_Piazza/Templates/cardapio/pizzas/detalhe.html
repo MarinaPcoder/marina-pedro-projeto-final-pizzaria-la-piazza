@@ -1,0 +1,250 @@
+{% extends "_base.html" %}
+{% load static %}
+
+
+{% block title %}
+{{ pizza.nome }} | La Piazza
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/pizzas.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="pizza-page">
+
+
+    <div class="pizza-detail-layout">
+
+
+        <section class="pizza-detail-image lp-reveal">
+
+            {% if pizza.imagem %}
+
+                <img
+                    src="{{ pizza.imagem.url }}"
+                    alt="{{ pizza.nome }}"
+                >
+
+            {% else %}
+
+                <div class="pizza-image-placeholder">
+
+                    <i class="bi bi-image"></i>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+
+        <section class="pizza-detail-card pizza-detail-content lp-reveal">
+
+
+            <span class="pizza-detail-category">
+
+                {{ pizza.categoria.nome }}
+
+            </span>
+
+
+            <h1>
+                {{ pizza.nome }}
+            </h1>
+
+
+            <p class="pizza-detail-description">
+
+                {% if pizza.descricao %}
+
+                    {{ pizza.descricao }}
+
+                {% else %}
+
+                    Pizza artesanal La Piazza.
+
+                {% endif %}
+
+            </p>
+
+
+            <div class="pizza-detail-price">
+
+                R$ {{ pizza.preco|floatformat:2 }}
+
+            </div>
+
+
+
+            <div class="pizza-detail-meta">
+
+
+                <div class="pizza-detail-meta-item">
+
+                    <span>
+                        Categoria
+                    </span>
+
+                    <strong>
+                        {{ pizza.categoria.nome }}
+                    </strong>
+
+                </div>
+
+
+                <div class="pizza-detail-meta-item">
+
+                    <span>
+                        Disponibilidade
+                    </span>
+
+                    <strong>
+
+                        {% if pizza.disponivel %}
+
+                            Disponível
+
+                        {% else %}
+
+                            Indisponível
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="pizza-detail-actions">
+
+
+                <a
+                    href="{% url 'pizza_lista' %}"
+                    class="btn btn-secondary"
+                >
+
+                    <i class="bi bi-arrow-left"></i>
+
+                    Voltar
+
+                </a>
+
+
+                {% if perms.cardapio.view_receitapizza %}
+
+                    <a
+                        href="{% url 'receita_lista' pizza.pk %}"
+                        class="btn btn-info"
+                    >
+
+                        <i class="bi bi-journal-text"></i>
+
+                        Receita
+
+                    </a>
+
+                {% endif %}
+
+
+                {% if perms.cardapio.change_pizza %}
+
+                    <a
+                        href="{% url 'pizza_editar' pizza.pk %}"
+                        class="btn btn-warning"
+                    >
+
+                        <i class="bi bi-pencil"></i>
+
+                        Editar
+
+                    </a>
+
+                {% endif %}
+
+
+                {% if perms.cardapio.delete_pizza %}
+
+                    <a
+                        href="{% url 'pizza_excluir' pizza.pk %}"
+                        class="btn btn-danger"
+                    >
+
+                        <i class="bi bi-trash"></i>
+
+                        Excluir
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <div class="pizza-recipe-panel">
+
+                <h3>
+                    Receita
+                </h3>
+
+
+                {% for ingrediente in pizza.receita.all %}
+
+                    <div class="pizza-recipe-row">
+
+                        <strong>
+
+                            {{ ingrediente.item_estoque.nome }}
+
+                        </strong>
+
+
+                        <span>
+
+                            {{ ingrediente.quantidade_utilizada }}
+
+                            {{ ingrediente.item_estoque.get_unidade_medida_display }}
+
+                        </span>
+
+                    </div>
+
+
+                {% empty %}
+
+                    <p
+                        style="
+                            color:var(--lp-muted);
+                            font-size:11px;
+                            margin:0;
+                        "
+                    >
+
+                        Nenhum ingrediente cadastrado na receita.
+
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}

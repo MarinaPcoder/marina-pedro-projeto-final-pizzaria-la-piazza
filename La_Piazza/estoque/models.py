@@ -1,8 +1,8 @@
 from decimal import Decimal
 
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
-from usuarios.models import Usuario
 
 
 class CategoriaEstoque(models.Model):
@@ -65,7 +65,9 @@ class ItemEstoque(models.Model):
         max_digits=10,
         decimal_places=3,
         default=Decimal("0.000"),
-        validators=[MinValueValidator(Decimal("0.000"))],
+        validators=[
+            MinValueValidator(Decimal("0.000"))
+        ],
         verbose_name="quantidade atual",
     )
 
@@ -73,7 +75,9 @@ class ItemEstoque(models.Model):
         max_digits=10,
         decimal_places=3,
         default=Decimal("0.000"),
-        validators=[MinValueValidator(Decimal("0.000"))],
+        validators=[
+            MinValueValidator(Decimal("0.000"))
+        ],
         verbose_name="estoque mínimo",
     )
 
@@ -81,7 +85,9 @@ class ItemEstoque(models.Model):
         max_digits=10,
         decimal_places=2,
         default=Decimal("0.00"),
-        validators=[MinValueValidator(Decimal("0.00"))],
+        validators=[
+            MinValueValidator(Decimal("0.00"))
+        ],
         verbose_name="preço de custo",
     )
 
@@ -112,11 +118,18 @@ class ItemEstoque(models.Model):
         ordering = ["nome"]
 
     def __str__(self):
-        return f"{self.nome} — {self.quantidade_atual} {self.unidade_medida}"
+        return (
+            f"{self.nome} — "
+            f"{self.quantidade_atual} "
+            f"{self.get_unidade_medida_display()}"
+        )
 
     @property
     def abaixo_do_minimo(self):
-        return self.quantidade_atual <= self.estoque_minimo
+        return (
+            self.quantidade_atual
+            <= self.estoque_minimo
+        )
 
 
 class MovimentacaoEstoque(models.Model):
@@ -142,12 +155,14 @@ class MovimentacaoEstoque(models.Model):
     quantidade = models.DecimalField(
         max_digits=10,
         decimal_places=3,
-        validators=[MinValueValidator(Decimal("0.001"))],
+        validators=[
+            MinValueValidator(Decimal("0.001"))
+        ],
         verbose_name="quantidade",
     )
 
     responsavel = models.ForeignKey(
-        Usuario,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -172,4 +187,7 @@ class MovimentacaoEstoque(models.Model):
         ordering = ["-criada_em"]
 
     def __str__(self):
-        return f"{self.get_tipo_display()} — {self.item.nome}"
+        return (
+            f"{self.get_tipo_display()} — "
+            f"{self.item.nome}"
+        )

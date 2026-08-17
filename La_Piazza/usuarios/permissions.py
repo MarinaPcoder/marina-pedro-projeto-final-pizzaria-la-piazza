@@ -56,18 +56,3 @@ PERMISSOES_FUNCIONARIO = [
     "delete_itempedido",
     "view_itempedido",
 ]
-
-
-def criar_grupos_e_permissoes(sender, **kwargs):
-    Group = sender.apps.get_model("auth", "Group")
-    Permission = sender.apps.get_model("auth", "Permission")
-
-    cliente, _ = Group.objects.get_or_create(name=GRUPO_CLIENTE)
-    funcionario, _ = Group.objects.get_or_create(name=GRUPO_FUNCIONARIO)
-
-    cliente.permissions.set(
-        Permission.objects.filter(codename__in=PERMISSOES_CLIENTE)
-    )
-    funcionario.permissions.set(
-        Permission.objects.filter(codename__in=PERMISSOES_FUNCIONARIO)
-    )

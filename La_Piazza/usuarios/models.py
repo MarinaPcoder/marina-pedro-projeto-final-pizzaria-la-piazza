@@ -1,20 +1,20 @@
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class Usuario(User):
+class Usuario(AbstractUser):
     telefone = models.CharField(
         max_length=20,
         blank=True,
-        db_index=True,
         verbose_name="telefone",
     )
 
     cpf = models.CharField(
         max_length=14,
         blank=True,
-        unique=True,
         null=True,
+        unique=True,
         verbose_name="CPF",
     )
 
@@ -44,7 +44,7 @@ class Usuario(User):
 
 class EnderecoUsuario(models.Model):
     usuario = models.ForeignKey(
-        Usuario,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="enderecos",
         verbose_name="usuário",
@@ -90,7 +90,7 @@ class EnderecoUsuario(models.Model):
 
     principal = models.BooleanField(
         default=False,
-        verbose_name="principal",
+        verbose_name="endereço principal",
     )
 
     ativo = models.BooleanField(
@@ -111,7 +111,15 @@ class EnderecoUsuario(models.Model):
     class Meta:
         verbose_name = "endereço de usuário"
         verbose_name_plural = "endereços de usuários"
-        ordering = ["usuario__username", "-principal", "logradouro"]
+
+        ordering = [
+            "usuario__username",
+            "-principal",
+            "logradouro",
+        ]
 
     def __str__(self):
-        return f"{self.logradouro}, {self.numero} - {self.cidade}/{self.estado}"
+        return (
+            f"{self.logradouro}, {self.numero} - "
+            f"{self.cidade}/{self.estado}"
+        )

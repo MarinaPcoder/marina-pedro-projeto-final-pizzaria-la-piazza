@@ -7,11 +7,4 @@ class UsuariosConfig(AppConfig):
     verbose_name = "usuários"
 
     def ready(self):
-        from django.db.models.signals import post_migrate
-
-        from .permissions import criar_grupos_e_permissoes
-
-        post_migrate.connect(
-            criar_grupos_e_permissoes,
-            dispatch_uid="usuarios.criar_grupos_e_permissoes",
-        )
+        import usuarios.signals  # noqa: F401

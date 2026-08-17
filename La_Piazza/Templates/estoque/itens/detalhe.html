@@ -1,0 +1,140 @@
+{% extends "_base.html" %}
+
+{% block title %}
+{{ item.nome }} | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>
+            {{ item.nome }}
+        </h2>
+
+
+        <p>
+            <strong>Categoria:</strong>
+            {{ item.categoria.nome }}
+        </p>
+
+
+        <p>
+            <strong>Quantidade atual:</strong>
+
+            {{ item.quantidade_atual }}
+            {{ item.get_unidade_medida_display }}
+        </p>
+
+
+        <p>
+            <strong>Estoque mínimo:</strong>
+
+            {{ item.estoque_minimo }}
+            {{ item.get_unidade_medida_display }}
+        </p>
+
+
+        <p>
+            <strong>Preço de custo:</strong>
+
+            R$ {{ item.preco_custo }}
+        </p>
+
+
+        <p>
+            <strong>Validade:</strong>
+
+            {% if item.data_validade %}
+
+                {{ item.data_validade|date:"d/m/Y" }}
+
+            {% else %}
+
+                Não informada
+
+            {% endif %}
+
+        </p>
+
+
+        <p>
+            <strong>Situação:</strong>
+
+            {% if item.abaixo_do_minimo %}
+
+                <span class="text-danger">
+                    Estoque baixo
+                </span>
+
+            {% else %}
+
+                <span class="text-success">
+                    Estoque normal
+                </span>
+
+            {% endif %}
+
+        </p>
+
+
+        <p>
+            <strong>Ativo:</strong>
+
+            {% if item.ativo %}
+                Sim
+            {% else %}
+                Não
+            {% endif %}
+        </p>
+
+        {% if perms.estoque.add_movimentacaoestoque %}
+
+            <a
+                href="{% url 'estoque:movimentacao_criar' %}?item={{ item.pk }}"
+                class="btn btn-primary"
+            >
+                Registrar movimentação
+            </a>
+
+        {% endif %}
+
+
+        {% if perms.estoque.change_itemestoque %}
+
+            <a
+                href="{% url 'estoque:item_editar' item.pk %}"
+                class="btn btn-warning"
+            >
+                Editar
+            </a>
+
+        {% endif %}
+
+
+        {% if perms.estoque.delete_itemestoque %}
+
+            <a
+                href="{% url 'estoque:item_excluir' item.pk %}"
+                class="btn btn-danger"
+            >
+                Excluir
+            </a>
+
+        {% endif %}
+
+
+        <a
+            href="{% url 'estoque:item_lista' %}"
+            class="btn btn-secondary"
+        >
+            Voltar
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

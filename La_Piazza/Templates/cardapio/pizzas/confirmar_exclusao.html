@@ -1,0 +1,96 @@
+{% extends "_base.html" %}
+{% load static %}
+
+
+{% block title %}
+Excluir {{ pizza.nome }} | La Piazza
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/pizzas.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="pizza-delete-card lp-reveal">
+
+
+    <div class="pizza-delete-icon">
+
+        <i class="bi bi-trash3"></i>
+
+    </div>
+
+
+    <div class="pizza-eyebrow"
+         style="justify-content:center;">
+
+        Ação irreversível
+
+    </div>
+
+
+    <h1>
+        Excluir pizza?
+    </h1>
+
+
+    <p>
+
+        Você está prestes a excluir
+
+        <span class="pizza-delete-name">
+
+            {{ pizza.nome }}
+
+        </span>.
+
+        Essa operação não poderá ser desfeita.
+
+    </p>
+
+
+    <form method="post">
+
+        {% csrf_token %}
+
+
+        <div class="pizza-delete-actions">
+
+            <a
+                href="{% url 'pizza_detalhe' pizza.pk %}"
+                class="btn btn-secondary"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                Cancelar
+
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+
+                <i class="bi bi-trash3"></i>
+
+                Excluir definitivamente
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}

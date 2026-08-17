@@ -54,7 +54,9 @@ class Pizza(models.Model):
     preco = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(Decimal("0.01"))],
+        validators=[
+            MinValueValidator(Decimal("0.01"))
+        ],
         verbose_name="preço",
     )
 
@@ -114,14 +116,20 @@ class ReceitaPizza(models.Model):
     quantidade_utilizada = models.DecimalField(
         max_digits=10,
         decimal_places=3,
-        validators=[MinValueValidator(Decimal("0.001"))],
+        validators=[
+            MinValueValidator(Decimal("0.001"))
+        ],
         verbose_name="quantidade utilizada",
     )
 
     class Meta:
         verbose_name = "receita da pizza"
         verbose_name_plural = "receitas das pizzas"
-        ordering = ["pizza__nome", "item_estoque__nome"]
+
+        ordering = [
+            "pizza__nome",
+            "item_estoque__nome",
+        ]
 
         constraints = [
             models.UniqueConstraint(
@@ -131,4 +139,7 @@ class ReceitaPizza(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.pizza.nome} — {self.item_estoque.nome}"
+        return (
+            f"{self.pizza.nome} - "
+            f"{self.item_estoque.nome}"
+        )

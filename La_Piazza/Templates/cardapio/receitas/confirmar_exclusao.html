@@ -1,0 +1,63 @@
+{% extends "_base.html" %}
+
+
+{% block title %}
+Remover ingrediente | La Piazza
+{% endblock %}
+
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>
+            Remover ingrediente
+        </h2>
+
+
+        <p>
+
+            Deseja remover
+
+            <strong>
+                {{ ingrediente.item_estoque.nome }}
+            </strong>
+
+            da receita da pizza
+
+            <strong>
+                {{ pizza.nome }}
+            </strong>?
+
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+                Sim, remover
+            </button>
+
+
+            <a
+                href="{% url 'receita_lista' pizza.pk %}"
+                class="btn btn-secondary"
+            >
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

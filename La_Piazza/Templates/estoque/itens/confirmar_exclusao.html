@@ -1,0 +1,63 @@
+{% extends "_base.html" %}
+
+{% block title %}
+Excluir item | La Piazza
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+
+    <div class="container">
+
+        <h2>
+            Excluir item de estoque
+        </h2>
+
+
+        <p>
+
+            Tem certeza que deseja excluir
+
+            <strong>
+                {{ item.nome }}
+            </strong>?
+
+        </p>
+
+
+        <p class="text-danger">
+
+            Se este item estiver sendo utilizado em uma receita
+            ou possuir movimentações, a exclusão será bloqueada.
+
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+                Sim, excluir
+            </button>
+
+
+            <a
+                href="{% url 'estoque:item_detalhe' item.pk %}"
+                class="btn btn-secondary"
+            >
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

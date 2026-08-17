@@ -1,29 +1,52 @@
-"""
-URL configuration for Piazza project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
+from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
+
+
+admin.site.site_header = "La Piazza"
+admin.site.site_title = "Administração La Piazza"
+admin.site.index_title = "Gerenciamento da Pizzaria"
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path(
+        "admin/",
+        admin.site.urls,
+    ),
 
-    # Cardapio
-    path('', include("cardapio.urls"))
+    path(
+        "",
+        include("cardapio.urls"),
+    ),
+
+    path(
+        "conta/",
+        include("usuarios.urls"),
+    ),
+
+    path(
+    "gerenciamento/estoque/",
+    include("estoque.urls"),
+    ),
+
+    path(
+    "gerenciamento/pedidos/",
+    include("pedidos.urls"),
+    ),
+
+    path(
+    "painel/",
+    include("painel.urls"),
+    ),
+
 ]
 
+handler403 = "Piazza.views.erro_403"
+handler404 = "Piazza.views.erro_404"
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+    )

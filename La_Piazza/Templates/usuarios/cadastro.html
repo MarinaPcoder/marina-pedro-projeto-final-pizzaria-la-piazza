@@ -1,0 +1,446 @@
+{% extends "_base.html" %}
+{% load static %}
+
+
+{% block title %}
+Criar conta | La Piazza
+{% endblock %}
+
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/auth.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+</div>
+</main>
+
+
+<div class="auth-page">
+
+
+    <section
+        class="auth-showcase"
+        data-auth-particles
+    >
+
+        <div class="auth-particles"></div>
+
+
+        <a
+            href="{% url 'index' %}"
+            class="auth-brand"
+        >
+
+            <div class="auth-brand-icon">
+
+                <i class="bi bi-fire"></i>
+
+            </div>
+
+
+            <div class="auth-brand-copy">
+
+                <strong>
+                    La Piazza
+                </strong>
+
+                <span>
+                    Pizzeria
+                </span>
+
+            </div>
+
+        </a>
+
+
+
+        <div class="auth-showcase-content">
+
+            <div class="auth-overline">
+
+                Faça parte da experiência
+
+            </div>
+
+
+            <h1>
+
+                Sua próxima pizza
+                <span>
+                    começa aqui.
+                </span>
+
+            </h1>
+
+
+            <p>
+
+                Crie sua conta para fazer parte
+                da experiência La Piazza e acompanhar
+                seus dados dentro da plataforma.
+
+            </p>
+
+
+            <div class="auth-features">
+
+
+                <div class="auth-feature">
+
+                    <i class="bi bi-person-check"></i>
+
+                    <strong>
+                        Conta pessoal
+                    </strong>
+
+                    <span>
+                        Seus dados organizados em um único perfil.
+                    </span>
+
+                </div>
+
+
+                <div class="auth-feature">
+
+                    <i class="bi bi-bag-check"></i>
+
+                    <strong>
+                        Pedidos
+                    </strong>
+
+                    <span>
+                        Estrutura preparada para acompanhar pedidos.
+                    </span>
+
+                </div>
+
+
+                <div class="auth-feature">
+
+                    <i class="bi bi-heart"></i>
+
+                    <strong>
+                        Experiência
+                    </strong>
+
+                    <span>
+                        Um sistema moderno pensado para o cliente.
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="auth-showcase-footer">
+
+            <span>
+                © {% now "Y" %} La Piazza
+            </span>
+
+
+            <div class="auth-showcase-status">
+
+                <span></span>
+
+                Cadastro disponível
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="auth-panel">
+
+
+        <div class="auth-panel-inner">
+
+
+            <a
+                href="{% url 'index' %}"
+                class="auth-brand auth-mobile-brand"
+            >
+
+                <div class="auth-brand-icon">
+
+                    <i class="bi bi-fire"></i>
+
+                </div>
+
+
+                <div class="auth-brand-copy">
+
+                    <strong>
+                        La Piazza
+                    </strong>
+
+                    <span>
+                        Pizzeria
+                    </span>
+
+                </div>
+
+            </a>
+
+
+
+            <div class="auth-form-header">
+
+                <div class="auth-form-header-badge">
+
+                    <i class="bi bi-stars"></i>
+
+                    Nova conta
+
+                </div>
+
+
+                <h2>
+                    Crie sua conta
+                </h2>
+
+
+                <p>
+
+                    Preencha seus dados para começar
+                    a utilizar a plataforma.
+
+                </p>
+
+            </div>
+
+
+
+            <form
+                method="post"
+                class="auth-form"
+                novalidate
+            >
+
+                {% csrf_token %}
+
+
+                {% if form.non_field_errors %}
+
+                    <div class="auth-global-error">
+
+                        {% for error in form.non_field_errors %}
+
+                            {{ error }}
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+
+                {% for field in form %}
+
+                    <div class="auth-field">
+
+
+                        <label for="{{ field.id_for_label }}">
+
+                            {% if field.name == "email" %}
+
+                                <i class="bi bi-envelope"></i>
+
+                            {% elif field.name == "nome" %}
+
+                                <i class="bi bi-person"></i>
+
+                            {% elif "password" in field.name %}
+
+                                <i class="bi bi-key"></i>
+
+                            {% else %}
+
+                                <i class="bi bi-pencil"></i>
+
+                            {% endif %}
+
+
+                            {{ field.label }}
+
+                        </label>
+
+
+
+                        <div class="auth-input-wrapper">
+
+                            {% if field.name == "password1" %}
+
+                                <input
+                                    type="password"
+                                    name="{{ field.name }}"
+                                    id="{{ field.id_for_label }}"
+                                    class="form-control"
+                                    autocomplete="new-password"
+                                    data-password-strength
+                                    required
+                                >
+
+                            {% else %}
+
+                                {{ field }}
+
+                            {% endif %}
+
+
+
+                            {% if "password" in field.name %}
+
+                                <button
+                                    type="button"
+                                    class="auth-password-toggle"
+                                    data-password-toggle="{{ field.id_for_label }}"
+                                >
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        {% if field.name == "password1" %}
+
+                            <div class="password-strength">
+
+                                <div class="password-strength-track">
+
+                                    <div
+                                        class="password-strength-bar"
+                                        id="passwordStrengthBar"
+                                    ></div>
+
+                                </div>
+
+
+                                <div class="password-strength-copy">
+
+                                    <span>
+                                        Força da senha
+                                    </span>
+
+                                    <strong id="passwordStrengthLabel">
+                                        Digite uma senha
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        {% for error in field.errors %}
+
+                            <div class="auth-error">
+
+                                <i class="bi bi-exclamation-circle"></i>
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+
+
+                        {% if field.help_text %}
+
+                            <small
+                                style="
+                                    display:block;
+                                    margin-top:6px;
+                                    color:#66615c;
+                                    font-size:9px;
+                                "
+                            >
+
+                                {{ field.help_text|safe }}
+
+                            </small>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+
+
+                <button
+                    type="submit"
+                    class="auth-submit"
+                >
+
+                    <i class="bi bi-person-plus"></i>
+
+                    <span class="auth-submit-text">
+
+                        Criar minha conta
+
+                    </span>
+
+                </button>
+
+            </form>
+
+
+
+            <div class="auth-switch">
+
+                Já possui uma conta?
+
+                <a href="{% url 'usuarios:login' %}">
+                    Entrar
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+</div>
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'js/auth.js' %}"
+></script>
+
+{% endblock %}
