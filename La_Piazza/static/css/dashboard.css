@@ -32,12 +32,12 @@
     background:
         radial-gradient(
             circle at 90% 20%,
-            rgba(217, 121, 65, 0.23),
+            rgba(250, 197, 100, 0.23),
             transparent 32%
         ),
         linear-gradient(
             135deg,
-            rgba(217, 121, 65, 0.11),
+            rgba(250, 197, 100, 0.11),
             rgba(255, 255, 255, 0.025)
         );
 
@@ -303,7 +303,7 @@
 
 .dashboard-search input:focus {
     border-color:
-        rgba(217, 121, 65, .45);
+        rgba(250, 197, 100, .45);
 
     background:
         rgba(255, 255, 255, .06);
@@ -457,7 +457,7 @@
 
 .dashboard-refresh:hover {
     border-color:
-        rgba(217, 121, 65, .35);
+        rgba(250, 197, 100, .35);
 
     color:
         var(--lp-primary-light);
@@ -553,7 +553,7 @@
     background:
         radial-gradient(
             circle,
-            rgba(217, 121, 65, .12),
+            rgba(250, 197, 100, .12),
             transparent 70%
         );
 }
@@ -564,7 +564,7 @@
         translateY(-5px);
 
     border-color:
-        rgba(217, 121, 65, .22);
+        rgba(250, 197, 100, .22);
 
     box-shadow:
         0 25px 60px rgba(
@@ -647,7 +647,7 @@
 
 .kpi-pizza {
     background:
-        rgba(217, 121, 65, .15);
+        rgba(250, 197, 100, .15);
 
     color:
         var(--lp-primary-light);
@@ -745,7 +745,7 @@
     background:
         linear-gradient(
             100deg,
-            rgba(217, 121, 65, .06),
+            rgba(250, 197, 100, .06),
             rgba(255, 255, 255, .018)
         );
 }
@@ -837,10 +837,10 @@
         translateY(-2px);
 
     border-color:
-        rgba(217, 121, 65, .32);
+        rgba(250, 197, 100, .32);
 
     background:
-        rgba(217, 121, 65, .08);
+        rgba(250, 197, 100, .08);
 }
 
 
@@ -947,7 +947,7 @@
 
 .dashboard-chart-card:hover {
     border-color:
-        rgba(217, 121, 65, .2);
+        rgba(250, 197, 100, .2);
 
     box-shadow:
         0 25px 70px rgba(
@@ -1030,7 +1030,7 @@
         white;
 
     border-color:
-        rgba(217, 121, 65, .3);
+        rgba(250, 197, 100, .3);
 
     transform:
         scale(1.06);

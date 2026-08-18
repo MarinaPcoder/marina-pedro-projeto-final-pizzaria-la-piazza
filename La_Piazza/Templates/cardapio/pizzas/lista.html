@@ -1,485 +1,124 @@
 {% extends "_management_base.html" %}
 {% load static %}
 
-
-{% block title %}
-Gerenciar Pizzas | La Piazza
-{% endblock %}
-
-
-{% block extra_css %}
-
-<link
-    rel="stylesheet"
-    href="{% static 'css/pizzas.css' %}"
->
-
-{% endblock %}
-
+{% block title %}Gerenciar pizzas | La Piazza{% endblock %}
 
 {% block content %}
 
-
-<div class="pizza-page">
-
-
-    <section class="pizza-hero lp-reveal">
-
-        <div class="pizza-hero-copy">
-
-            <div class="pizza-eyebrow">
-                Cardápio administrativo
-            </div>
-
-
-            <h1>
-                Gerenciamento de Pizzas
-            </h1>
-
-
-            <p>
-
-                Cadastre sabores, organize categorias,
-                preços, disponibilidade e receitas do
-                cardápio La Piazza.
-
-            </p>
-
-        </div>
-
-
-        <div class="pizza-hero-actions">
-
-            {% if perms.cardapio.add_pizza %}
-
-                <a
-                    href="{% url 'pizza_criar' %}"
-                    class="pizza-add-button"
-                >
-
-                    <i class="bi bi-plus-lg"></i>
-
-                    Nova pizza
-
-                </a>
-
-            {% endif %}
-
-        </div>
-
-    </section>
-
-
-
-    <form
-        method="get"
-        id="pizzaFilterForm"
-        class="pizza-toolbar lp-reveal"
-    >
-
-
-        <div class="pizza-search">
-
-            <i class="bi bi-search"></i>
-
-            <input
-                type="search"
-                name="q"
-                id="pizzaSearch"
-                value="{{ busca }}"
-                placeholder="Pesquisar pizzas..."
-                autocomplete="off"
-            >
-
-            <kbd>/</kbd>
-
-        </div>
-
-
-
-        <div class="pizza-category-filter">
-
-            <select
-                name="categoria"
-                id="pizzaCategoryFilter"
-                class="form-control"
-            >
-
-                <option value="">
-                    Todas as categorias
-                </option>
-
-
-                {% for categoria in categorias %}
-
-                    <option
-                        value="{{ categoria.pk }}"
-                        {% if categoria_selecionada|stringformat:"s" == categoria.pk|stringformat:"s" %}
-                            selected
-                        {% endif %}
-                    >
-
-                        {{ categoria.nome }}
-
-                    </option>
-
-                {% endfor %}
-
-            </select>
-
-        </div>
-
-
-
-        <div class="pizza-view-toggle">
-
-            <button
-                type="button"
-                class="pizza-view-button active"
-                data-pizza-view="grid"
-                title="Visualização em grade"
-            >
-
-                <i class="bi bi-grid"></i>
-
-            </button>
-
-
-            <button
-                type="button"
-                class="pizza-view-button"
-                data-pizza-view="list"
-                title="Visualização em lista"
-            >
-
-                <i class="bi bi-list"></i>
-
-            </button>
-
-        </div>
-
-    </form>
-
-
-
-    <div class="pizza-results-info lp-reveal">
-
-        <div>
-
-            <strong>
-                {{ page_obj.paginator.count }}
-            </strong>
-
-            {% if page_obj.paginator.count == 1 %}
-                pizza encontrada
-            {% else %}
-                pizzas encontradas
-            {% endif %}
-
-        </div>
-
-
-        <div class="pizza-live-count">
-
-            <span></span>
-
-            Cardápio atualizado
-
-        </div>
-
+<section class="management-hero hero-wrap" style="background-image: url({% static 'images/bg_3.jpg' %});">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-md-8 text-center">
+        <span class="subheading">Administração do cardápio</span>
+        <h1 class="mb-3">Gerenciamento de pizzas</h1>
+        <p class="breadcrumbs">
+          <span class="mr-2"><a href="{% url 'index' %}">Início</a></span>
+          <span class="mr-2"><a href="{% url 'menu' %}">Cardápio</a></span>
+          <span>Pizzas</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center mb-5 pb-3">
+      <div class="col-md-8 heading-section text-center">
+        <span class="subheading">La Piazza</span>
+        <h2 class="mb-4">Pizzas do cardápio</h2>
+        <p>Consulte os sabores cadastrados e mantenha o cardápio sempre atualizado.</p>
+      </div>
     </div>
 
-
-
-    <section
-        class="pizza-grid"
-        id="pizzaGrid"
-    >
-
-
-        {% for pizza in page_obj %}
-
-
-            <article
-                class="pizza-card lp-reveal"
-            >
-
-
-                <div class="pizza-card-image">
-
-
-                    {% if pizza.imagem %}
-
-                        <img
-                            src="{{ pizza.imagem.url }}"
-                            alt="{{ pizza.nome }}"
-                            loading="lazy"
-                        >
-
-                    {% else %}
-
-                        <div class="pizza-image-placeholder">
-
-                            <i class="bi bi-circle"></i>
-
-                        </div>
-
-                    {% endif %}
-
-
-
-                    {% if pizza.disponivel %}
-
-                        <span class="pizza-status available">
-                            Disponível
-                        </span>
-
-                    {% else %}
-
-                        <span class="pizza-status unavailable">
-                            Indisponível
-                        </span>
-
-                    {% endif %}
-
-
-                </div>
-
-
-
-                <div class="pizza-card-content">
-
-
-                    <span class="pizza-card-category">
-
-                        {{ pizza.categoria.nome }}
-
-                    </span>
-
-
-                    <h3>
-
-                        {{ pizza.nome }}
-
-                    </h3>
-
-
-                    <p class="pizza-description">
-
-                        {% if pizza.descricao %}
-
-                            {{ pizza.descricao }}
-
-                        {% else %}
-
-                            Pizza artesanal La Piazza.
-
-                        {% endif %}
-
-                    </p>
-
-
-
-                    <div class="pizza-card-footer">
-
-
-                        <div class="pizza-price">
-
-                            <span>
-                                Preço
-                            </span>
-
-                            <strong>
-                                R$ {{ pizza.preco|floatformat:2 }}
-                            </strong>
-
-                        </div>
-
-
-
-                        <div class="pizza-actions">
-
-
-                            {% if perms.cardapio.view_pizza %}
-
-                                <a
-                                    href="{% url 'pizza_detalhe' pizza.pk %}"
-                                    class="pizza-action"
-                                    title="Visualizar"
-                                >
-
-                                    <i class="bi bi-eye"></i>
-
-                                </a>
-
-                            {% endif %}
-
-
-
-                            {% if perms.cardapio.view_receitapizza %}
-
-                                <a
-                                    href="{% url 'receita_lista' pizza.pk %}"
-                                    class="pizza-action"
-                                    title="Receita"
-                                >
-
-                                    <i class="bi bi-journal-text"></i>
-
-                                </a>
-
-                            {% endif %}
-
-
-
-                            {% if perms.cardapio.change_pizza %}
-
-                                <a
-                                    href="{% url 'pizza_editar' pizza.pk %}"
-                                    class="pizza-action"
-                                    title="Editar"
-                                >
-
-                                    <i class="bi bi-pencil"></i>
-
-                                </a>
-
-                            {% endif %}
-
-
-
-                            {% if perms.cardapio.delete_pizza %}
-
-                                <a
-                                    href="{% url 'pizza_excluir' pizza.pk %}"
-                                    class="pizza-action delete"
-                                    title="Excluir"
-                                >
-
-                                    <i class="bi bi-trash"></i>
-
-                                </a>
-
-                            {% endif %}
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-
-            </article>
-
-
-        {% empty %}
-
-
-            <div class="pizza-empty lp-reveal">
-
-                <i class="bi bi-search"></i>
-
-                <h3>
-                    Nenhuma pizza encontrada
-                </h3>
-
-                <p>
-
-                    Tente alterar os filtros ou cadastrar
-                    uma nova pizza no cardápio.
-
-                </p>
-
+    <form method="get" id="pizzaFilterForm" class="row align-items-end justify-content-center mb-5 pizza-public-filter">
+      <div class="col-md-5 mb-3 mb-md-0">
+        <label for="pizzaSearch">Pesquisar pizza</label>
+        <input type="search" name="q" id="pizzaSearch" value="{{ busca }}" class="form-control" placeholder="Nome da pizza" autocomplete="off">
+      </div>
+      <div class="col-md-4 mb-3 mb-md-0">
+        <label for="pizzaCategoryFilter">Categoria</label>
+        <select name="categoria" id="pizzaCategoryFilter" class="form-control">
+          <option value="">Todas as categorias</option>
+          {% for categoria in categorias %}
+            <option value="{{ categoria.pk }}" {% if categoria_selecionada|stringformat:"s" == categoria.pk|stringformat:"s" %}selected{% endif %}>{{ categoria.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 d-flex mb-3 mb-md-0">
+        <button type="submit" class="btn btn-primary flex-grow-1 mr-2">Filtrar</button>
+        <button type="button" class="btn btn-outline-primary" data-pizza-view="grid" title="Visualização em grade">▦</button>
+        <button type="button" class="btn btn-outline-primary ml-1" data-pizza-view="list" title="Visualização em lista">☷</button>
+      </div>
+    </form>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 pizza-public-summary">
+      <p class="mb-0">{{ page_obj.paginator.count }} pizza{{ page_obj.paginator.count|pluralize:"s" }} encontrada{{ page_obj.paginator.count|pluralize:"s" }}.</p>
+      {% if perms.cardapio.add_pizza %}
+        <a href="{% url 'pizza_criar' %}" class="btn btn-primary">Nova pizza</a>
+      {% endif %}
+    </div>
+
+    <div class="row no-gutters d-flex pizza-public-grid" id="pizzaGrid">
+      {% for pizza in page_obj %}
+        <div class="col-lg-4 col-md-6 d-flex pizza-public-column">
+          <article class="services-wrap d-flex pizza-public-card">
+            {% if pizza.imagem %}
+              <div class="img" style="background-image: url({{ pizza.imagem.url }});" role="img" aria-label="{{ pizza.nome }}"></div>
+            {% else %}
+              <div class="img" style="background-image: url({% static 'images/pizza-1.jpg' %});" role="img" aria-label="{{ pizza.nome }}"></div>
+            {% endif %}
+
+            <div class="text p-4">
+              <small class="d-block mb-2 pizza-public-category">{{ pizza.categoria.nome }}</small>
+              <h3>{{ pizza.nome }}</h3>
+              <p>{% if pizza.descricao %}{{ pizza.descricao }}{% else %}Pizza artesanal La Piazza.{% endif %}</p>
+              <p class="price"><span>R$ {{ pizza.preco|floatformat:2 }}</span></p>
+
+              <div class="pizza-public-actions">
+                {% if perms.cardapio.view_pizza %}
+                  <a href="{% url 'pizza_detalhe' pizza.pk %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                {% endif %}
+                {% if perms.cardapio.view_receitapizza %}
+                  <a href="{% url 'receita_lista' pizza.pk %}" class="btn btn-sm btn-outline-primary">Receita</a>
+                {% endif %}
+                {% if perms.cardapio.change_pizza %}
+                  <a href="{% url 'pizza_editar' pizza.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                {% endif %}
+                {% if perms.cardapio.delete_pizza %}
+                  <a href="{% url 'pizza_excluir' pizza.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+                {% endif %}
+              </div>
             </div>
-
-
-        {% endfor %}
-
-
-    </section>
-
-
+          </article>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center py-5">
+          <h3>Nenhuma pizza encontrada</h3>
+          <p>Tente alterar os filtros ou cadastrar uma nova pizza.</p>
+        </div>
+      {% endfor %}
+    </div>
 
     {% if page_obj.paginator.num_pages > 1 %}
-
-        <nav class="pizza-pagination lp-reveal">
-
-
-            {% if page_obj.has_previous %}
-
-                <a
-                    href="?page={{ page_obj.previous_page_number }}&q={{ busca }}&categoria={{ categoria_selecionada }}"
-                    class="pizza-page-link"
-                >
-
-                    <i class="bi bi-chevron-left"></i>
-
-                </a>
-
-            {% endif %}
-
-
-
-            {% for numero in page_obj.paginator.page_range %}
-
-                {% if numero == page_obj.number %}
-
-                    <span class="pizza-page-link current">
-
-                        {{ numero }}
-
-                    </span>
-
-                {% else %}
-
-                    <a
-                        href="?page={{ numero }}&q={{ busca }}&categoria={{ categoria_selecionada }}"
-                        class="pizza-page-link"
-                    >
-
-                        {{ numero }}
-
-                    </a>
-
-                {% endif %}
-
-            {% endfor %}
-
-
-
-            {% if page_obj.has_next %}
-
-                <a
-                    href="?page={{ page_obj.next_page_number }}&q={{ busca }}&categoria={{ categoria_selecionada }}"
-                    class="pizza-page-link"
-                >
-
-                    <i class="bi bi-chevron-right"></i>
-
-                </a>
-
-            {% endif %}
-
-
-        </nav>
-
+      <nav class="mt-5" aria-label="Paginação das pizzas">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ busca }}&categoria={{ categoria_selecionada }}">Anterior</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ busca }}&categoria={{ categoria_selecionada }}">Próxima</a></li>
+          {% endif %}
+        </ul>
+      </nav>
     {% endif %}
-
-
-</div>
-
+  </div>
+</section>
 
 {% endblock %}
 
-
-
 {% block extra_js %}
-
-<script
-    src="{% static 'js/pizzas.js' %}"
-></script>
-
+  <script src="{% static 'js/pizzas.js' %}"></script>
 {% endblock %}

@@ -1,259 +1,70 @@
-<nav class="lp-navbar">
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'index' %}">
+      <span class="flaticon-pizza-1 mr-1"></span>La Piazza<br><small>Delicioso</small>
+    </a>
 
-    <div class="lp-navbar-inner">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Abrir menu">
+      <span class="oi oi-menu"></span> Menu
+    </button>
 
+    <div class="collapse navbar-collapse" id="ftco-nav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+          <a href="{% url 'index' %}" class="nav-link">Início</a>
+        </li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'menu' %}active{% endif %}">
+          <a href="{% url 'menu' %}" class="nav-link">Cardápio</a>
+        </li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'sobre' %}active{% endif %}">
+          <a href="{% url 'sobre' %}" class="nav-link">Sobre</a>
+        </li>
 
-        <!-- LOGO -->
+        {% if perms.pedidos.view_pedido %}
+          <li class="nav-item {% if request.resolver_match.namespace == 'painel' %}active{% endif %}">
+            <a href="{% url 'painel:dashboard' %}" class="nav-link">Painel</a>
+          </li>
+        {% endif %}
 
-        <a
-            href="{% url 'index' %}"
-            class="lp-brand"
-        >
-
-            <div class="lp-brand-mark">
-                🍕
-            </div>
-
-
-            <div class="lp-brand-text">
-
-                <span class="lp-brand-title">
-                    La Piazza
-                </span>
-
-                <span class="lp-brand-subtitle">
-                    Pizzeria & Management
-                </span>
-
-            </div>
-
-        </a>
-
-
-
-        <!-- MENU -->
-
-        <ul
-            class="lp-nav-links"
-            data-lp-menu
-        >
-
-            <li>
-
-                <a
-                    href="{% url 'index' %}"
-                    class="
-                        lp-nav-link
-
-                        {% if request.resolver_match.url_name == 'index' %}
-                            is-active
-                        {% endif %}
-                    "
-                >
-                    Início
-                </a>
-
+        {% if user.is_authenticated %}
+          {% if perms.cardapio.view_pizza %}
+            <li class="nav-item {% if request.resolver_match.url_name == 'pizza_lista' or request.resolver_match.url_name == 'pizza_criar' or request.resolver_match.url_name == 'pizza_detalhe' or request.resolver_match.url_name == 'pizza_editar' or request.resolver_match.url_name == 'pizza_excluir' %}active{% endif %}">
+              <a href="{% url 'pizza_lista' %}" class="nav-link">Pizzas</a>
             </li>
+          {% endif %}
 
-
-            <li>
-
-                <a
-                    href="{% url 'menu' %}"
-                    class="
-                        lp-nav-link
-
-                        {% if request.resolver_match.url_name == 'menu' %}
-                            is-active
-                        {% endif %}
-                    "
-                >
-                    Cardápio
-                </a>
-
+          {% if perms.estoque.view_itemestoque %}
+            <li class="nav-item {% if request.resolver_match.namespace == 'estoque' %}active{% endif %}">
+              <a href="{% url 'estoque:item_lista' %}" class="nav-link">Estoque</a>
             </li>
-
-            {% if perms.pedidos.view_pedido %}
-
-                <li>
-
-                    <a
-                        href="{% url 'painel:dashboard' %}"
-                        class="
-                            lp-nav-link
-
-                            {% if request.resolver_match.namespace == 'painel' %}
-                                is-active
-                            {% endif %}
-                        "
-                    >
-
-                        <i class="bi bi-grid-1x2"></i>
-
-                        Painel
-
-                    </a>
-
-                </li>
-
-            {% endif %}
-
-
-
-
-            {% if user.is_authenticated %}
-
-
-                {% if perms.cardapio.view_pizza %}
-
-                    <li>
-
-                        <a
-                            href="{% url 'pizza_lista' %}"
-                            class="lp-nav-link"
-                        >
-                            Pizzas
-                        </a>
-
-                    </li>
-
-                {% endif %}
-
-
-                {% if perms.estoque.view_itemestoque %}
-
-                    <li>
-
-                        <a
-                            href="{% url 'estoque:item_lista' %}"
-                            class="lp-nav-link"
-                        >
-                            Estoque
-                        </a>
-
-                    </li>
-
-                {% endif %}
-
-
-                {% if perms.pedidos.view_pedido %}
-
-                    <li>
-
-                        <a
-                            href="{% url 'pedidos:pedido_lista' %}"
-                            class="lp-nav-link"
-                        >
-                            Pedidos
-                        </a>
-
-                    </li>
-
-                {% endif %}
-
-
-            {% else %}
-
-                <li>
-
-                    <a
-                        href="{% url 'sobre' %}"
-                        class="lp-nav-link"
-                    >
-                        Sobre
-                    </a>
-
-                </li>
-
-            {% endif %}
-
-        </ul>
-
-
-
-        <!-- USUÁRIO -->
-
-        <div class="lp-user-area">
-
-
-            {% if user.is_authenticated %}
-
-                <div class="lp-user-pill">
-
-                    <div class="lp-user-avatar">
-
-                        {{ user.nome|first|upper }}
-
-                    </div>
-
-
-                    <span class="lp-user-name">
-
-                        {% if user.first_name %}
-
-                            {{ user.first_name }}
-
-                        {% else %}
-
-                            {{ user.username }}
-
-                        {% endif %}
-
-                    </span>
-
-                </div>
-
-
-                <form
-                    method="post"
-                    action="{% url 'usuarios:logout' %}"
-                    data-no-loader
-                >
-
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="btn btn-secondary btn-sm"
-                    >
-                        Sair
-                    </button>
-
-                </form>
-
-
-            {% else %}
-
-                <a
-                    href="{% url 'usuarios:login' %}"
-                    class="btn btn-secondary btn-sm"
-                >
-                    Entrar
-                </a>
-
-
-                <a
-                    href="{% url 'usuarios:cadastro' %}"
-                    class="btn btn-primary btn-sm"
-                >
-                    Criar conta
-                </a>
-
-            {% endif %}
-
-
-            <button
-                type="button"
-                class="lp-menu-toggle"
-                data-lp-menu-toggle
-                aria-label="Abrir menu"
-                aria-expanded="false"
-            >
-                ☰
-            </button>
-
-        </div>
-
+          {% endif %}
+
+          {% if perms.pedidos.view_pedido %}
+            <li class="nav-item {% if request.resolver_match.namespace == 'pedidos' %}active{% endif %}">
+              <a href="{% url 'pedidos:pedido_lista' %}" class="nav-link">Pedidos</a>
+            </li>
+          {% endif %}
+
+        {% else %}
+          <li class="nav-item"><a href="{% url 'usuarios:login' %}" class="nav-link">Entrar</a></li>
+          <li class="nav-item"><a href="{% url 'usuarios:cadastro' %}" class="nav-link">Criar conta</a></li>
+        {% endif %}
+      </ul>
     </div>
 
+    {% if user.is_authenticated %}
+      <div class="site-profile" aria-label="Perfil conectado">
+        <span class="site-profile-avatar" aria-hidden="true">
+          {% if user.first_name %}{{ user.first_name|first|upper }}{% else %}{{ user.username|first|upper }}{% endif %}
+        </span>
+        <span class="site-profile-name">
+          {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}
+        </span>
+        <form method="post" action="{% url 'usuarios:logout' %}" class="site-profile-form">
+          {% csrf_token %}
+          <button type="submit" class="site-profile-logout">Sair</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
 </nav>

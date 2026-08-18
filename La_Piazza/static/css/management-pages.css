@@ -1,0 +1,241 @@
+/* La Piazza — base administrativa alinhada ao site público */
+
+:root {
+    --lp-bg: #121618;
+    --lp-card: #1d2326;
+    --lp-card-solid: #121618;
+    --lp-primary: #fac564;
+    --lp-primary-light: #ffd987;
+    --lp-primary-dark: #c99a3d;
+    --lp-cream: #fff;
+    --lp-text: #f3f3f3;
+    --lp-muted: #bfbfbf;
+    --lp-border: rgba(255, 255, 255, .1);
+    --lp-border-strong: rgba(255, 255, 255, .2);
+    --lp-shadow-small: 0 10px 34px rgba(0, 0, 0, .2);
+    --lp-transition: .3s ease;
+}
+
+.management-site {
+    min-height: 100vh;
+    background: #121618 url("../images/bg_4.jpg") no-repeat fixed;
+    background-size: cover;
+}
+
+.management-site .management-main {
+    min-height: calc(100vh - 90px);
+}
+
+.management-site .management-messages {
+    padding-top: 24px;
+}
+
+.management-site .management-messages .alert {
+    border: 0;
+    border-radius: 2px;
+}
+
+.management-site .management-messages .close {
+    color: inherit;
+}
+
+.management-site .ftco-navbar-light .nav-item form {
+    margin: 0;
+}
+
+.management-site .ftco-navbar-light .nav-item form .nav-link {
+    cursor: pointer;
+}
+
+/* As listagens e formulários continuam usando os componentes do tema público. */
+
+.management-site .ftco-section > .container {
+    max-width: 1140px;
+}
+
+.management-site .ftco-section .table-responsive {
+    border-radius: 2px;
+}
+
+.management-site .ftco-section .table-dark {
+    background: rgba(18, 22, 24, .96);
+}
+
+.management-site .ftco-section .table-dark thead th {
+    border-color: rgba(250, 197, 100, .28);
+    color: #fff;
+}
+
+.management-site .ftco-section .table-dark tbody tr:hover {
+    background: rgba(250, 197, 100, .08);
+}
+
+.management-site .ftco-section .form-control,
+.management-site .ftco-section select.form-control,
+.management-site .ftco-section textarea.form-control {
+    border-radius: 2px;
+}
+
+.management-site .ftco-section .btn-primary,
+.management-site .ftco-section .btn-info,
+.management-site .ftco-section .btn-warning,
+.management-site .ftco-section .btn-danger,
+.management-site .ftco-section .btn-secondary {
+    border-radius: 2px;
+}
+
+/* Variáveis e animação usadas pelos componentes especiais do painel e pizzas. */
+
+.management-site .lp-reveal {
+    opacity: 1;
+    transform: none;
+}
+
+.management-site .lp-card {
+    padding: 30px;
+    border: 1px solid rgba(250, 197, 100, .16);
+    border-radius: 2px;
+    background: rgba(18, 22, 24, .94);
+    box-shadow: var(--lp-shadow-small);
+}
+
+.management-site .dashboard,
+.management-site .pizza-page {
+    width: min(1140px, 100%);
+    margin: 0 auto;
+    padding: 70px 15px;
+}
+
+.management-site .dashboard h1,
+.management-site .dashboard h2,
+.management-site .dashboard h3,
+.management-site .pizza-page h1,
+.management-site .pizza-page h2,
+.management-site .pizza-page h3 {
+    font-family: "Josefin Sans", Arial, sans-serif;
+}
+
+.management-site .dashboard-hero,
+.management-site .pizza-hero {
+    border-radius: 2px;
+}
+
+.management-site .management-hero {
+    position: relative;
+    min-height: 330px;
+    padding: 90px 0 70px;
+}
+
+.management-site .management-hero .overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: .68;
+}
+
+.management-site .management-hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.management-site .management-hero h1 {
+    color: #fff;
+    font-family: "Josefin Sans", Arial, sans-serif;
+    font-size: 44px;
+}
+
+.management-site .management-hero .subheading,
+.management-site .management-hero .breadcrumbs,
+.management-site .management-hero .breadcrumbs a {
+    color: var(--lp-primary);
+}
+
+.management-site .pizza-public-filter {
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(0, 0, 0, .18);
+}
+
+.management-site .pizza-public-filter label {
+    color: #fff;
+}
+
+.management-site .pizza-public-summary p,
+.management-site .pizza-public-category {
+    color: var(--lp-muted);
+}
+
+.management-site .pizza-public-grid {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.management-site .pizza-public-column {
+    padding: 15px;
+}
+
+.management-site .pizza-public-card {
+    min-height: 290px;
+    background: rgba(0, 0, 0, .2);
+}
+
+.management-site .pizza-public-card .img {
+    min-height: 290px;
+}
+
+.management-site .pizza-public-card .text {
+    width: 60%;
+}
+
+.management-site .pizza-public-card .text h3 {
+    color: #fff;
+}
+
+.management-site .pizza-public-card .price span {
+    color: var(--lp-primary);
+    font-weight: 600;
+}
+
+.management-site .pizza-public-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.management-site .pizza-public-actions .btn {
+    padding: 4px 8px;
+}
+
+.management-site .pizza-public-grid.list-view .pizza-public-column {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+@media (max-width: 767.98px) {
+    .management-site .management-hero h1 {
+        font-size: 34px;
+    }
+
+    .management-site .pizza-public-card .img,
+    .management-site .pizza-public-card {
+        min-height: 220px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .management-site .dashboard,
+    .management-site .pizza-page {
+        padding-top: 50px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .management-site .ftco-section > .container {
+        width: 100%;
+    }
+
+    .management-site .dashboard,
+    .management-site .pizza-page {
+        padding: 40px 15px;
+    }
+}

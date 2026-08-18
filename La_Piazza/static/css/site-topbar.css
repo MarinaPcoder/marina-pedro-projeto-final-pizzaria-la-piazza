@@ -1,0 +1,86 @@
+/* Perfil compartilhado entre as páginas públicas e administrativas. */
+
+.site-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    flex: 0 0 auto;
+    margin-left: 18px;
+    padding: 5px 8px 5px 6px;
+    border: 1px solid rgba(250, 197, 100, .35);
+    border-radius: 999px;
+    background: rgba(18, 22, 24, .82);
+    text-align: center;
+}
+
+.site-profile-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    background: #fac564;
+    color: #121618;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.site-profile-name {
+    max-width: 145px;
+    overflow: hidden;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.site-profile-form {
+    margin: 0;
+}
+
+.site-profile-logout {
+    padding: 4px 10px;
+    border: 1px solid rgba(250, 197, 100, .75);
+    border-radius: 999px;
+    background: transparent;
+    color: #fac564;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    line-height: 1.2;
+    transition: .3s ease;
+}
+
+.site-profile-logout:hover,
+.site-profile-logout:focus {
+    background: #fac564;
+    color: #121618;
+    outline: 0;
+}
+
+@media (max-width: 991.98px) {
+    .site-profile {
+        margin-left: auto;
+        margin-right: 12px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .site-profile {
+        gap: 6px;
+        margin-right: 6px;
+        padding-right: 6px;
+    }
+
+    .site-profile-name {
+        max-width: 90px;
+    }
+
+    .site-profile-logout {
+        padding: 4px 8px;
+    }
+}

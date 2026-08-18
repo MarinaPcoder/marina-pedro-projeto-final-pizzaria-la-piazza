@@ -143,10 +143,10 @@ function configureChartJS() {
 const dashboardColors = {
 
     orange:
-        "#d97941",
+        "#fac564",
 
     orangeLight:
-        "#ef9c62",
+        "#ffd987",
 
     cream:
         "#f4ead8",
@@ -971,12 +971,12 @@ function createOrdersChart(
 
     gradient.addColorStop(
         0,
-        "rgba(217, 121, 65, 0.32)"
+        "rgba(250, 197, 100, 0.32)"
     );
 
     gradient.addColorStop(
         1,
-        "rgba(217, 121, 65, 0)"
+        "rgba(250, 197, 100, 0)"
     );
 
 
@@ -1439,7 +1439,7 @@ function createHealthChart(
                                 data.saude.valores,
 
                             backgroundColor:
-                                "rgba(217, 121, 65, .18)",
+                                "rgba(250, 197, 100, .18)",
 
                             borderColor:
                                 dashboardColors.orangeLight,

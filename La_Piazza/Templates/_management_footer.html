@@ -1,41 +1,49 @@
-<footer class="lp-footer">
-
-    <div class="lp-footer-inner">
-
-
-        <div>
-
-            <div class="lp-footer-brand">
-
-                La Piazza
-
-            </div>
-
-
-            <p class="lp-footer-text">
-
-                Gestão inteligente para uma experiência
-                gastronômica completa.
-
-            </p>
-
+<footer class="ftco-footer ftco-section">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-5 col-md-6 mb-5 mb-md-0">
+        <div class="ftco-footer-widget mb-4">
+          <h2 class="ftco-heading-2">La Piazza</h2>
+          <p>Gestão e operação da pizzaria com a mesma identidade do nosso cardápio.</p>
         </div>
+      </div>
 
-
-        <div class="lp-footer-badge">
-
-            Django • Python • Bootstrap • JavaScript
-
+      <div class="col-lg-3 col-md-6 mb-5 mb-md-0">
+        <div class="ftco-footer-widget mb-4">
+          <h2 class="ftco-heading-2">Navegação</h2>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'index' %}" class="py-2 d-block">Início</a></li>
+            <li><a href="{% url 'menu' %}" class="py-2 d-block">Cardápio</a></li>
+            <li><a href="{% url 'sobre' %}" class="py-2 d-block">Sobre</a></li>
+          </ul>
         </div>
+      </div>
 
-
-        <div class="lp-footer-text">
-
-            © {% now "Y" %} La Piazza
-
+      <div class="col-lg-4 col-md-6">
+        <div class="ftco-footer-widget mb-4">
+          <h2 class="ftco-heading-2">Administração</h2>
+          <ul class="list-unstyled">
+            {% if perms.pedidos.view_pedido %}
+              <li><a href="{% url 'painel:dashboard' %}" class="py-2 d-block">Painel</a></li>
+            {% endif %}
+            {% if perms.cardapio.view_pizza %}
+              <li><a href="{% url 'pizza_lista' %}" class="py-2 d-block">Pizzas</a></li>
+            {% endif %}
+            {% if perms.estoque.view_itemestoque %}
+              <li><a href="{% url 'estoque:item_lista' %}" class="py-2 d-block">Estoque</a></li>
+            {% endif %}
+            {% if perms.pedidos.view_pedido %}
+              <li><a href="{% url 'pedidos:pedido_lista' %}" class="py-2 d-block">Pedidos</a></li>
+            {% endif %}
+          </ul>
         </div>
-
-
+      </div>
     </div>
 
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <p>© {% now "Y" %} La Piazza. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </div>
 </footer>

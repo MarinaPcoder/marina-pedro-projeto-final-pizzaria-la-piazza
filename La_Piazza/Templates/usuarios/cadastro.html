@@ -23,10 +23,6 @@ Criar conta | La Piazza
 
 {% block content %}
 
-</div>
-</main>
-
-
 <div class="auth-page">
 
 
@@ -232,6 +228,7 @@ Criar conta | La Piazza
 
             <form
                 method="post"
+                action="{% url 'usuarios:cadastro' %}"
                 class="auth-form"
                 novalidate
             >
@@ -297,6 +294,7 @@ Criar conta | La Piazza
                                     id="{{ field.id_for_label }}"
                                     class="form-control"
                                     autocomplete="new-password"
+                                    placeholder="Crie uma senha"
                                     data-password-strength
                                     required
                                 >
@@ -315,6 +313,7 @@ Criar conta | La Piazza
                                     type="button"
                                     class="auth-password-toggle"
                                     data-password-toggle="{{ field.id_for_label }}"
+                                    aria-label="Mostrar senha"
                                 >
 
                                     <i class="bi bi-eye"></i>
