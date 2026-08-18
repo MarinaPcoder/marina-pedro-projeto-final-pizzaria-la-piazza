@@ -30,7 +30,6 @@ class PedidoAdmin(admin.ModelAdmin):
         "status",
         "tipo_atendimento",
         "valor_total_admin",
-        "estoque_baixado",
         "criado_em",
     )
 
@@ -43,7 +42,6 @@ class PedidoAdmin(admin.ModelAdmin):
     list_filter = (
         "status",
         "tipo_atendimento",
-        "estoque_baixado",
         "criado_em",
     )
 
@@ -53,7 +51,6 @@ class PedidoAdmin(admin.ModelAdmin):
 
     readonly_fields = (
         "valor_total_admin",
-        "estoque_baixado",
         "criado_em",
         "atualizado_em",
     )
@@ -66,17 +63,15 @@ class PedidoAdmin(admin.ModelAdmin):
                     "usuario",
                     "status",
                     "tipo_atendimento",
-                    "endereco_entrega",
                     "observacoes",
                 )
             },
         ),
         (
-            "Valores e estoque",
+            "Valores",
             {
                 "fields": (
                     "valor_total_admin",
-                    "estoque_baixado",
                 )
             },
         ),

@@ -11,7 +11,6 @@ from estoque.models import (
     MovimentacaoEstoque,
     TIPO_MOVIMENTACAO_SAIDA,
 )
-from usuarios.models import EnderecoUsuario
 from usuarios.permissions import (
     GRUPO_CLIENTE,
     GRUPO_FUNCIONARIO,
@@ -67,15 +66,6 @@ class Pedido(models.Model):
         verbose_name="tipo de atendimento",
     )
 
-    endereco_entrega = models.ForeignKey(
-        EnderecoUsuario,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="pedidos",
-        verbose_name="endereço de entrega",
-    )
-
     observacoes = models.TextField(
         blank=True,
         verbose_name="observações",
@@ -89,11 +79,6 @@ class Pedido(models.Model):
     atualizado_em = models.DateTimeField(
         auto_now=True,
         verbose_name="atualizado em",
-    )
-
-    estoque_baixado = models.BooleanField(
-        default=False,
-        verbose_name="estoque baixado",
     )
 
     class Meta:
@@ -111,29 +96,6 @@ class Pedido(models.Model):
 
     def clean(self):
         erros = {}
-
-        if (
-            self.tipo_atendimento
-            == TIPO_ATENDIMENTO_ENTREGA
-            and not self.endereco_entrega_id
-        ):
-            erros["endereco_entrega"] = (
-                "Informe o endereço para pedidos "
-                "de entrega."
-            )
-
-        if (
-            self.endereco_entrega_id
-            and self.usuario_id
-            and (
-                self.endereco_entrega.usuario_id
-                != self.usuario_id
-            )
-        ):
-            erros["endereco_entrega"] = (
-                "Selecione um endereço cadastrado "
-                "para este usuário."
-            )
 
         if (
             self.usuario_id
@@ -182,9 +144,6 @@ class Pedido(models.Model):
                 .select_for_update()
                 .get(pk=self.pk)
             )
-
-            if pedido.estoque_baixado:
-                return
 
             for item_pedido in pedido.itens.select_related(
                 "pizza"
@@ -245,16 +204,6 @@ class Pedido(models.Model):
                         ),
                     )
 
-            pedido.estoque_baixado = True
-
-            pedido.save(
-                update_fields=[
-                    "estoque_baixado",
-                    "atualizado_em",
-                ]
-            )
-
-            self.estoque_baixado = True
 
 
 class ItemPedido(models.Model):

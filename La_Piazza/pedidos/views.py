@@ -81,7 +81,6 @@ def pedido_lista(request):
         Pedido.objects
         .select_related(
             "usuario",
-            "endereco_entrega",
         )
         .prefetch_related(
             "itens"
@@ -162,7 +161,6 @@ def pedido_detalhe(request, pk):
         Pedido.objects
         .select_related(
             "usuario",
-            "endereco_entrega",
         )
         .prefetch_related(
             "itens__pizza"
@@ -285,21 +283,6 @@ def pedido_excluir(request, pk):
         pk=pk,
     )
 
-    if pedido.estoque_baixado:
-
-        messages.error(
-            request,
-            (
-                "Este pedido já realizou baixa no estoque "
-                "e não pode ser excluído."
-            ),
-        )
-
-        return redirect(
-            "pedidos:pedido_detalhe",
-            pk=pedido.pk,
-        )
-
     if request.method == "POST":
 
         pedido.delete()
@@ -333,21 +316,6 @@ def item_adicionar(request, pedido_pk):
         Pedido,
         pk=pedido_pk,
     )
-
-    if pedido.estoque_baixado:
-
-        messages.error(
-            request,
-            (
-                "Este pedido já realizou a baixa "
-                "no estoque e não pode mais receber itens."
-            ),
-        )
-
-        return redirect(
-            "pedidos:pedido_detalhe",
-            pk=pedido.pk,
-        )
 
     if request.method == "POST":
 
@@ -414,22 +382,6 @@ def item_editar(request, pedido_pk, item_pk):
         pedido=pedido,
     )
 
-    if pedido.estoque_baixado:
-
-        messages.error(
-            request,
-            (
-                "Este pedido já realizou a baixa "
-                "no estoque e seus itens não podem "
-                "mais ser alterados."
-            ),
-        )
-
-        return redirect(
-            "pedidos:pedido_detalhe",
-            pk=pedido.pk,
-        )
-
     if request.method == "POST":
 
         form = ItemPedidoForm(
@@ -492,22 +444,6 @@ def item_excluir(request, pedido_pk, item_pk):
         pedido=pedido,
     )
 
-    if pedido.estoque_baixado:
-
-        messages.error(
-            request,
-            (
-                "Este pedido já realizou a baixa "
-                "no estoque e seus itens não podem "
-                "mais ser removidos."
-            ),
-        )
-
-        return redirect(
-            "pedidos:pedido_detalhe",
-            pk=pedido.pk,
-        )
-
     if request.method == "POST":
 
         pizza_nome = item.pizza.nome
@@ -553,18 +489,6 @@ def pedido_confirmar(request, pk):
         Pedido,
         pk=pk,
     )
-
-    if pedido.estoque_baixado:
-
-        messages.warning(
-            request,
-            "O estoque deste pedido já foi baixado.",
-        )
-
-        return redirect(
-            "pedidos:pedido_detalhe",
-            pk=pedido.pk,
-        )
 
     if not pedido.itens.exists():
 

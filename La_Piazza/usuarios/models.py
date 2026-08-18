@@ -2,14 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Usuario(models.Model):
-    usuario = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="perfil",
-        verbose_name="usuário",
-    )
-
+class Usuario(User):
     telefone = models.CharField(
         max_length=20,
         blank=True,
@@ -42,10 +35,10 @@ class Usuario(models.Model):
     class Meta:
         verbose_name = "usuário"
         verbose_name_plural = "usuários"
-        ordering = ["usuario__username"]
+        ordering = ["username"]
 
     def __str__(self):
-        return self.usuario.get_full_name() or self.usuario.username
+        return self.get_full_name() or self.username
 
 
 class EnderecoUsuario(models.Model):

@@ -7,6 +7,7 @@ from .models import EnderecoUsuario, Usuario
 
 class UsuarioInline(admin.StackedInline):
     model = Usuario
+    fk_name = "user_ptr"
     extra = 0
     fields = (
         "telefone",
@@ -57,8 +58,8 @@ class UsuarioAdmin(UserAdmin):
         "first_name",
         "last_name",
         "email",
-        "perfil__telefone",
-        "perfil__cpf",
+        "usuario__telefone",
+        "usuario__cpf",
     )
 
     list_filter = (
@@ -77,27 +78,27 @@ class UsuarioAdmin(UserAdmin):
 
     @admin.display(description="telefone")
     def telefone_display(self, obj):
-        return getattr(getattr(obj, "perfil", None), "telefone", "")
+        return getattr(getattr(obj, "usuario", None), "telefone", "")
 
     @admin.display(description="CPF")
     def cpf_display(self, obj):
-        return getattr(getattr(obj, "perfil", None), "cpf", "") or ""
+        return getattr(getattr(obj, "usuario", None), "cpf", "") or ""
 
 
 @admin.register(Usuario)
 class UsuarioPerfilAdmin(admin.ModelAdmin):
     list_display = (
-        "usuario",
+        "username",
         "telefone",
         "cpf",
         "criado_em",
         "atualizado_em",
     )
     search_fields = (
-        "usuario__username",
-        "usuario__first_name",
-        "usuario__last_name",
-        "usuario__email",
+        "username",
+        "first_name",
+        "last_name",
+        "email",
         "telefone",
         "cpf",
     )

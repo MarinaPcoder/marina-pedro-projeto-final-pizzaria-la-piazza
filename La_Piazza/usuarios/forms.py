@@ -45,7 +45,7 @@ class CadastroUsuarioForm(UserCreationForm):
     )
 
     class Meta(UserCreationForm.Meta):
-        model = User
+        model = Usuario
 
         fields = (
             "username",
@@ -111,17 +111,3 @@ class CadastroUsuarioForm(UserCreationForm):
             )
 
         return cpf
-
-    def save(self, commit=True):
-        usuario = super().save(commit=commit)
-
-        if commit:
-            Usuario.objects.update_or_create(
-                usuario=usuario,
-                defaults={
-                    "telefone": self.cleaned_data.get("telefone", ""),
-                    "cpf": self.cleaned_data.get("cpf"),
-                },
-            )
-
-        return usuario
