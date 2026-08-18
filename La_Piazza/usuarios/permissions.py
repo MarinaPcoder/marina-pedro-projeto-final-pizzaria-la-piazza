@@ -15,6 +15,10 @@ PERMISSOES_CLIENTE = [
 ]
 
 PERMISSOES_FUNCIONARIO = [
+    "add_user",
+    "change_user",
+    "delete_user",
+    "view_user",
     "add_usuario",
     "change_usuario",
     "delete_usuario",

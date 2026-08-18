@@ -56,7 +56,7 @@ Painel Administrativo | La Piazza
                 </span>,
 
                 <strong>
-                    {{ request.user.nome|default:"Administrador" }}
+                    {{ request.user.get_full_name|default:request.user.username|default:"Administrador" }}
                 </strong>.
 
             </h1>
@@ -842,7 +842,7 @@ Painel Administrativo | La Piazza
                         data-search="
                             pedido
                             {{ pedido.pk }}
-                            {{ pedido.usuario.nome }}
+                            {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}
                             {{ pedido.get_status_display }}
                         "
                     >
@@ -857,7 +857,7 @@ Painel Administrativo | La Piazza
                         <div class="order-customer">
 
                             <strong>
-                                {{ pedido.usuario.nome }}
+                                {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}
                             </strong>
 
                             <span>

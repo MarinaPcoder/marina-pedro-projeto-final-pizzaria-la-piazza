@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     "django_extensions",
 
     "usuarios.apps.UsuariosConfig",
-    "cardapio",
+    "pizza.apps.PizzaConfig",
     "estoque",
     "pedidos",
     "painel",
@@ -141,7 +141,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-AUTH_USER_MODEL = "usuarios.Usuario"
 
 
 LOGIN_URL = "usuarios:login"

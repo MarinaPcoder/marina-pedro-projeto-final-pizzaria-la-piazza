@@ -22,6 +22,7 @@ from .models import (
     CategoriaEstoque,
     ItemEstoque,
     MovimentacaoEstoque,
+    TIPO_MOVIMENTACAO_CHOICES,
 )
 
 from django.core.exceptions import ValidationError
@@ -539,7 +540,7 @@ def movimentacao_lista(request):
             "page_obj": page_obj,
             "busca": busca,
             "tipo_selecionado": tipo,
-            "tipos": MovimentacaoEstoque.TipoMovimentacao.choices,
+            "tipos": TIPO_MOVIMENTACAO_CHOICES,
         },
     )
 

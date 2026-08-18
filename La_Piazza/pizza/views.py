@@ -32,7 +32,7 @@ def index(request):
 
     return render(
         request,
-        "cardapio/index.html",
+        "pizza/index.html",
         context,
     )
 
@@ -45,7 +45,7 @@ def menu(request):
 
     return render(
         request,
-        "cardapio/menu.html",
+        "pizza/menu.html",
         context,
     )
 
@@ -53,7 +53,7 @@ def menu(request):
 def sobre(request):
     return render(
         request,
-        "cardapio/sobre.html",
+        "pizza/sobre.html",
     )
 
 
@@ -95,7 +95,7 @@ def categoria_lista(request):
 
     return render(
         request,
-        "cardapio/categorias/lista.html",
+        "pizza/categorias/lista.html",
         context,
     )
 
@@ -114,7 +114,7 @@ def categoria_detalhe(request, pk):
 
     return render(
         request,
-        "cardapio/categorias/detalhe.html",
+        "pizza/categorias/detalhe.html",
         {
             "categoria": categoria,
         },
@@ -153,7 +153,7 @@ def categoria_criar(request):
 
     return render(
         request,
-        "cardapio/categorias/form.html",
+        "pizza/categorias/form.html",
         {
             "form": form,
             "titulo": "Nova categoria",
@@ -201,7 +201,7 @@ def categoria_editar(request, pk):
 
     return render(
         request,
-        "cardapio/categorias/form.html",
+        "pizza/categorias/form.html",
         {
             "form": form,
             "titulo": "Editar categoria",
@@ -252,7 +252,7 @@ def categoria_excluir(request, pk):
 
     return render(
         request,
-        "cardapio/categorias/confirmar_exclusao.html",
+        "pizza/categorias/confirmar_exclusao.html",
         {
             "categoria": categoria,
         },
@@ -317,7 +317,7 @@ def pizza_lista(request):
 
     return render(
         request,
-        "cardapio/pizzas/lista.html",
+        "pizza/pizzas/lista.html",
         context,
     )
 
@@ -338,7 +338,7 @@ def pizza_detalhe(request, pk):
 
     return render(
         request,
-        "cardapio/pizzas/detalhe.html",
+        "pizza/pizzas/detalhe.html",
         {
             "pizza": pizza,
         },
@@ -378,7 +378,7 @@ def pizza_criar(request):
 
     return render(
         request,
-        "cardapio/pizzas/form.html",
+        "pizza/pizzas/form.html",
         {
             "form": form,
             "titulo": "Nova pizza",
@@ -427,7 +427,7 @@ def pizza_editar(request, pk):
 
     return render(
         request,
-        "cardapio/pizzas/form.html",
+        "pizza/pizzas/form.html",
         {
             "form": form,
             "titulo": "Editar pizza",
@@ -479,7 +479,7 @@ def pizza_excluir(request, pk):
 
     return render(
         request,
-        "cardapio/pizzas/confirmar_exclusao.html",
+        "pizza/pizzas/confirmar_exclusao.html",
         {
             "pizza": pizza,
         },
@@ -512,7 +512,7 @@ def receita_lista(request, pizza_pk):
 
     return render(
         request,
-        "cardapio/receitas/lista.html",
+        "pizza/receitas/lista.html",
         {
             "pizza": pizza,
             "receita": receita,
@@ -567,7 +567,7 @@ def receita_adicionar(request, pizza_pk):
 
     return render(
         request,
-        "cardapio/receitas/form.html",
+        "pizza/receitas/form.html",
         {
             "form": form,
             "pizza": pizza,
@@ -631,7 +631,7 @@ def receita_editar(
 
     return render(
         request,
-        "cardapio/receitas/form.html",
+        "pizza/receitas/form.html",
         {
             "form": form,
             "pizza": pizza,
@@ -681,7 +681,7 @@ def receita_excluir(
 
     return render(
         request,
-        "cardapio/receitas/confirmar_exclusao.html",
+        "pizza/receitas/confirmar_exclusao.html",
         {
             "pizza": pizza,
             "ingrediente": ingrediente,

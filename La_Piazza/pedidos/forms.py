@@ -2,16 +2,22 @@
 from django import forms
 
 from django.db.models import Q
+from django.contrib.auth.models import User
 
-from cardapio.models import Pizza
+from pizza.models import Pizza
 
-from usuarios.models import EnderecoUsuario, Usuario
+from usuarios.models import EnderecoUsuario
 from usuarios.permissions import (
     GRUPO_CLIENTE,
     GRUPO_FUNCIONARIO,
 )
 
-from .models import ItemPedido, Pedido
+from .models import (
+    ItemPedido,
+    Pedido,
+    TIPO_ATENDIMENTO_ENTREGA,
+    TIPO_ATENDIMENTO_RETIRADA,
+)
 
 
 class EnderecoEntregaChoiceField(forms.ModelChoiceField):
@@ -81,7 +87,7 @@ class PedidoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         clientes = (
-            Usuario.objects
+            User.objects
             .filter(
                 groups__name=GRUPO_CLIENTE
             )
@@ -130,7 +136,7 @@ class PedidoForm(forms.ModelForm):
 
         if (
             tipo_atendimento
-            == Pedido.TipoAtendimento.ENTREGA
+            == TIPO_ATENDIMENTO_ENTREGA
             and not endereco
         ):
             self.add_error(
@@ -150,7 +156,7 @@ class PedidoForm(forms.ModelForm):
 
         if (
             tipo_atendimento
-            == Pedido.TipoAtendimento.RETIRADA
+            == TIPO_ATENDIMENTO_RETIRADA
         ):
             cleaned_data["endereco_entrega"] = None
 

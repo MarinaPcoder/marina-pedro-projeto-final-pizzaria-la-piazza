@@ -1,9 +1,15 @@
-from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from django.db import models
 
 
-class Usuario(AbstractUser):
+class Usuario(models.Model):
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="perfil",
+        verbose_name="usuário",
+    )
+
     telefone = models.CharField(
         max_length=20,
         blank=True,
@@ -36,15 +42,15 @@ class Usuario(AbstractUser):
     class Meta:
         verbose_name = "usuário"
         verbose_name_plural = "usuários"
-        ordering = ["username"]
+        ordering = ["usuario__username"]
 
     def __str__(self):
-        return self.get_full_name() or self.username
+        return self.usuario.get_full_name() or self.usuario.username
 
 
 class EnderecoUsuario(models.Model):
     usuario = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         related_name="enderecos",
         verbose_name="usuário",

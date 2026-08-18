@@ -3,6 +3,7 @@ from django.contrib.auth.forms import (
     AuthenticationForm,
     UserCreationForm,
 )
+from django.contrib.auth.models import User
 
 from .models import Usuario
 
@@ -33,8 +34,18 @@ class LoginForm(AuthenticationForm):
 
 
 class CadastroUsuarioForm(UserCreationForm):
+    telefone = forms.CharField(
+        required=False,
+        label="Telefone",
+    )
+
+    cpf = forms.CharField(
+        required=False,
+        label="CPF",
+    )
+
     class Meta(UserCreationForm.Meta):
-        model = Usuario
+        model = User
 
         fields = (
             "username",
@@ -82,7 +93,7 @@ class CadastroUsuarioForm(UserCreationForm):
             .lower()
         )
 
-        if Usuario.objects.filter(
+        if User.objects.filter(
             email__iexact=email
         ).exists():
             raise forms.ValidationError(
@@ -90,3 +101,27 @@ class CadastroUsuarioForm(UserCreationForm):
             )
 
         return email
+
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get("cpf") or None
+
+        if cpf and Usuario.objects.filter(cpf=cpf).exists():
+            raise forms.ValidationError(
+                "Já existe uma conta com este CPF."
+            )
+
+        return cpf
+
+    def save(self, commit=True):
+        usuario = super().save(commit=commit)
+
+        if commit:
+            Usuario.objects.update_or_create(
+                usuario=usuario,
+                defaults={
+                    "telefone": self.cleaned_data.get("telefone", ""),
+                    "cpf": self.cleaned_data.get("cpf"),
+                },
+            )
+
+        return usuario

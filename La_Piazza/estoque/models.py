@@ -1,8 +1,39 @@
 from decimal import Decimal
 
-from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
+
+
+UNIDADE_MEDIDA_UNIDADE = "UN"
+UNIDADE_MEDIDA_QUILOGRAMA = "KG"
+UNIDADE_MEDIDA_GRAMA = "G"
+UNIDADE_MEDIDA_LITRO = "L"
+UNIDADE_MEDIDA_MILILITRO = "ML"
+UNIDADE_MEDIDA_PACOTE = "PCT"
+UNIDADE_MEDIDA_CAIXA = "CX"
+
+UNIDADE_MEDIDA_CHOICES = (
+    (UNIDADE_MEDIDA_UNIDADE, "Unidade"),
+    (UNIDADE_MEDIDA_QUILOGRAMA, "Quilograma"),
+    (UNIDADE_MEDIDA_GRAMA, "Grama"),
+    (UNIDADE_MEDIDA_LITRO, "Litro"),
+    (UNIDADE_MEDIDA_MILILITRO, "Mililitro"),
+    (UNIDADE_MEDIDA_PACOTE, "Pacote"),
+    (UNIDADE_MEDIDA_CAIXA, "Caixa"),
+)
+
+TIPO_MOVIMENTACAO_ENTRADA = "ENTRADA"
+TIPO_MOVIMENTACAO_SAIDA = "SAIDA"
+TIPO_MOVIMENTACAO_PERDA = "PERDA"
+TIPO_MOVIMENTACAO_AJUSTE = "AJUSTE"
+
+TIPO_MOVIMENTACAO_CHOICES = (
+    (TIPO_MOVIMENTACAO_ENTRADA, "Entrada"),
+    (TIPO_MOVIMENTACAO_SAIDA, "Saída"),
+    (TIPO_MOVIMENTACAO_PERDA, "Perda"),
+    (TIPO_MOVIMENTACAO_AJUSTE, "Ajuste"),
+)
 
 
 class CategoriaEstoque(models.Model):
@@ -32,15 +63,6 @@ class CategoriaEstoque(models.Model):
 
 
 class ItemEstoque(models.Model):
-    class UnidadeMedida(models.TextChoices):
-        UNIDADE = "UN", "Unidade"
-        QUILOGRAMA = "KG", "Quilograma"
-        GRAMA = "G", "Grama"
-        LITRO = "L", "Litro"
-        MILILITRO = "ML", "Mililitro"
-        PACOTE = "PCT", "Pacote"
-        CAIXA = "CX", "Caixa"
-
     categoria = models.ForeignKey(
         CategoriaEstoque,
         on_delete=models.PROTECT,
@@ -56,8 +78,8 @@ class ItemEstoque(models.Model):
 
     unidade_medida = models.CharField(
         max_length=3,
-        choices=UnidadeMedida.choices,
-        default=UnidadeMedida.UNIDADE,
+        choices=UNIDADE_MEDIDA_CHOICES,
+        default=UNIDADE_MEDIDA_UNIDADE,
         verbose_name="unidade de medida",
     )
 
@@ -133,12 +155,6 @@ class ItemEstoque(models.Model):
 
 
 class MovimentacaoEstoque(models.Model):
-    class TipoMovimentacao(models.TextChoices):
-        ENTRADA = "ENTRADA", "Entrada"
-        SAIDA = "SAIDA", "Saída"
-        PERDA = "PERDA", "Perda"
-        AJUSTE = "AJUSTE", "Ajuste"
-
     item = models.ForeignKey(
         ItemEstoque,
         on_delete=models.PROTECT,
@@ -148,7 +164,7 @@ class MovimentacaoEstoque(models.Model):
 
     tipo = models.CharField(
         max_length=10,
-        choices=TipoMovimentacao.choices,
+        choices=TIPO_MOVIMENTACAO_CHOICES,
         verbose_name="tipo",
     )
 
@@ -162,7 +178,7 @@ class MovimentacaoEstoque(models.Model):
     )
 
     responsavel = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

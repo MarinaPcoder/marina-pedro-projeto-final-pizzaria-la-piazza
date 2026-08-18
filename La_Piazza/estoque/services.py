@@ -6,6 +6,10 @@ from django.db import transaction
 from .models import (
     ItemEstoque,
     MovimentacaoEstoque,
+    TIPO_MOVIMENTACAO_AJUSTE,
+    TIPO_MOVIMENTACAO_ENTRADA,
+    TIPO_MOVIMENTACAO_PERDA,
+    TIPO_MOVIMENTACAO_SAIDA,
 )
 
 
@@ -34,13 +38,13 @@ def registrar_movimentacao(
 
 
     # ENTRADA
-    if tipo == MovimentacaoEstoque.TipoMovimentacao.ENTRADA:
+    if tipo == TIPO_MOVIMENTACAO_ENTRADA:
 
         item.quantidade_atual += quantidade
 
 
     # SAÍDA
-    elif tipo == MovimentacaoEstoque.TipoMovimentacao.SAIDA:
+    elif tipo == TIPO_MOVIMENTACAO_SAIDA:
 
         if quantidade > item.quantidade_atual:
 
@@ -55,7 +59,7 @@ def registrar_movimentacao(
 
 
     # PERDA
-    elif tipo == MovimentacaoEstoque.TipoMovimentacao.PERDA:
+    elif tipo == TIPO_MOVIMENTACAO_PERDA:
 
         if quantidade > item.quantidade_atual:
 
@@ -70,7 +74,7 @@ def registrar_movimentacao(
 
 
     # AJUSTE
-    elif tipo == MovimentacaoEstoque.TipoMovimentacao.AJUSTE:
+    elif tipo == TIPO_MOVIMENTACAO_AJUSTE:
 
         item.quantidade_atual = quantidade
 

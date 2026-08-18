@@ -1,11 +1,24 @@
 from django.contrib import admin
-
-# Register your models here.
-
-from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 from .models import EnderecoUsuario, Usuario
+
+
+class UsuarioInline(admin.StackedInline):
+    model = Usuario
+    extra = 0
+    fields = (
+        "telefone",
+        "cpf",
+        "observacoes",
+        "criado_em",
+        "atualizado_em",
+    )
+    readonly_fields = (
+        "criado_em",
+        "atualizado_em",
+    )
 
 
 class EnderecoUsuarioInline(admin.TabularInline):
@@ -23,15 +36,18 @@ class EnderecoUsuarioInline(admin.TabularInline):
     )
 
 
-@admin.register(Usuario)
+admin.site.unregister(User)
+
+
+@admin.register(User)
 class UsuarioAdmin(UserAdmin):
     list_display = (
         "username",
         "first_name",
         "last_name",
         "email",
-        "telefone",
-        "cpf",
+        "telefone_display",
+        "cpf_display",
         "is_staff",
         "is_active",
     )
@@ -41,8 +57,8 @@ class UsuarioAdmin(UserAdmin):
         "first_name",
         "last_name",
         "email",
-        "telefone",
-        "cpf",
+        "perfil__telefone",
+        "perfil__cpf",
     )
 
     list_filter = (
@@ -54,51 +70,37 @@ class UsuarioAdmin(UserAdmin):
 
     ordering = ("username",)
 
-    readonly_fields = (
+    inlines = [
+        UsuarioInline,
+        EnderecoUsuarioInline,
+    ]
+
+    @admin.display(description="telefone")
+    def telefone_display(self, obj):
+        return getattr(getattr(obj, "perfil", None), "telefone", "")
+
+    @admin.display(description="CPF")
+    def cpf_display(self, obj):
+        return getattr(getattr(obj, "perfil", None), "cpf", "") or ""
+
+
+@admin.register(Usuario)
+class UsuarioPerfilAdmin(admin.ModelAdmin):
+    list_display = (
+        "usuario",
+        "telefone",
+        "cpf",
         "criado_em",
         "atualizado_em",
     )
-
-    fieldsets = UserAdmin.fieldsets + (
-        (
-            "Dados do La Piazza",
-            {
-                "fields": (
-                    "telefone",
-                    "cpf",
-                    "observacoes",
-                )
-            },
-        ),
-        (
-            "Auditoria",
-            {
-                "fields": (
-                    "criado_em",
-                    "atualizado_em",
-                )
-            },
-        ),
+    search_fields = (
+        "usuario__username",
+        "usuario__first_name",
+        "usuario__last_name",
+        "usuario__email",
+        "telefone",
+        "cpf",
     )
-
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        (
-            "Dados do La Piazza",
-            {
-                "fields": (
-                    "first_name",
-                    "last_name",
-                    "email",
-                    "telefone",
-                    "cpf",
-                )
-            },
-        ),
-    )
-
-    inlines = [
-        EnderecoUsuarioInline,
-    ]
 
 
 @admin.register(EnderecoUsuario)

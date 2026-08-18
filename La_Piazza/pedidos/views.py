@@ -21,7 +21,13 @@ from django.shortcuts import (
 from usuarios.permissions import GRUPO_FUNCIONARIO
 
 from .forms import ItemPedidoForm, PedidoForm
-from .models import ItemPedido, Pedido
+from .models import (
+    ItemPedido,
+    Pedido,
+    STATUS_PEDIDO_CHOICES,
+    STATUS_PEDIDO_CONFIRMADO,
+    TIPO_ATENDIMENTO_CHOICES,
+)
 
 
 def funcionario_required(view_func):
@@ -133,8 +139,8 @@ def pedido_lista(request):
         "busca": busca,
         "status_selecionado": status,
         "tipo_selecionado": tipo,
-        "status_opcoes": Pedido.StatusPedido.choices,
-        "tipo_opcoes": Pedido.TipoAtendimento.choices,
+        "status_opcoes": STATUS_PEDIDO_CHOICES,
+        "tipo_opcoes": TIPO_ATENDIMENTO_CHOICES,
     }
 
     return render(
@@ -580,9 +586,7 @@ def pedido_confirmar(request, pk):
                 responsavel=request.user
             )
 
-            pedido.status = (
-                Pedido.StatusPedido.CONFIRMADO
-            )
+            pedido.status = STATUS_PEDIDO_CONFIRMADO
 
             pedido.save(
                 update_fields=[

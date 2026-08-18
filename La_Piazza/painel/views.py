@@ -22,7 +22,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 
-from cardapio.models import Pizza
+from pizza.models import Pizza
 
 from estoque.models import (
     ItemEstoque,
@@ -41,11 +41,10 @@ from pedidos.models import (
 
 def obter_valor_choice(model, campo, termo):
     """
-    Localiza o valor real de uma opção de TextChoices
+    Localiza o valor real de uma opção configurada por constantes
     procurando tanto pelo valor quanto pelo texto exibido.
 
-    Isso evita depender diretamente de coisas como:
-    Pedido.StatusPedido.CANCELADO
+    Isso evita depender de classes internas de opções.
     """
 
     choices = model._meta.get_field(

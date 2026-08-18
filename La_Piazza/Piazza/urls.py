@@ -17,7 +17,7 @@ urlpatterns = [
 
     path(
         "",
-        include("cardapio.urls"),
+        include("pizza.urls"),
     ),
 
     path(

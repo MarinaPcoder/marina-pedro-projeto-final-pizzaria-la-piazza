@@ -1,37 +1,53 @@
 from decimal import Decimal
 
-from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
-from cardapio.models import Pizza
-from estoque.models import ItemEstoque, MovimentacaoEstoque
+from pizza.models import Pizza
+from estoque.models import (
+    ItemEstoque,
+    MovimentacaoEstoque,
+    TIPO_MOVIMENTACAO_SAIDA,
+)
 from usuarios.models import EnderecoUsuario
 from usuarios.permissions import (
     GRUPO_CLIENTE,
     GRUPO_FUNCIONARIO,
 )
 
-class Pedido(models.Model):
-    class StatusPedido(models.TextChoices):
-        PENDENTE = "PENDENTE", "Pendente"
-        CONFIRMADO = "CONFIRMADO", "Confirmado"
-        EM_PREPARO = "EM_PREPARO", "Em preparo"
-        PRONTO = "PRONTO", "Pronto"
-        SAIU_ENTREGA = (
-            "SAIU_ENTREGA",
-            "Saiu para entrega",
-        )
-        ENTREGUE = "ENTREGUE", "Entregue"
-        CANCELADO = "CANCELADO", "Cancelado"
+STATUS_PEDIDO_PENDENTE = "PENDENTE"
+STATUS_PEDIDO_CONFIRMADO = "CONFIRMADO"
+STATUS_PEDIDO_EM_PREPARO = "EM_PREPARO"
+STATUS_PEDIDO_PRONTO = "PRONTO"
+STATUS_PEDIDO_SAIU_ENTREGA = "SAIU_ENTREGA"
+STATUS_PEDIDO_ENTREGUE = "ENTREGUE"
+STATUS_PEDIDO_CANCELADO = "CANCELADO"
 
-    class TipoAtendimento(models.TextChoices):
-        RETIRADA = "RETIRADA", "Retirada"
-        ENTREGA = "ENTREGA", "Entrega"
+STATUS_PEDIDO_CHOICES = (
+    (STATUS_PEDIDO_PENDENTE, "Pendente"),
+    (STATUS_PEDIDO_CONFIRMADO, "Confirmado"),
+    (STATUS_PEDIDO_EM_PREPARO, "Em preparo"),
+    (STATUS_PEDIDO_PRONTO, "Pronto"),
+    (STATUS_PEDIDO_SAIU_ENTREGA, "Saiu para entrega"),
+    (STATUS_PEDIDO_ENTREGUE, "Entregue"),
+    (STATUS_PEDIDO_CANCELADO, "Cancelado"),
+)
+
+TIPO_ATENDIMENTO_RETIRADA = "RETIRADA"
+TIPO_ATENDIMENTO_ENTREGA = "ENTREGA"
+
+TIPO_ATENDIMENTO_CHOICES = (
+    (TIPO_ATENDIMENTO_RETIRADA, "Retirada"),
+    (TIPO_ATENDIMENTO_ENTREGA, "Entrega"),
+)
+
+
+class Pedido(models.Model):
 
     usuario = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.PROTECT,
         related_name="pedidos",
         verbose_name="usuário",
@@ -39,15 +55,15 @@ class Pedido(models.Model):
 
     status = models.CharField(
         max_length=15,
-        choices=StatusPedido.choices,
-        default=StatusPedido.PENDENTE,
+        choices=STATUS_PEDIDO_CHOICES,
+        default=STATUS_PEDIDO_PENDENTE,
         verbose_name="status",
     )
 
     tipo_atendimento = models.CharField(
         max_length=10,
-        choices=TipoAtendimento.choices,
-        default=TipoAtendimento.RETIRADA,
+        choices=TIPO_ATENDIMENTO_CHOICES,
+        default=TIPO_ATENDIMENTO_RETIRADA,
         verbose_name="tipo de atendimento",
     )
 
@@ -98,7 +114,7 @@ class Pedido(models.Model):
 
         if (
             self.tipo_atendimento
-            == self.TipoAtendimento.ENTREGA
+            == TIPO_ATENDIMENTO_ENTREGA
             and not self.endereco_entrega_id
         ):
             erros["endereco_entrega"] = (
@@ -220,11 +236,7 @@ class Pedido(models.Model):
 
                     MovimentacaoEstoque.objects.create(
                         item=item_estoque,
-                        tipo=(
-                            MovimentacaoEstoque
-                            .TipoMovimentacao
-                            .SAIDA
-                        ),
+                        tipo=TIPO_MOVIMENTACAO_SAIDA,
                         quantidade=quantidade,
                         responsavel=responsavel,
                         motivo=(

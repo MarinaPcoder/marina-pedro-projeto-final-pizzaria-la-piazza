@@ -1,13 +1,24 @@
-from django.contrib.auth.models import Group, Permission
-from django.db.models.signals import post_migrate
+from django.contrib.auth.models import Group, Permission, User
+from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
 
+from .models import Usuario
 from .permissions import (
     GRUPO_CLIENTE,
     GRUPO_FUNCIONARIO,
     PERMISSOES_CLIENTE,
     PERMISSOES_FUNCIONARIO,
 )
+
+
+@receiver(
+    post_save,
+    sender=User,
+    dispatch_uid="usuarios.criar_perfil_usuario",
+)
+def criar_perfil_usuario(sender, instance, created, **kwargs):
+    if created and isinstance(instance, User):
+        Usuario.objects.get_or_create(usuario=instance)
 
 
 @receiver(
