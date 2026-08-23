@@ -33,6 +33,16 @@ Pedido #{{ pedido.pk }} | La Piazza
         </p>
 
 
+        {% if pedido.endereco_entrega %}
+
+            <p>
+                <strong>Endereço:</strong>
+                {{ pedido.endereco_entrega }}
+            </p>
+
+        {% endif %}
+
+
         <p>
             <strong>Observações:</strong>
 

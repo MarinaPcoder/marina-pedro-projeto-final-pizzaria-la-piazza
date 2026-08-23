@@ -81,6 +81,7 @@ def pedido_lista(request):
         Pedido.objects
         .select_related(
             "usuario",
+            "endereco_entrega",
         )
         .prefetch_related(
             "itens"
@@ -161,6 +162,7 @@ def pedido_detalhe(request, pk):
         Pedido.objects
         .select_related(
             "usuario",
+            "endereco_entrega",
         )
         .prefetch_related(
             "itens__pizza"

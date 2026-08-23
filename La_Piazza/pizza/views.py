@@ -24,6 +24,8 @@ from .models import (
     ReceitaPizza,
 )
 
+
+# Views de páginas públicas
 def index(request):
     context = {
         "categorias": CategoriaPizza.objects.all(),
@@ -57,6 +59,9 @@ def sobre(request):
     )
 
 
+# CRUD de categorias de pizza
+
+# Read - List - Categorias
 @login_required
 @permission_required(
     "cardapio.view_categoriapizza",
@@ -100,6 +105,7 @@ def categoria_lista(request):
     )
 
 
+# Read - Detail - Categorias
 @login_required
 @permission_required(
     "cardapio.view_categoriapizza",
@@ -121,6 +127,7 @@ def categoria_detalhe(request, pk):
     )
 
 
+# Create - Categorias
 @login_required
 @permission_required(
     "cardapio.add_categoriapizza",
@@ -161,6 +168,7 @@ def categoria_criar(request):
     )
 
 
+# Update - Categorias
 @login_required
 @permission_required(
     "cardapio.change_categoriapizza",
@@ -209,6 +217,7 @@ def categoria_editar(request, pk):
     )
 
 
+# Delete - Categorias
 @login_required
 @permission_required(
     "cardapio.delete_categoriapizza",
@@ -258,6 +267,7 @@ def categoria_excluir(request, pk):
         },
     )
 
+# 
 @login_required
 @permission_required(
     "cardapio.view_pizza",

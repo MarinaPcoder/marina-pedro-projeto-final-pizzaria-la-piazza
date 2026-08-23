@@ -29,6 +29,7 @@ class PedidoAdmin(admin.ModelAdmin):
         "usuario",
         "status",
         "tipo_atendimento",
+        "endereco_entrega",
         "valor_total_admin",
         "criado_em",
     )
@@ -63,6 +64,7 @@ class PedidoAdmin(admin.ModelAdmin):
                     "usuario",
                     "status",
                     "tipo_atendimento",
+                    "endereco_entrega",
                     "observacoes",
                 )
             },
