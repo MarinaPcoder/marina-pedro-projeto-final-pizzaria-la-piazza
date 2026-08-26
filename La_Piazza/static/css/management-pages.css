@@ -76,6 +76,40 @@
     border-radius: 2px;
 }
 
+.management-site .management-checkbox,
+.management-site .ftco-section .form-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 38px;
+    padding-left: 0;
+}
+
+.management-site .management-checkbox .form-check-input,
+.management-site .ftco-section .form-check .form-check-input {
+    position: static;
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--lp-primary);
+    cursor: pointer;
+}
+
+.management-site .management-checkbox .form-check-label,
+.management-site .ftco-section .form-check .form-check-label {
+    margin: 0;
+    color: var(--lp-text);
+    cursor: pointer;
+    line-height: 1.35;
+}
+
+.management-site .management-checkbox .form-check-input:focus,
+.management-site .ftco-section .form-check .form-check-input:focus {
+    outline: 2px solid rgba(250, 197, 100, .42);
+    outline-offset: 3px;
+}
+
 .management-site .ftco-section .btn-primary,
 .management-site .ftco-section .btn-info,
 .management-site .ftco-section .btn-warning,

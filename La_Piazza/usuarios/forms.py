@@ -6,6 +6,8 @@ from django.contrib.auth.forms import (
 from django.contrib.auth.models import User
 
 from .models import Usuario
+from .models import EnderecoUsuario
+from .permissions import GRUPO_CLIENTE, GRUPO_FUNCIONARIO
 
 
 class LoginForm(AuthenticationForm):
@@ -111,3 +113,107 @@ class CadastroUsuarioForm(UserCreationForm):
             )
 
         return cpf
+
+
+class ClienteEdicaoForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = (
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "telefone",
+            "cpf",
+            "observacoes",
+            "is_active",
+        )
+        widgets = {
+            "observacoes": forms.Textarea(
+                attrs={"rows": 4}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for campo in self.fields.values():
+            if isinstance(
+                campo.widget,
+                forms.CheckboxInput,
+            ):
+                campo.widget.attrs["class"] = (
+                    "form-check-input"
+                )
+            else:
+                campo.widget.attrs["class"] = (
+                    "form-control"
+                )
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        usuarios = User.objects.filter(email__iexact=email)
+
+        if self.instance.pk:
+            usuarios = usuarios.exclude(pk=self.instance.pk)
+
+        if usuarios.exists():
+            raise forms.ValidationError(
+                "Já existe uma conta com este e-mail."
+            )
+
+        return email
+
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get("cpf") or None
+        usuarios = Usuario.objects.filter(cpf=cpf)
+
+        if self.instance.pk:
+            usuarios = usuarios.exclude(pk=self.instance.pk)
+
+        if cpf and usuarios.exists():
+            raise forms.ValidationError(
+                "Já existe uma conta com este CPF."
+            )
+
+        return cpf
+
+
+class EnderecoUsuarioForm(forms.ModelForm):
+    class Meta:
+        model = EnderecoUsuario
+        fields = (
+            "usuario",
+            "logradouro",
+            "numero",
+            "bairro",
+            "cidade",
+            "estado",
+            "complemento",
+            "referencia",
+            "principal",
+            "ativo",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["usuario"].queryset = (
+            Usuario.objects.filter(groups__name=GRUPO_CLIENTE)
+            .exclude(groups__name=GRUPO_FUNCIONARIO)
+            .distinct()
+            .order_by("first_name", "username")
+        )
+
+        for campo in self.fields.values():
+            if isinstance(
+                campo.widget,
+                forms.CheckboxInput,
+            ):
+                campo.widget.attrs["class"] = (
+                    "form-check-input"
+                )
+            else:
+                campo.widget.attrs["class"] = (
+                    "form-control"
+                )

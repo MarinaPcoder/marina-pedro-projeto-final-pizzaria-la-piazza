@@ -1,4 +1,4 @@
-{% extends "_management_base.html" %}
+{% extends "_gerencia_base.html" %}
 
 {% block title %}
 {{ titulo }} | La Piazza
@@ -26,11 +26,30 @@
 
                         <div class="form-group">
 
-                            <label>
-                                {{ field.label }}
-                            </label>
+                            {% if field.field.widget.input_type == "checkbox" %}
 
-                            {{ field }}
+                                <div class="form-check management-checkbox">
+
+                                    {{ field }}
+
+                                    <label
+                                        class="form-check-label"
+                                        for="{{ field.id_for_label }}"
+                                    >
+                                        {{ field.label }}
+                                    </label>
+
+                                </div>
+
+                            {% else %}
+
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+
+                                {{ field }}
+
+                            {% endif %}
 
                             {% for error in field.errors %}
 

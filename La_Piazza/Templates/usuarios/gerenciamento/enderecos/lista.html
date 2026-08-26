@@ -1,0 +1,53 @@
+{% extends "_gerencia_base.html" %}
+
+{% block title %}Endereços dos clientes | La Piazza{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <span class="subheading">Usuário</span>
+        <h2 class="mb-1">Endereços dos clientes</h2>
+        <p class="mb-0">Consulte e mantenha os endereços utilizados nas entregas.</p>
+      </div>
+      {% if perms.usuarios.add_enderecousuario %}
+        <a href="{% url 'usuarios_gerenciamento:endereco_criar' %}" class="btn btn-primary mt-3 mt-md-0">Novo endereço</a>
+      {% endif %}
+    </div>
+
+    <form method="get" class="mb-4">
+      <div class="input-group">
+        <input type="search" name="q" value="{{ busca }}" class="form-control" placeholder="Cliente, rua, bairro ou cidade">
+        <div class="input-group-append"><button type="submit" class="btn btn-primary">Pesquisar</button></div>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-striped">
+        <thead><tr><th>Cliente</th><th>Endereço</th><th>Cidade</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>
+          {% for endereco in page_obj %}
+            <tr>
+              <td>{% firstof endereco.usuario.get_full_name endereco.usuario.username %}</td>
+              <td>{{ endereco.logradouro }}, {{ endereco.numero|default:"s/n" }} — {{ endereco.bairro }}</td>
+              <td>{{ endereco.cidade }}/{{ endereco.estado }}</td>
+              <td>{% if endereco.principal %}Principal{% else %}Adicional{% endif %}</td>
+              <td>{% if endereco.ativo %}<span class="text-success">Ativo</span>{% else %}<span class="text-muted">Inativo</span>{% endif %}</td>
+              <td>
+                <a href="{% url 'usuarios_gerenciamento:endereco_detalhe' endereco.pk %}" class="btn btn-sm btn-info">Ver</a>
+                {% if perms.usuarios.change_enderecousuario %}<a href="{% url 'usuarios_gerenciamento:endereco_editar' endereco.pk %}" class="btn btn-sm btn-warning">Editar</a>{% endif %}
+                {% if perms.usuarios.delete_enderecousuario %}<a href="{% url 'usuarios_gerenciamento:endereco_excluir' endereco.pk %}" class="btn btn-sm btn-danger">Excluir</a>{% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6">Nenhum endereço encontrado.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% include "usuarios/gerenciamento/_paginacao.html" with page_obj=page_obj busca=busca %}
+  </div>
+</section>
+{% endblock %}

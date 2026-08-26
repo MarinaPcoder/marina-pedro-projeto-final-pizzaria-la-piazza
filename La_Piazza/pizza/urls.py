@@ -94,9 +94,15 @@ urlpatterns = [
         name="pizza_excluir",
     ),
 
-        # =========================
+    # =========================
     # RECEITAS DAS PIZZAS
     # =========================
+
+    path(
+        "gerenciamento/receitas/",
+        views.receita_geral_lista,
+        name="receita_geral_lista",
+    ),
 
     path(
         "gerenciamento/pizzas/<int:pizza_pk>/receita/",

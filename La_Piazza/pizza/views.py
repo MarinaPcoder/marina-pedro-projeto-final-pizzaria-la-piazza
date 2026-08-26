@@ -1,8 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import (
-    login_required,
-    permission_required,
-)
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
@@ -12,18 +8,19 @@ from django.shortcuts import (
     render,
 )
 
+# Forms
 from .forms import (
     CategoriaPizzaForm,
     PizzaForm,
     ReceitaPizzaForm,
 )
 
+# Modelos
 from .models import (
     CategoriaPizza,
     Pizza,
     ReceitaPizza,
 )
-
 
 # Views de páginas públicas
 def index(request):
@@ -60,13 +57,7 @@ def sobre(request):
 
 
 # CRUD de categorias de pizza
-
 # Read - List - Categorias
-@login_required
-@permission_required(
-    "cardapio.view_categoriapizza",
-    raise_exception=True,
-)
 def categoria_lista(request):
 
     busca = request.GET.get(
@@ -106,11 +97,6 @@ def categoria_lista(request):
 
 
 # Read - Detail - Categorias
-@login_required
-@permission_required(
-    "cardapio.view_categoriapizza",
-    raise_exception=True,
-)
 def categoria_detalhe(request, pk):
 
     categoria = get_object_or_404(
@@ -128,11 +114,6 @@ def categoria_detalhe(request, pk):
 
 
 # Create - Categorias
-@login_required
-@permission_required(
-    "cardapio.add_categoriapizza",
-    raise_exception=True,
-)
 def categoria_criar(request):
 
     if request.method == "POST":
@@ -169,16 +150,15 @@ def categoria_criar(request):
 
 
 # Update - Categorias
-@login_required
-@permission_required(
-    "cardapio.change_categoriapizza",
-    raise_exception=True,
-)
 def categoria_editar(request, pk):
 
     categoria = get_object_or_404(
         CategoriaPizza,
         pk=pk,
+    )
+
+    categoria = CategoriaPizza.objects.get(
+        pk=pk
     )
 
     if request.method == "POST":
@@ -218,11 +198,6 @@ def categoria_editar(request, pk):
 
 
 # Delete - Categorias
-@login_required
-@permission_required(
-    "cardapio.delete_categoriapizza",
-    raise_exception=True,
-)
 def categoria_excluir(request, pk):
 
     categoria = get_object_or_404(
@@ -267,12 +242,9 @@ def categoria_excluir(request, pk):
         },
     )
 
-# 
-@login_required
-@permission_required(
-    "cardapio.view_pizza",
-    raise_exception=True,
-)
+
+# CRUD de pizzas
+# Read - List - Pizzas
 def pizza_lista(request):
 
     busca = request.GET.get(
@@ -331,12 +303,7 @@ def pizza_lista(request):
         context,
     )
 
-
-@login_required
-@permission_required(
-    "cardapio.view_pizza",
-    raise_exception=True,
-)
+# Read - Detail - Pizzas
 def pizza_detalhe(request, pk):
 
     pizza = get_object_or_404(
@@ -354,12 +321,7 @@ def pizza_detalhe(request, pk):
         },
     )
 
-
-@login_required
-@permission_required(
-    "cardapio.add_pizza",
-    raise_exception=True,
-)
+# Create - Pizzas
 def pizza_criar(request):
 
     if request.method == "POST":
@@ -395,12 +357,7 @@ def pizza_criar(request):
         },
     )
 
-
-@login_required
-@permission_required(
-    "cardapio.change_pizza",
-    raise_exception=True,
-)
+# Update - Pizzas
 def pizza_editar(request, pk):
 
     pizza = get_object_or_404(
@@ -445,12 +402,7 @@ def pizza_editar(request, pk):
         },
     )
 
-
-@login_required
-@permission_required(
-    "cardapio.delete_pizza",
-    raise_exception=True,
-)
+# Delete - Pizzas
 def pizza_excluir(request, pk):
 
     pizza = get_object_or_404(
@@ -495,11 +447,41 @@ def pizza_excluir(request, pk):
         },
     )
 
-@login_required
-@permission_required(
-    "cardapio.view_receitapizza",
-    raise_exception=True,
-)
+
+# CRUD de receitas de pizza
+# Read - List - Receitas
+def receita_geral_lista(request):
+    busca = request.GET.get("q", "").strip()
+
+    receitas = ReceitaPizza.objects.select_related(
+        "pizza",
+        "item_estoque",
+    )
+
+    if busca:
+        receitas = receitas.filter(
+            Q(pizza__nome__icontains=busca)
+            | Q(item_estoque__nome__icontains=busca)
+        )
+
+    page_obj = Paginator(
+        receitas.order_by(
+            "pizza__nome",
+            "item_estoque__nome",
+        ),
+        15,
+    ).get_page(request.GET.get("page"))
+
+    return render(
+        request,
+        "pizza/receitas/lista_geral.html",
+        {
+            "page_obj": page_obj,
+            "busca": busca,
+        },
+    )
+
+# Read - List - Receitas de uma pizza específica
 def receita_lista(request, pizza_pk):
 
     pizza = get_object_or_404(
@@ -529,12 +511,7 @@ def receita_lista(request, pizza_pk):
         },
     )
 
-
-@login_required
-@permission_required(
-    "cardapio.add_receitapizza",
-    raise_exception=True,
-)
+# Create - Receitas
 def receita_adicionar(request, pizza_pk):
 
     pizza = get_object_or_404(
@@ -587,12 +564,7 @@ def receita_adicionar(request, pizza_pk):
         },
     )
 
-
-@login_required
-@permission_required(
-    "cardapio.change_receitapizza",
-    raise_exception=True,
-)
+# Update - Receitas
 def receita_editar(
     request,
     pizza_pk,
@@ -652,12 +624,7 @@ def receita_editar(
         },
     )
 
-
-@login_required
-@permission_required(
-    "cardapio.delete_receitapizza",
-    raise_exception=True,
-)
+# Delete - Receitas
 def receita_excluir(
     request,
     pizza_pk,

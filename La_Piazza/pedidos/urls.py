@@ -42,6 +42,12 @@ urlpatterns = [
     # =========================
 
     path(
+        "itens/",
+        views.item_lista,
+        name="item_lista",
+    ),
+
+    path(
         "<int:pedido_pk>/itens/adicionar/",
         views.item_adicionar,
         name="item_adicionar",

@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light management-navbar" id="ftco-navbar">
+  <div class="container">
+    <a class="navbar-brand management-brand" href="{% url 'painel:dashboard' %}">
+      <span class="flaticon-pizza-1" aria-hidden="true"></span>
+      <span>Sistema de administração Piazza</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#administration-navbar" aria-controls="administration-navbar" aria-expanded="false" aria-label="Abrir menu administrativo">
+      <span class="oi oi-menu"></span> Administração
+    </button>
+
+    <div class="collapse navbar-collapse" id="administration-navbar">
+      <ul class="navbar-nav ml-auto management-navigation">
+        <li class="nav-item dropdown {% if secao_gerencia == 'pizza' %}active{% endif %}">
+          <button class="nav-link dropdown-toggle management-nav-button" type="button" id="pizza-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pizza</button>
+          <div class="dropdown-menu" aria-labelledby="pizza-menu">
+            <span class="dropdown-header">Gerenciamento de pizza</span>
+            <a class="dropdown-item" href="{% url 'categoria_lista' %}">Categorias de pizza</a>
+            <a class="dropdown-item" href="{% url 'pizza_lista' %}">Pizzas</a>
+            <a class="dropdown-item" href="{% url 'receita_geral_lista' %}">Receitas de pizza</a>
+          </div>
+        </li>
+
+        <li class="nav-item dropdown {% if secao_gerencia == 'estoque' %}active{% endif %}">
+          <button class="nav-link dropdown-toggle management-nav-button" type="button" id="estoque-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Estoque</button>
+          <div class="dropdown-menu" aria-labelledby="estoque-menu">
+            <span class="dropdown-header">Gerenciamento de estoque</span>
+            <a class="dropdown-item" href="{% url 'estoque:categoria_lista' %}">Categorias do estoque</a>
+            <a class="dropdown-item" href="{% url 'estoque:item_lista' %}">Itens no estoque</a>
+            <a class="dropdown-item" href="{% url 'estoque:movimentacao_lista' %}">Movimentações do estoque</a>
+          </div>
+        </li>
+
+        <li class="nav-item dropdown {% if secao_gerencia == 'pedido' %}active{% endif %}">
+          <button class="nav-link dropdown-toggle management-nav-button" type="button" id="pedido-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pedido</button>
+          <div class="dropdown-menu" aria-labelledby="pedido-menu">
+            <span class="dropdown-header">Gerenciamento de pedidos</span>
+            <a class="dropdown-item" href="{% url 'pedidos:pedido_lista' %}">Pedidos</a>
+            <a class="dropdown-item" href="{% url 'pedidos:item_lista' %}">Itens do pedido</a>
+          </div>
+        </li>
+
+        <li class="nav-item dropdown {% if secao_gerencia == 'usuario' %}active{% endif %}">
+          <button class="nav-link dropdown-toggle management-nav-button" type="button" id="usuario-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Usuário</button>
+          <div class="dropdown-menu" aria-labelledby="usuario-menu">
+            <span class="dropdown-header">Gerenciamento de clientes</span>
+            <a class="dropdown-item" href="{% url 'usuarios_gerenciamento:cliente_lista' %}">Clientes</a>
+            <a class="dropdown-item" href="{% url 'usuarios_gerenciamento:endereco_lista' %}">Endereços dos clientes</a>
+          </div>
+        </li>
+      </ul>
+
+      {% if user.is_authenticated %}
+        <div class="site-profile management-profile" aria-label="Perfil conectado">
+          <span class="site-profile-avatar" role="img" aria-label="Avatar de {{ user.username }}">
+            {{ user.username|first|upper }}
+          </span>
+
+          <span class="site-profile-name">
+            {{ user.username }}
+          </span>
+
+          <div class="site-profile-actions">
+            <a href="{% url 'index' %}" class="site-profile-action site-profile-admin">Ir ao site</a>
+
+            <form method="post" action="{% url 'usuarios:logout' %}" class="site-profile-form">
+              {% csrf_token %}
+              <button type="submit" class="site-profile-action site-profile-logout">Sair</button>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>

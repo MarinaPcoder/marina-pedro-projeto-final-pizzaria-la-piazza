@@ -52,10 +52,9 @@ function initPasswordToggles() {
 
                 if (icon) {
 
-                    icon.className =
-                        showing
-                            ? "bi bi-eye"
-                            : "bi bi-eye-slash";
+                    icon.className = showing
+                        ? "icon-eye"
+                        : "icon-eye-slash";
 
                 }
 

@@ -87,7 +87,7 @@
         		<div class="staff">
       				<div class="img mb-4" style="background-image: url({% static 'images/person_1.jpg' %});"></div>
       				<div class="info text-center">
-      					<h3><a href="teacher-single.html">Tom Smith</a></h3>
+					<h3>Tom Smith</h3>
       					<span class="position">Especialista em cabelos</span>
       					<div class="text">
 	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
@@ -99,7 +99,7 @@
         		<div class="staff">
       				<div class="img mb-4" style="background-image: url({% static 'images/person_2.jpg' %});"></div>
       				<div class="info text-center">
-      					<h3><a href="teacher-single.html">Mark Wilson</a></h3>
+					<h3>Mark Wilson</h3>
       					<span class="position">Especialista em barba</span>
       					<div class="text">
 	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
@@ -111,7 +111,7 @@
         		<div class="staff">
       				<div class="img mb-4" style="background-image: url({% static 'images/person_3.jpg' %});"></div>
       				<div class="info text-center">
-      					<h3><a href="teacher-single.html">Patrick Jacobson</a></h3>
+					<h3>Patrick Jacobson</h3>
       					<span class="position">Cabeleireiro</span>
       					<div class="text">
 	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
@@ -123,7 +123,7 @@
         		<div class="staff">
       				<div class="img mb-4" style="background-image: url({% static 'images/person_4.jpg' %});"></div>
       				<div class="info text-center">
-      					<h3><a href="teacher-single.html">Ivan Dorchsner</a></h3>
+					<h3>Ivan Dorchsner</h3>
       					<span class="position">Especialista em barba</span>
       					<div class="text">
 	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
@@ -185,35 +185,43 @@
     </section>
 
 		
-		<section class="ftco-appointment">
-			<div class="overlay"></div>
-    	<div class="container-wrap">
-    		<div class="row no-gutters d-md-flex align-items-center">
-    			<div class="col-md-6 d-flex align-self-stretch">
-    				<div id="map"></div>
-    			</div>
-	    		<div class="col-md-6 appointment ftco-animate">
-	    			<h3 class="mb-3">Entre em contato</h3>
-	    			<form action="#" class="appointment-form">
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="Nome">
-		    				</div>
-	    				</div>
-	    				<div class="d-me-flex">
-	    					<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="Sobrenome">
-		    				</div>
-	    				</div>
-	    				<div class="form-group">
-	              <textarea name="" id="" cols="30" rows="3" class="form-control" placeholder="Mensagem"></textarea>
-	            </div>
-	            <div class="form-group">
-	              <input type="submit" value="Enviar" class="btn btn-primary py-3 px-4">
-	            </div>
-	    			</form>
-	    		</div>    			
-    		</div>
-    	</div>
+    <section class="ftco-appointment">
+      <div class="overlay"></div>
+      <div class="container-wrap">
+        <div class="row no-gutters d-md-flex align-items-center">
+          <div class="col-md-6 d-flex align-self-stretch">
+            <div id="map"></div>
+          </div>
+          <div class="col-md-6 appointment ftco-animate">
+            <h3 class="mb-3">Entre em contato</h3>
+            <form class="appointment-form" id="contact-form">
+              <div class="d-md-flex">
+                <div class="form-group">
+                  <label class="sr-only" for="contact-first-name">Nome</label>
+                  <input type="text" name="nome" id="contact-first-name" class="form-control" placeholder="Nome" autocomplete="given-name">
+                </div>
+              </div>
+              <div class="d-md-flex">
+                <div class="form-group">
+                  <label class="sr-only" for="contact-last-name">Sobrenome</label>
+                  <input type="text" name="sobrenome" id="contact-last-name" class="form-control" placeholder="Sobrenome" autocomplete="family-name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="sr-only" for="contact-message">Mensagem</label>
+                <textarea name="mensagem" id="contact-message" cols="30" rows="3" class="form-control" placeholder="Mensagem"></textarea>
+              </div>
+              <div class="form-group">
+                <button type="button" class="btn btn-primary py-3 px-4" disabled title="O envio de mensagens ainda não está disponível">Enviar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </section>
-{% endblock content%}
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'js/google-map.js' %}"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&callback=initPiazzaMap"></script>
+{% endblock %}

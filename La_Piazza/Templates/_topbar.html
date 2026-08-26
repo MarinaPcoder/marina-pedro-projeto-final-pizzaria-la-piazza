@@ -1,39 +1,62 @@
 {% load static %}
-      <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-        <div class="container">
-              <a class="navbar-brand" href="{% url 'index' %}"><span class="flaticon-pizza-1 mr-1"></span>La Piazza<br><small>Delicioso</small></a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="oi oi-menu"></span> Cardápio
-              </button>
-          <div class="collapse navbar-collapse" id="ftco-nav">
-            <ul class="navbar-nav ml-auto">
-            <li class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}"><a href="{% url 'index' %}" class="nav-link">Início</a></li>
-            <li class="nav-item {% if request.resolver_match.url_name == 'menu' %}active{% endif %}"><a href="{% url 'menu' %}" class="nav-link">Cardápio</a></li>
-            <li class="nav-item {% if request.resolver_match.url_name == 'sobre' %}active{% endif %}"><a href="{% url 'sobre' %}" class="nav-link">Sobre</a></li>
-            {% if user.is_authenticated %}
-              {% if perms.pedidos.view_pedido %}
-                <li class="nav-item {% if request.resolver_match.namespace == 'painel' %}active{% endif %}"><a href="{% url 'painel:dashboard' %}" class="nav-link">Painel</a></li>
-              {% endif %}
-            {% else %}
-              <li class="nav-item"><a href="{% url 'usuarios:login' %}" class="nav-link">Entrar</a></li>
-              <li class="nav-item"><a href="{% url 'usuarios:cadastro' %}" class="nav-link">Criar conta</a></li>
-            {% endif %}
-          </ul>
-          </div>
 
-          {% if user.is_authenticated %}
-            <div class="site-profile" aria-label="Perfil conectado">
-              <span class="site-profile-avatar" aria-hidden="true">
-                {% if user.first_name %}{{ user.first_name|first|upper }}{% else %}{{ user.username|first|upper }}{% endif %}
-              </span>
-              <span class="site-profile-name">
-                {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}
-              </span>
-              <form method="post" action="{% url 'usuarios:logout' %}" class="site-profile-form">
-                {% csrf_token %}
-                <button type="submit" class="site-profile-logout">Sair</button>
-              </form>
-            </div>
-          {% endif %}
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light site-navbar" id="ftco-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'index' %}">
+      <span class="flaticon-pizza-1 mr-1"></span>La Piazza<br>
+      <small>Delicioso</small>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#public-navbar" aria-controls="public-navbar" aria-expanded="false" aria-label="Abrir menu">
+      <span class="oi oi-menu"></span> Menu
+    </button>
+
+    <div class="collapse navbar-collapse" id="public-navbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+          <a href="{% url 'index' %}" class="nav-link">Início</a>
+        </li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'menu' %}active{% endif %}">
+          <a href="{% url 'menu' %}" class="nav-link">Cardápio</a>
+        </li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'sobre' %}active{% endif %}">
+          <a href="{% url 'sobre' %}" class="nav-link">Sobre</a>
+        </li>
+
+        {% if not user.is_authenticated %}
+          <li class="nav-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
+            <a href="{% url 'usuarios:login' %}" class="nav-link">Entrar</a>
+          </li>
+          <li class="nav-item {% if request.resolver_match.url_name == 'cadastro' %}active{% endif %}">
+            <a href="{% url 'usuarios:cadastro' %}" class="nav-link">Criar conta</a>
+          </li>
+        {% endif %}
+      </ul>
+
+      {% if user.is_authenticated %}
+        <div class="site-profile" aria-label="Perfil conectado">
+          <span class="site-profile-avatar" role="img" aria-label="Avatar de {{ user.username }}">
+            {{ user.username|first|upper }}
+          </span>
+
+          <span class="site-profile-name">
+            {{ user.username }}
+          </span>
+
+          <div class="site-profile-actions">
+            {% if eh_funcionario %}
+              <a href="{% url 'painel:dashboard' %}" class="site-profile-action site-profile-admin">
+                Administração
+              </a>
+            {% endif %}
+
+            <form method="post" action="{% url 'usuarios:logout' %}" class="site-profile-form">
+              {% csrf_token %}
+              <button type="submit" class="site-profile-action site-profile-logout">Sair</button>
+            </form>
           </div>
-      </nav>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>

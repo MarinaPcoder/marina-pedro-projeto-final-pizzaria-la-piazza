@@ -1,4 +1,4 @@
-{% extends "_management_base.html" %}
+{% extends "_gerencia_base.html" %}
 {% load static %}
 
 
@@ -55,9 +55,7 @@ Painel Administrativo | La Piazza
                     Bem-vindo
                 </span>,
 
-                <strong>
-                    {{ request.user.get_full_name|default:request.user.username|default:"Administrador" }}
-                </strong>.
+                <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>.
 
             </h1>
 

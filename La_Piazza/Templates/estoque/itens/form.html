@@ -1,4 +1,4 @@
-{% extends "_management_base.html" %}
+{% extends "_gerencia_base.html" %}
 
 {% block title %}
 {{ titulo }} | La Piazza
@@ -39,7 +39,7 @@
 
                             {% if field.name == "ativo" %}
 
-                                <div class="form-check">
+                                <div class="form-check management-checkbox">
 
                                     {{ field }}
 

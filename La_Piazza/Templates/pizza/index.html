@@ -12,7 +12,7 @@
             	<span class="subheading">Delicious</span>
               <h1 class="mb-4">Culinária italiana</h1>
               <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="#" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
+              <p><a href="{% url 'menu' %}" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
             </div>
             <div class="col-md-6 ftco-animate">
             	<img src="{% static 'images/bg_1.png' %}" class="img-fluid" alt="">
@@ -31,7 +31,7 @@
             	<span class="subheading">Crunchy</span>
               <h1 class="mb-4">Pizza italiana</h1>
               <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="#" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
+              <p><a href="{% url 'menu' %}" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
             </div>
             <div class="col-md-6 ftco-animate">
             	<img src="{% static 'images/bg_2.png' %}" class="img-fluid" alt="">
@@ -50,7 +50,7 @@
             	<span class="subheading">Bem-vindo</span>
               <h1 class="mb-4">Preparamos a receita de pizza que você deseja</h1>
               <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="#" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
+              <p><a href="{% url 'menu' %}" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
             </div>
 
           </div>
@@ -619,8 +619,7 @@
         <div class="row d-flex">
           <div class="col-md-4 d-flex ftco-animate">
           	<div class="blog-entry align-self-stretch">
-              <a href="blog-single.html" class="block-20" style="background-image: url({% static 'images/image_1.jpg' %});">
-              </a>
+              <div class="block-20" style="background-image: url({% static 'images/image_1.jpg' %});"></div>
               <div class="text py-4 d-block">
               	<div class="meta">
                   <div><a href="#">Sept 10, 2018</a></div>
@@ -634,8 +633,7 @@
           </div>
           <div class="col-md-4 d-flex ftco-animate">
           	<div class="blog-entry align-self-stretch">
-              <a href="blog-single.html" class="block-20" style="background-image: url({% static 'images/image_2.jpg' %});">
-              </a>
+              <div class="block-20" style="background-image: url({% static 'images/image_2.jpg' %});"></div>
               <div class="text py-4 d-block">
               	<div class="meta">
                   <div><a href="#">Sept 10, 2018</a></div>
@@ -649,8 +647,7 @@
           </div>
           <div class="col-md-4 d-flex ftco-animate">
           	<div class="blog-entry align-self-stretch">
-              <a href="blog-single.html" class="block-20" style="background-image: url({% static 'images/image_3.jpg' %});">
-              </a>
+              <div class="block-20" style="background-image: url({% static 'images/image_3.jpg' %});"></div>
               <div class="text py-4 d-block">
               	<div class="meta">
                   <div><a href="#">Sept 10, 2018</a></div>
@@ -667,35 +664,43 @@
     </section>
 
 		
-		<section class="ftco-appointment">
-			<div class="overlay"></div>
-    	<div class="container-wrap">
-    		<div class="row no-gutters d-md-flex align-items-center">
-    			<div class="col-md-6 d-flex align-self-stretch">
-    				<div id="map"></div>
-    			</div>
-	    		<div class="col-md-6 appointment ftco-animate">
-	    			<h3 class="mb-3">Entre em contato</h3>
-	    			<form action="#" class="appointment-form">
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="Nome">
-		    				</div>
-	    				</div>
-	    				<div class="d-me-flex">
-	    					<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="Sobrenome">
-		    				</div>
-	    				</div>
-	    				<div class="form-group">
-	              <textarea name="" id="" cols="30" rows="3" class="form-control" placeholder="Mensagem"></textarea>
-	            </div>
-	            <div class="form-group">
-	              <input type="submit" value="Enviar" class="btn btn-primary py-3 px-4">
-	            </div>
-	    			</form>
-	    		</div>    			
-    		</div>
-    	</div>
+    <section class="ftco-appointment">
+      <div class="overlay"></div>
+      <div class="container-wrap">
+        <div class="row no-gutters d-md-flex align-items-center">
+          <div class="col-md-6 d-flex align-self-stretch">
+            <div id="map"></div>
+          </div>
+          <div class="col-md-6 appointment ftco-animate">
+            <h3 class="mb-3">Entre em contato</h3>
+            <form class="appointment-form" id="contact-form">
+              <div class="d-md-flex">
+                <div class="form-group">
+                  <label class="sr-only" for="contact-first-name">Nome</label>
+                  <input type="text" name="nome" id="contact-first-name" class="form-control" placeholder="Nome" autocomplete="given-name">
+                </div>
+              </div>
+              <div class="d-md-flex">
+                <div class="form-group">
+                  <label class="sr-only" for="contact-last-name">Sobrenome</label>
+                  <input type="text" name="sobrenome" id="contact-last-name" class="form-control" placeholder="Sobrenome" autocomplete="family-name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="sr-only" for="contact-message">Mensagem</label>
+                <textarea name="mensagem" id="contact-message" cols="30" rows="3" class="form-control" placeholder="Mensagem"></textarea>
+              </div>
+              <div class="form-group">
+                <button type="button" class="btn btn-primary py-3 px-4" disabled title="O envio de mensagens ainda não está disponível">Enviar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </section>
 {% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'js/google-map.js' %}"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&callback=initPiazzaMap"></script>
+{% endblock %}

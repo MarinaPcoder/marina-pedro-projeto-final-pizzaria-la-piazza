@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const page =
-        document.querySelector(".pizza-page");
+        document.querySelector(".pizza-page")
+        || document.getElementById(
+            "pizzaFilterForm"
+        )?.closest("section");
 
     if (!page) {
         return;
@@ -241,7 +244,7 @@ function initPizzaCardTilt() {
 
 
     document.querySelectorAll(
-        ".pizza-card"
+        ".pizza-card, .pizza-public-card"
     ).forEach(card => {
 
         card.addEventListener(

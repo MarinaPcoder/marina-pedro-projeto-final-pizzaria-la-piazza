@@ -1,4 +1,76 @@
-/* Perfil compartilhado entre as páginas públicas e administrativas. */
+/* Navegação e perfil compartilhados entre o site e a administração. */
+
+.site-navbar .container,
+.management-navbar .container {
+    max-width: 1320px;
+}
+
+.management-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 290px;
+    font-family: "Josefin Sans", Arial, sans-serif;
+    font-size: 18px !important;
+    line-height: 1.15 !important;
+    text-transform: none;
+}
+
+.management-brand .flaticon-pizza-1 {
+    color: #fac564;
+    font-size: 30px;
+}
+
+.management-navbar .management-nav-button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}
+
+.management-navbar .management-nav-button:focus {
+    outline: 0;
+}
+
+.management-navbar .management-navigation .dropdown-menu {
+    min-width: 230px;
+    margin-top: 0;
+    padding: 8px;
+    border: 1px solid rgba(250, 197, 100, .24);
+    border-radius: 12px;
+    background-color: #121618 !important;
+    color: #f3f3f3;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .35);
+}
+
+.management-navbar .management-navigation .dropdown-header {
+    padding: 8px 12px;
+    color: #fac564 !important;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.management-navbar .management-navigation .dropdown-item {
+    padding: 9px 12px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background-color: transparent !important;
+    color: #f3f3f3 !important;
+    font-size: 13px;
+    transition: .2s ease;
+}
+
+.management-navbar .management-navigation .dropdown-item:hover,
+.management-navbar .management-navigation .dropdown-item:focus,
+.management-navbar .management-navigation .dropdown-item:active {
+    border-color: rgba(250, 197, 100, .55);
+    background-color: #fac564 !important;
+    color: #121618 !important;
+    outline: 0;
+    text-decoration: none;
+}
 
 .site-profile {
     display: flex;
@@ -6,11 +78,11 @@
     justify-content: center;
     gap: 9px;
     flex: 0 0 auto;
-    margin-left: 18px;
-    padding: 5px 8px 5px 6px;
+    margin-left: 16px;
+    padding: 5px 7px 5px 6px;
     border: 1px solid rgba(250, 197, 100, .35);
     border-radius: 999px;
-    background: rgba(18, 22, 24, .82);
+    background: rgba(18, 22, 24, .88);
     text-align: center;
 }
 
@@ -18,69 +90,134 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 31px;
-    height: 31px;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border: 2px solid rgba(255, 255, 255, .28);
     border-radius: 50%;
     background: #fac564;
     color: #121618;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     line-height: 1;
 }
 
 .site-profile-name {
-    max-width: 145px;
+    max-width: 135px;
     overflow: hidden;
     color: #fff;
     font-size: 12px;
+    font-weight: 500;
     line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.site-profile-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .site-profile-form {
     margin: 0;
 }
 
-.site-profile-logout {
-    padding: 4px 10px;
+.site-profile-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 5px 10px;
     border: 1px solid rgba(250, 197, 100, .75);
     border-radius: 999px;
     background: transparent;
     color: #fac564;
     cursor: pointer;
     font: inherit;
-    font-size: 11px;
-    line-height: 1.2;
-    transition: .3s ease;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.1;
+    transition: .25s ease;
+    white-space: nowrap;
 }
 
-.site-profile-logout:hover,
-.site-profile-logout:focus {
+.site-profile-admin {
     background: #fac564;
     color: #121618;
+}
+
+.site-profile-action:hover,
+.site-profile-action:focus {
+    border-color: #fac564;
+    background: #fff;
+    color: #121618;
     outline: 0;
+    text-decoration: none;
+}
+
+@media (max-width: 1199.98px) {
+    .management-brand {
+        max-width: 230px;
+        font-size: 15px !important;
+    }
+
+    .management-navbar .nav-link {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .site-profile {
+        margin-left: 8px;
+    }
+
+    .site-profile-name {
+        max-width: 95px;
+    }
 }
 
 @media (max-width: 991.98px) {
+    .site-navbar .navbar-collapse,
+    .management-navbar .navbar-collapse {
+        padding: 12px 0 18px;
+    }
+
+    .management-navigation .dropdown-menu {
+        margin: 0 0 8px;
+        border-radius: 8px;
+        box-shadow: none;
+    }
+
     .site-profile {
-        margin-left: auto;
-        margin-right: 12px;
+        width: fit-content;
+        max-width: 100%;
+        margin: 10px 0 0 auto;
     }
 }
 
 @media (max-width: 575.98px) {
+    .management-brand {
+        max-width: 205px;
+        font-size: 13px !important;
+    }
+
+    .management-brand .flaticon-pizza-1 {
+        font-size: 25px;
+    }
+
     .site-profile {
-        gap: 6px;
-        margin-right: 6px;
-        padding-right: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        border-radius: 18px;
     }
 
     .site-profile-name {
-        max-width: 90px;
+        max-width: 150px;
     }
 
-    .site-profile-logout {
-        padding: 4px 8px;
+    .site-profile-actions {
+        flex-basis: 100%;
+        justify-content: flex-end;
+        padding: 0 2px 2px 42px;
     }
 }

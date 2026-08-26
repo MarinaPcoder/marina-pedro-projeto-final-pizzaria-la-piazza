@@ -1,0 +1,45 @@
+{% extends "_gerencia_base.html" %}
+
+{% block title %}{{ titulo }} | Endereços{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <span class="subheading">Usuário</span>
+        <h2 class="mb-4">{{ titulo }}</h2>
+
+        <form method="post" class="lp-card">
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+          <div class="row">
+            {% for field in form %}
+              <div class="{% if field.name == 'logradouro' or field.name == 'complemento' or field.name == 'referencia' or field.name == 'usuario' %}col-12{% elif field.field.widget.input_type == 'checkbox' %}col-md-6{% else %}col-md-6{% endif %}">
+                {% if field.field.widget.input_type == "checkbox" %}
+                  <div class="form-check management-checkbox mb-3 mt-2">
+                    {{ field }}
+                    <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  </div>
+                {% else %}
+                  <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                  </div>
+                {% endif %}
+                {% for error in field.errors %}<div class="text-danger mb-2">{{ error }}</div>{% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <a href="{% if endereco %}{% url 'usuarios_gerenciamento:endereco_detalhe' endereco.pk %}{% else %}{% url 'usuarios_gerenciamento:endereco_lista' %}{% endif %}" class="btn btn-secondary mr-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

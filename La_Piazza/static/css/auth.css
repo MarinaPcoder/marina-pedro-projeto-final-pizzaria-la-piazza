@@ -674,14 +674,34 @@
     width: 37px;
     height: 37px;
 
-    border: 0;
+    border:
+        1px solid rgba(
+            255,
+            255,
+            255,
+            .28
+        );
 
     border-radius: 9px;
 
-    background: transparent;
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .12
+        );
 
     color:
-        var(--lp-muted);
+        white;
+
+    box-shadow:
+        0 3px 10px rgba(
+            0,
+            0,
+            0,
+            .18
+        );
 
     cursor: pointer;
 
@@ -692,15 +712,26 @@
 
 .auth-password-toggle:hover {
     background:
-        rgba(
-            255,
-            255,
-            255,
-            .05
-        );
+        var(--lp-primary);
 
     color:
         white;
+
+    border-color:
+        var(--lp-primary-light);
+}
+
+
+.auth-password-toggle:focus-visible {
+    outline:
+        3px solid rgba(
+            239,
+            156,
+            98,
+            .55
+        );
+
+    outline-offset: 2px;
 }
 
 

@@ -1,4 +1,4 @@
-{% extends "_management_base.html" %}
+{% extends "_gerencia_base.html" %}
 {% load static %}
 
 
@@ -97,40 +97,56 @@
                             "
                         >
 
-                            <label for="{{ field.id_for_label }}">
+                            {% if field.field.widget.input_type == "checkbox" %}
 
-                                {% if field.name == "nome" %}
+                                <div class="form-check management-checkbox">
 
-                                    <i class="bi bi-type"></i>
+                                    {{ field }}
 
-                                {% elif field.name == "categoria" %}
+                                    <label
+                                        class="form-check-label"
+                                        for="{{ field.id_for_label }}"
+                                    >
+                                        <i class="bi bi-check-circle"></i>
+                                        {{ field.label }}
+                                    </label>
 
-                                    <i class="bi bi-tags"></i>
+                                </div>
 
-                                {% elif field.name == "preco" %}
+                            {% else %}
 
-                                    <i class="bi bi-currency-dollar"></i>
+                                <label for="{{ field.id_for_label }}">
 
-                                {% elif field.name == "descricao" %}
+                                    {% if field.name == "nome" %}
 
-                                    <i class="bi bi-card-text"></i>
+                                        <i class="bi bi-type"></i>
 
-                                {% elif field.name == "imagem" %}
+                                    {% elif field.name == "categoria" %}
 
-                                    <i class="bi bi-image"></i>
+                                        <i class="bi bi-tags"></i>
 
-                                {% elif field.name == "disponivel" %}
+                                    {% elif field.name == "preco" %}
 
-                                    <i class="bi bi-check-circle"></i>
+                                        <i class="bi bi-currency-dollar"></i>
 
-                                {% endif %}
+                                    {% elif field.name == "descricao" %}
 
-                                {{ field.label }}
+                                        <i class="bi bi-card-text"></i>
 
-                            </label>
+                                    {% elif field.name == "imagem" %}
+
+                                        <i class="bi bi-image"></i>
+
+                                    {% endif %}
+
+                                    {{ field.label }}
+
+                                </label>
 
 
-                            {{ field }}
+                                {{ field }}
+
+                            {% endif %}
 
 
                             {% if field.name == "descricao" %}

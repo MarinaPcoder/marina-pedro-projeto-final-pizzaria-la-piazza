@@ -1,5 +1,33 @@
+from functools import wraps
+
+from django.core.exceptions import PermissionDenied
+
+
 GRUPO_CLIENTE = "Cliente"
 GRUPO_FUNCIONARIO = "Funcionario"
+
+
+def usuario_eh_funcionario(usuario):
+    if not usuario.is_authenticated:
+        return False
+
+    return (
+        usuario.is_superuser
+        or usuario.groups.filter(
+            name=GRUPO_FUNCIONARIO
+        ).exists()
+    )
+
+
+def funcionario_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if usuario_eh_funcionario(request.user):
+            return view_func(request, *args, **kwargs)
+
+        raise PermissionDenied
+
+    return wrapper
 
 PERMISSOES_CLIENTE = [
     "view_categoriapizza",

@@ -1,15 +1,8 @@
-from functools import wraps
-
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.views.decorators.http import require_POST
 
 from django.contrib import messages
-from django.contrib.auth.decorators import (
-    login_required,
-    permission_required,
-)
-from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import (
@@ -17,8 +10,6 @@ from django.shortcuts import (
     redirect,
     render,
 )
-
-from usuarios.permissions import GRUPO_FUNCIONARIO
 
 from .forms import ItemPedidoForm, PedidoForm
 from .models import (
@@ -29,37 +20,6 @@ from .models import (
     TIPO_ATENDIMENTO_CHOICES,
 )
 
-
-def funcionario_required(view_func):
-
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-
-        eh_funcionario = request.user.groups.filter(
-            name=GRUPO_FUNCIONARIO
-        ).exists()
-
-        if (
-            request.user.is_superuser
-            or eh_funcionario
-        ):
-            return view_func(
-                request,
-                *args,
-                **kwargs,
-            )
-
-        raise PermissionDenied
-
-    return wrapper
-
-
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.view_pedido",
-    raise_exception=True,
-)
 def pedido_lista(request):
 
     busca = request.GET.get(
@@ -150,12 +110,6 @@ def pedido_lista(request):
     )
 
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.view_pedido",
-    raise_exception=True,
-)
 def pedido_detalhe(request, pk):
 
     pedido = get_object_or_404(
@@ -179,12 +133,6 @@ def pedido_detalhe(request, pk):
     )
 
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.add_pedido",
-    raise_exception=True,
-)
 def pedido_criar(request):
 
     if request.method == "POST":
@@ -221,12 +169,6 @@ def pedido_criar(request):
     )
 
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.change_pedido",
-    raise_exception=True,
-)
 def pedido_editar(request, pk):
 
     pedido = get_object_or_404(
@@ -272,12 +214,6 @@ def pedido_editar(request, pk):
     )
 
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.delete_pedido",
-    raise_exception=True,
-)
 def pedido_excluir(request, pk):
 
     pedido = get_object_or_404(
@@ -306,12 +242,43 @@ def pedido_excluir(request, pk):
         },
     )
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.add_itempedido",
-    raise_exception=True,
-)
+
+def item_lista(request):
+    busca = request.GET.get("q", "").strip()
+
+    itens = ItemPedido.objects.select_related(
+        "pedido",
+        "pedido__usuario",
+        "pizza",
+    )
+
+    if busca:
+        filtro = (
+            Q(pizza__nome__icontains=busca)
+            | Q(pedido__usuario__username__icontains=busca)
+            | Q(pedido__usuario__first_name__icontains=busca)
+            | Q(pedido__usuario__last_name__icontains=busca)
+        )
+
+        if busca.isdigit():
+            filtro |= Q(pedido_id=int(busca))
+
+        itens = itens.filter(filtro)
+
+    page_obj = Paginator(
+        itens.order_by("-pedido__criado_em", "pizza__nome"),
+        15,
+    ).get_page(request.GET.get("page"))
+
+    return render(
+        request,
+        "pedidos/itens/lista.html",
+        {
+            "page_obj": page_obj,
+            "busca": busca,
+        },
+    )
+
 def item_adicionar(request, pedido_pk):
 
     pedido = get_object_or_404(
@@ -365,12 +332,6 @@ def item_adicionar(request, pedido_pk):
     )
 
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.change_itempedido",
-    raise_exception=True,
-)
 def item_editar(request, pedido_pk, item_pk):
 
     pedido = get_object_or_404(
@@ -427,12 +388,6 @@ def item_editar(request, pedido_pk, item_pk):
     )
 
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.delete_itempedido",
-    raise_exception=True,
-)
 def item_excluir(request, pedido_pk, item_pk):
 
     pedido = get_object_or_404(
@@ -474,16 +429,6 @@ def item_excluir(request, pedido_pk, item_pk):
         },
     )
 
-@login_required
-@funcionario_required
-@permission_required(
-    "pedidos.change_pedido",
-    raise_exception=True,
-)
-@permission_required(
-    "estoque.add_movimentacaoestoque",
-    raise_exception=True,
-)
 @require_POST
 def pedido_confirmar(request, pk):
 

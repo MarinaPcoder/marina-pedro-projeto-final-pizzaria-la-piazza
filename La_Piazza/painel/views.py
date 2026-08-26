@@ -3,11 +3,6 @@ from django.shortcuts import render
 from datetime import timedelta
 from decimal import Decimal
 
-from django.contrib.auth.decorators import (
-    login_required,
-    permission_required,
-)
-
 from django.db.models import (
     Count,
     DecimalField,
@@ -619,11 +614,6 @@ def gerar_dados_dashboard(periodo=7):
 # DASHBOARD
 # =========================================================
 
-@login_required
-@permission_required(
-    "pedidos.view_pedido",
-    raise_exception=True,
-)
 def dashboard(request):
 
     hoje = timezone.localdate()
@@ -816,11 +806,6 @@ def dashboard(request):
 # API PARA ATUALIZAÇÃO DOS GRÁFICOS
 # =========================================================
 
-@login_required
-@permission_required(
-    "pedidos.view_pedido",
-    raise_exception=True,
-)
 def dashboard_dados(request):
 
     try:

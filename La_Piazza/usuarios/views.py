@@ -4,14 +4,29 @@ from django.shortcuts import render
 
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from django.shortcuts import redirect, render
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.db.models.deletion import ProtectedError
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from .forms import CadastroUsuarioForm, LoginForm
-from .permissions import GRUPO_CLIENTE
+from .forms import (
+    CadastroUsuarioForm,
+    ClienteEdicaoForm,
+    EnderecoUsuarioForm,
+    LoginForm,
+)
+from .models import EnderecoUsuario, Usuario
+from .permissions import (
+    GRUPO_CLIENTE,
+    GRUPO_FUNCIONARIO,
+)
 
 
 def login_usuario(request):
@@ -116,7 +131,6 @@ def cadastro_usuario(request):
     )
 
 
-@login_required
 @require_POST
 def logout_usuario(request):
     logout(request)
@@ -127,3 +141,292 @@ def logout_usuario(request):
     )
 
     return redirect("index")
+
+
+def _clientes():
+    return (
+        Usuario.objects.filter(groups__name=GRUPO_CLIENTE)
+        .exclude(groups__name=GRUPO_FUNCIONARIO)
+        .distinct()
+    )
+
+
+def cliente_lista(request):
+    busca = request.GET.get("q", "").strip()
+    clientes = _clientes().order_by("first_name", "username")
+
+    if busca:
+        clientes = clientes.filter(
+            Q(username__icontains=busca)
+            | Q(first_name__icontains=busca)
+            | Q(last_name__icontains=busca)
+            | Q(email__icontains=busca)
+            | Q(cpf__icontains=busca)
+        )
+
+    page_obj = Paginator(clientes, 12).get_page(
+        request.GET.get("page")
+    )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/clientes/lista.html",
+        {
+            "page_obj": page_obj,
+            "busca": busca,
+        },
+    )
+
+
+def cliente_detalhe(request, pk):
+    cliente = get_object_or_404(_clientes(), pk=pk)
+
+    return render(
+        request,
+        "usuarios/gerenciamento/clientes/detalhe.html",
+        {
+            "cliente": cliente,
+            "enderecos": cliente.enderecos.order_by(
+                "-principal",
+                "logradouro",
+            ),
+        },
+    )
+
+
+def cliente_criar(request):
+    form = CadastroUsuarioForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        cliente = form.save()
+        grupo_cliente, _ = Group.objects.get_or_create(
+            name=GRUPO_CLIENTE
+        )
+        cliente.groups.add(grupo_cliente)
+
+        messages.success(
+            request,
+            "Cliente cadastrado com sucesso.",
+        )
+        return redirect(
+            "usuarios_gerenciamento:cliente_detalhe",
+            pk=cliente.pk,
+        )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/clientes/form.html",
+        {
+            "form": form,
+            "titulo": "Novo cliente",
+        },
+    )
+
+
+def cliente_editar(request, pk):
+    cliente = get_object_or_404(_clientes(), pk=pk)
+    form = ClienteEdicaoForm(
+        request.POST or None,
+        instance=cliente,
+    )
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(
+            request,
+            "Cliente atualizado com sucesso.",
+        )
+        return redirect(
+            "usuarios_gerenciamento:cliente_detalhe",
+            pk=cliente.pk,
+        )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/clientes/form.html",
+        {
+            "form": form,
+            "titulo": "Editar cliente",
+            "cliente": cliente,
+        },
+    )
+
+
+def cliente_excluir(request, pk):
+    cliente = get_object_or_404(_clientes(), pk=pk)
+
+    if request.method == "POST":
+        try:
+            cliente.delete()
+        except ProtectedError:
+            messages.error(
+                request,
+                "Este cliente possui pedidos e não pode ser excluído.",
+            )
+            return redirect(
+                "usuarios_gerenciamento:cliente_detalhe",
+                pk=cliente.pk,
+            )
+
+        messages.success(
+            request,
+            "Cliente excluído com sucesso.",
+        )
+        return redirect(
+            "usuarios_gerenciamento:cliente_lista"
+        )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/clientes/confirmar_exclusao.html",
+        {"cliente": cliente},
+    )
+
+
+def endereco_lista(request):
+    busca = request.GET.get("q", "").strip()
+    enderecos = EnderecoUsuario.objects.select_related(
+        "usuario"
+    )
+
+    if busca:
+        enderecos = enderecos.filter(
+            Q(usuario__username__icontains=busca)
+            | Q(usuario__first_name__icontains=busca)
+            | Q(usuario__last_name__icontains=busca)
+            | Q(logradouro__icontains=busca)
+            | Q(bairro__icontains=busca)
+            | Q(cidade__icontains=busca)
+        )
+
+    page_obj = Paginator(
+        enderecos.order_by(
+            "usuario__first_name",
+            "usuario__username",
+            "-principal",
+        ),
+        15,
+    ).get_page(request.GET.get("page"))
+
+    return render(
+        request,
+        "usuarios/gerenciamento/enderecos/lista.html",
+        {
+            "page_obj": page_obj,
+            "busca": busca,
+        },
+    )
+
+
+def endereco_detalhe(request, pk):
+    endereco = get_object_or_404(
+        EnderecoUsuario.objects.select_related("usuario"),
+        pk=pk,
+    )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/enderecos/detalhe.html",
+        {"endereco": endereco},
+    )
+
+
+def _salvar_endereco(form):
+    endereco = form.save()
+
+    if endereco.principal:
+        EnderecoUsuario.objects.filter(
+            usuario=endereco.usuario,
+        ).exclude(pk=endereco.pk).update(principal=False)
+
+    return endereco
+
+
+def endereco_criar(request):
+    initial = {}
+    cliente_id = request.GET.get("cliente")
+
+    if cliente_id:
+        initial["usuario"] = get_object_or_404(
+            _clientes(),
+            pk=cliente_id,
+        )
+
+    form = EnderecoUsuarioForm(
+        request.POST or None,
+        initial=initial,
+    )
+
+    if request.method == "POST" and form.is_valid():
+        endereco = _salvar_endereco(form)
+        messages.success(
+            request,
+            "Endereço cadastrado com sucesso.",
+        )
+        return redirect(
+            "usuarios_gerenciamento:endereco_detalhe",
+            pk=endereco.pk,
+        )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/enderecos/form.html",
+        {
+            "form": form,
+            "titulo": "Novo endereço",
+        },
+    )
+
+
+def endereco_editar(request, pk):
+    endereco = get_object_or_404(EnderecoUsuario, pk=pk)
+    form = EnderecoUsuarioForm(
+        request.POST or None,
+        instance=endereco,
+    )
+
+    if request.method == "POST" and form.is_valid():
+        endereco = _salvar_endereco(form)
+        messages.success(
+            request,
+            "Endereço atualizado com sucesso.",
+        )
+        return redirect(
+            "usuarios_gerenciamento:endereco_detalhe",
+            pk=endereco.pk,
+        )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/enderecos/form.html",
+        {
+            "form": form,
+            "titulo": "Editar endereço",
+            "endereco": endereco,
+        },
+    )
+
+
+def endereco_excluir(request, pk):
+    endereco = get_object_or_404(
+        EnderecoUsuario.objects.select_related("usuario"),
+        pk=pk,
+    )
+
+    if request.method == "POST":
+        cliente_pk = endereco.usuario_id
+        endereco.delete()
+        messages.success(
+            request,
+            "Endereço excluído com sucesso.",
+        )
+        return redirect(
+            "usuarios_gerenciamento:cliente_detalhe",
+            pk=cliente_pk,
+        )
+
+    return render(
+        request,
+        "usuarios/gerenciamento/enderecos/confirmar_exclusao.html",
+        {"endereco": endereco},
+    )

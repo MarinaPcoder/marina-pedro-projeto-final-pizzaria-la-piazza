@@ -36,6 +36,11 @@ urlpatterns = [
     ),
 
     path(
+        "gerenciamento/usuarios/",
+        include("usuarios.management_urls"),
+    ),
+
+    path(
     "painel/",
     include("painel.urls"),
     ),

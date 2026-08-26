@@ -1,0 +1,62 @@
+{% extends "_gerencia_base.html" %}
+
+{% block title %}Receitas de pizza | La Piazza{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <span class="subheading">Pizza</span>
+        <h2 class="mb-1">Receitas de pizza</h2>
+        <p class="mb-0">Consulte os ingredientes e as quantidades utilizadas em cada pizza.</p>
+      </div>
+      <a href="{% url 'pizza_lista' %}" class="btn btn-primary mt-3 mt-md-0">Selecionar pizza</a>
+    </div>
+
+    <form method="get" class="mb-4">
+      <div class="input-group">
+        <input type="search" name="q" value="{{ busca }}" class="form-control" placeholder="Pesquisar pizza ou ingrediente">
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-primary">Pesquisar</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th>Pizza</th>
+            <th>Ingrediente</th>
+            <th>Quantidade utilizada</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for receita in page_obj %}
+            <tr>
+              <td>{{ receita.pizza.nome }}</td>
+              <td>{{ receita.item_estoque.nome }}</td>
+              <td>{{ receita.quantidade_utilizada }} {{ receita.item_estoque.get_unidade_medida_display }}</td>
+              <td>
+                <a href="{% url 'receita_lista' receita.pizza_id %}" class="btn btn-sm btn-info">Ver receita</a>
+                {% if perms.cardapio.change_receitapizza %}
+                  <a href="{% url 'receita_editar' receita.pizza_id receita.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                {% endif %}
+                {% if perms.cardapio.delete_receitapizza %}
+                  <a href="{% url 'receita_excluir' receita.pizza_id receita.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">Nenhuma receita encontrada.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% include "usuarios/gerenciamento/_paginacao.html" with page_obj=page_obj busca=busca %}
+  </div>
+</section>
+{% endblock %}

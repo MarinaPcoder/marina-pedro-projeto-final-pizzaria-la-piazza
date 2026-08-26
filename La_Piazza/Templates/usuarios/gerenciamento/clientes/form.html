@@ -1,0 +1,43 @@
+{% extends "_gerencia_base.html" %}
+
+{% block title %}{{ titulo }} | Clientes{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <span class="subheading">Usuário</span>
+        <h2 class="mb-4">{{ titulo }}</h2>
+
+        <form method="post" class="lp-card">
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+          {% for field in form %}
+            {% if field.field.widget.input_type == "checkbox" %}
+              <div class="form-check management-checkbox mb-3">
+                {{ field }}
+                <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              </div>
+              {% for error in field.errors %}<div class="text-danger mb-2">{{ error }}</div>{% endfor %}
+            {% else %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text|safe }}</small>{% endif %}
+                {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          <div class="d-flex justify-content-end mt-4">
+            <a href="{% if cliente %}{% url 'usuarios_gerenciamento:cliente_detalhe' cliente.pk %}{% else %}{% url 'usuarios_gerenciamento:cliente_lista' %}{% endif %}" class="btn btn-secondary mr-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
