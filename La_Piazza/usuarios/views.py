@@ -4,6 +4,10 @@ from django.shortcuts import render
 
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required,
+)
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -26,6 +30,7 @@ from .models import EnderecoUsuario, Usuario
 from .permissions import (
     GRUPO_CLIENTE,
     GRUPO_FUNCIONARIO,
+    funcionario_required,
 )
 
 
@@ -131,6 +136,7 @@ def cadastro_usuario(request):
     )
 
 
+@login_required
 @require_POST
 def logout_usuario(request):
     logout(request)

@@ -3,6 +3,11 @@ from django.shortcuts import render
 from datetime import timedelta
 from decimal import Decimal
 
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required,
+)
+
 from django.db.models import (
     Count,
     DecimalField,
@@ -28,6 +33,7 @@ from pedidos.models import (
     ItemPedido,
     Pedido,
 )
+from usuarios.permissions import funcionario_required
 
 
 # =========================================================

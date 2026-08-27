@@ -1,4 +1,8 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required,
+)
 from django.core.paginator import Paginator
 from django.db.models import F, Q
 from django.db.models.deletion import ProtectedError
@@ -23,7 +27,14 @@ from .models import (
 
 from django.core.exceptions import ValidationError
 from .services import registrar_movimentacao
+from usuarios.permissions import funcionario_required
 
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.view_categoriaestoque",
+    raise_exception=True,
+)
 def categoria_lista(request):
 
     busca = request.GET.get(
