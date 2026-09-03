@@ -12,12 +12,14 @@ from django.shortcuts import (
     render,
 )
 
+# Forms
 from .forms import (
     CategoriaEstoqueForm,
     ItemEstoqueForm,
     MovimentacaoEstoqueForm,
 )
 
+# Modelos
 from .models import (
     CategoriaEstoque,
     ItemEstoque,
@@ -29,6 +31,9 @@ from django.core.exceptions import ValidationError
 from .services import registrar_movimentacao
 from usuarios.permissions import funcionario_required
 
+
+# CRUD de categorias de estoque
+# Read - List - Categorias
 @login_required
 @funcionario_required
 @permission_required(
@@ -75,6 +80,13 @@ def categoria_lista(request):
     )
 
 
+# Read - Detail - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.view_categoriaestoque",
+    raise_exception=True,
+)
 def categoria_detalhe(request, pk):
 
     categoria = get_object_or_404(
@@ -91,6 +103,13 @@ def categoria_detalhe(request, pk):
     )
 
 
+# Create - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.add_categoriaestoque",
+    raise_exception=True,
+)
 def categoria_criar(request):
 
     if request.method == "POST":
@@ -126,6 +145,13 @@ def categoria_criar(request):
     )
 
 
+# Update - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.change_categoriaestoque",
+    raise_exception=True,
+)
 def categoria_editar(request, pk):
 
     categoria = get_object_or_404(
@@ -171,6 +197,13 @@ def categoria_editar(request, pk):
     )
 
 
+# Delete - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.delete_categoriaestoque",
+    raise_exception=True,
+)
 def categoria_excluir(request, pk):
 
     categoria = get_object_or_404(
@@ -216,6 +249,15 @@ def categoria_excluir(request, pk):
         },
     )
 
+
+# CRUD de itens de estoque
+# Read - List - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.view_itemestoque",
+    raise_exception=True,
+)
 def item_lista(request):
 
     busca = request.GET.get(
@@ -290,6 +332,13 @@ def item_lista(request):
     )
 
 
+# Read - Detail - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.view_itemestoque",
+    raise_exception=True,
+)
 def item_detalhe(request, pk):
 
     item = get_object_or_404(
@@ -308,6 +357,13 @@ def item_detalhe(request, pk):
     )
 
 
+# Create - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.add_itemestoque",
+    raise_exception=True,
+)
 def item_criar(request):
 
     if request.method == "POST":
@@ -344,6 +400,13 @@ def item_criar(request):
     )
 
 
+# Update - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.change_itemestoque",
+    raise_exception=True,
+)
 def item_editar(request, pk):
 
     item = get_object_or_404(
@@ -389,6 +452,13 @@ def item_editar(request, pk):
     )
 
 
+# Delete - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.delete_itemestoque",
+    raise_exception=True,
+)
 def item_excluir(request, pk):
 
     item = get_object_or_404(
@@ -434,6 +504,15 @@ def item_excluir(request, pk):
         },
     )
 
+
+# Movimentações de estoque
+# Read - List - Movimentações
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.view_movimentacaoestoque",
+    raise_exception=True,
+)
 def movimentacao_lista(request):
 
     busca = request.GET.get(
@@ -496,6 +575,14 @@ def movimentacao_lista(request):
         },
     )
 
+
+# Create - Movimentações
+@login_required
+@funcionario_required
+@permission_required(
+    "estoque.add_movimentacaoestoque",
+    raise_exception=True,
+)
 def movimentacao_criar(request):
 
     if request.method == "POST":

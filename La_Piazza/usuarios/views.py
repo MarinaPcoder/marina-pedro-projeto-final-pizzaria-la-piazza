@@ -1,7 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
-
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import (
@@ -20,13 +16,18 @@ from django.shortcuts import (
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
+# Forms
 from .forms import (
     CadastroUsuarioForm,
     ClienteEdicaoForm,
     EnderecoUsuarioForm,
     LoginForm,
 )
+
+# Modelos
 from .models import EnderecoUsuario, Usuario
+
+# Permissões e grupos
 from .permissions import (
     GRUPO_CLIENTE,
     GRUPO_FUNCIONARIO,
@@ -34,6 +35,8 @@ from .permissions import (
 )
 
 
+# Autenticação de usuários
+# Login
 def login_usuario(request):
     if request.user.is_authenticated:
         return redirect("index")
@@ -90,6 +93,7 @@ def login_usuario(request):
     )
 
 
+# Cadastro
 def cadastro_usuario(request):
     if request.user.is_authenticated:
         return redirect("index")
@@ -136,6 +140,7 @@ def cadastro_usuario(request):
     )
 
 
+# Logout
 @login_required
 @require_POST
 def logout_usuario(request):
@@ -149,6 +154,7 @@ def logout_usuario(request):
     return redirect("index")
 
 
+# Funções auxiliares de clientes
 def _clientes():
     return (
         Usuario.objects.filter(groups__name=GRUPO_CLIENTE)
@@ -157,6 +163,14 @@ def _clientes():
     )
 
 
+# CRUD de clientes
+# Read - List - Clientes
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.view_usuario",
+    raise_exception=True,
+)
 def cliente_lista(request):
     busca = request.GET.get("q", "").strip()
     clientes = _clientes().order_by("first_name", "username")
@@ -184,6 +198,13 @@ def cliente_lista(request):
     )
 
 
+# Read - Detail - Clientes
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.view_usuario",
+    raise_exception=True,
+)
 def cliente_detalhe(request, pk):
     cliente = get_object_or_404(_clientes(), pk=pk)
 
@@ -200,6 +221,13 @@ def cliente_detalhe(request, pk):
     )
 
 
+# Create - Clientes
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.add_usuario",
+    raise_exception=True,
+)
 def cliente_criar(request):
     form = CadastroUsuarioForm(request.POST or None)
 
@@ -229,6 +257,13 @@ def cliente_criar(request):
     )
 
 
+# Update - Clientes
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.change_usuario",
+    raise_exception=True,
+)
 def cliente_editar(request, pk):
     cliente = get_object_or_404(_clientes(), pk=pk)
     form = ClienteEdicaoForm(
@@ -258,6 +293,13 @@ def cliente_editar(request, pk):
     )
 
 
+# Delete - Clientes
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.delete_usuario",
+    raise_exception=True,
+)
 def cliente_excluir(request, pk):
     cliente = get_object_or_404(_clientes(), pk=pk)
 
@@ -289,6 +331,14 @@ def cliente_excluir(request, pk):
     )
 
 
+# CRUD de endereços
+# Read - List - Endereços
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.view_enderecousuario",
+    raise_exception=True,
+)
 def endereco_lista(request):
     busca = request.GET.get("q", "").strip()
     enderecos = EnderecoUsuario.objects.select_related(
@@ -324,6 +374,13 @@ def endereco_lista(request):
     )
 
 
+# Read - Detail - Endereços
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.view_enderecousuario",
+    raise_exception=True,
+)
 def endereco_detalhe(request, pk):
     endereco = get_object_or_404(
         EnderecoUsuario.objects.select_related("usuario"),
@@ -337,6 +394,7 @@ def endereco_detalhe(request, pk):
     )
 
 
+# Função auxiliar para salvar endereços
 def _salvar_endereco(form):
     endereco = form.save()
 
@@ -348,6 +406,13 @@ def _salvar_endereco(form):
     return endereco
 
 
+# Create - Endereços
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.add_enderecousuario",
+    raise_exception=True,
+)
 def endereco_criar(request):
     initial = {}
     cliente_id = request.GET.get("cliente")
@@ -384,6 +449,13 @@ def endereco_criar(request):
     )
 
 
+# Update - Endereços
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.change_enderecousuario",
+    raise_exception=True,
+)
 def endereco_editar(request, pk):
     endereco = get_object_or_404(EnderecoUsuario, pk=pk)
     form = EnderecoUsuarioForm(
@@ -413,6 +485,13 @@ def endereco_editar(request, pk):
     )
 
 
+# Delete - Endereços
+@login_required
+@funcionario_required
+@permission_required(
+    "usuarios.delete_enderecousuario",
+    raise_exception=True,
+)
 def endereco_excluir(request, pk):
     endereco = get_object_or_404(
         EnderecoUsuario.objects.select_related("usuario"),

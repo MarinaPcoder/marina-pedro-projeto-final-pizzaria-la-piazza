@@ -17,7 +17,10 @@ from django.shortcuts import (
 
 from usuarios.permissions import funcionario_required
 
+# Forms
 from .forms import ItemPedidoForm, PedidoForm
+
+# Modelos
 from .models import (
     ItemPedido,
     Pedido,
@@ -26,6 +29,15 @@ from .models import (
     TIPO_ATENDIMENTO_CHOICES,
 )
 
+
+# CRUD de pedidos
+# Read - List - Pedidos
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.view_pedido",
+    raise_exception=True,
+)
 def pedido_lista(request):
 
     busca = request.GET.get(
@@ -116,6 +128,13 @@ def pedido_lista(request):
     )
 
 
+# Read - Detail - Pedidos
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.view_pedido",
+    raise_exception=True,
+)
 def pedido_detalhe(request, pk):
 
     pedido = get_object_or_404(
@@ -139,6 +158,13 @@ def pedido_detalhe(request, pk):
     )
 
 
+# Create - Pedidos
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.add_pedido",
+    raise_exception=True,
+)
 def pedido_criar(request):
 
     if request.method == "POST":
@@ -175,6 +201,13 @@ def pedido_criar(request):
     )
 
 
+# Update - Pedidos
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.change_pedido",
+    raise_exception=True,
+)
 def pedido_editar(request, pk):
 
     pedido = get_object_or_404(
@@ -220,6 +253,13 @@ def pedido_editar(request, pk):
     )
 
 
+# Delete - Pedidos
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.delete_pedido",
+    raise_exception=True,
+)
 def pedido_excluir(request, pk):
 
     pedido = get_object_or_404(
@@ -249,6 +289,14 @@ def pedido_excluir(request, pk):
     )
 
 
+# CRUD de itens do pedido
+# Read - List - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.view_itempedido",
+    raise_exception=True,
+)
 def item_lista(request):
     busca = request.GET.get("q", "").strip()
 
@@ -285,6 +333,14 @@ def item_lista(request):
         },
     )
 
+
+# Create - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.add_itempedido",
+    raise_exception=True,
+)
 def item_adicionar(request, pedido_pk):
 
     pedido = get_object_or_404(
@@ -338,6 +394,13 @@ def item_adicionar(request, pedido_pk):
     )
 
 
+# Update - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.change_itempedido",
+    raise_exception=True,
+)
 def item_editar(request, pedido_pk, item_pk):
 
     pedido = get_object_or_404(
@@ -394,6 +457,13 @@ def item_editar(request, pedido_pk, item_pk):
     )
 
 
+# Delete - Itens
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.delete_itempedido",
+    raise_exception=True,
+)
 def item_excluir(request, pedido_pk, item_pk):
 
     pedido = get_object_or_404(
@@ -435,6 +505,18 @@ def item_excluir(request, pedido_pk, item_pk):
         },
     )
 
+
+# Confirmação de pedidos
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.change_pedido",
+    raise_exception=True,
+)
+@permission_required(
+    "estoque.add_movimentacaoestoque",
+    raise_exception=True,
+)
 @require_POST
 def pedido_confirmar(request, pk):
 

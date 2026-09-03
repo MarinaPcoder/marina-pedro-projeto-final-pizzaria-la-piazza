@@ -22,13 +22,16 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 
+# Modelos de pizzas
 from pizza.models import Pizza
 
+# Modelos de estoque
 from estoque.models import (
     ItemEstoque,
     MovimentacaoEstoque,
 )
 
+# Modelos de pedidos
 from pedidos.models import (
     ItemPedido,
     Pedido,
@@ -620,6 +623,12 @@ def gerar_dados_dashboard(periodo=7):
 # DASHBOARD
 # =========================================================
 
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.view_pedido",
+    raise_exception=True,
+)
 def dashboard(request):
 
     hoje = timezone.localdate()
@@ -812,6 +821,12 @@ def dashboard(request):
 # API PARA ATUALIZAÇÃO DOS GRÁFICOS
 # =========================================================
 
+@login_required
+@funcionario_required
+@permission_required(
+    "pedidos.view_pedido",
+    raise_exception=True,
+)
 def dashboard_dados(request):
 
     try:

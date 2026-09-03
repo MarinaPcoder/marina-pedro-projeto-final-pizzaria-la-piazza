@@ -64,6 +64,12 @@ def sobre(request):
 
 # CRUD de categorias de pizza
 # Read - List - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.view_categoriapizza",
+    raise_exception=True,
+)
 def categoria_lista(request):
 
     busca = request.GET.get(
@@ -103,6 +109,12 @@ def categoria_lista(request):
 
 
 # Read - Detail - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.view_categoriapizza",
+    raise_exception=True,
+)
 def categoria_detalhe(request, pk):
 
     categoria = get_object_or_404(
@@ -120,6 +132,12 @@ def categoria_detalhe(request, pk):
 
 
 # Create - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.add_categoriapizza",
+    raise_exception=True,
+)
 def categoria_criar(request):
 
     if request.method == "POST":
@@ -156,6 +174,12 @@ def categoria_criar(request):
 
 
 # Update - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.change_categoriapizza",
+    raise_exception=True,
+)
 def categoria_editar(request, pk):
 
     categoria = get_object_or_404(
@@ -204,6 +228,12 @@ def categoria_editar(request, pk):
 
 
 # Delete - Categorias
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.delete_categoriapizza",
+    raise_exception=True,
+)
 def categoria_excluir(request, pk):
 
     categoria = get_object_or_404(
@@ -251,6 +281,12 @@ def categoria_excluir(request, pk):
 
 # CRUD de pizzas
 # Read - List - Pizzas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.view_pizza",
+    raise_exception=True,
+)
 def pizza_lista(request):
 
     busca = request.GET.get(
@@ -310,6 +346,12 @@ def pizza_lista(request):
     )
 
 # Read - Detail - Pizzas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.view_pizza",
+    raise_exception=True,
+)
 def pizza_detalhe(request, pk):
 
     pizza = get_object_or_404(
@@ -328,6 +370,12 @@ def pizza_detalhe(request, pk):
     )
 
 # Create - Pizzas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.add_pizza",
+    raise_exception=True,
+)
 def pizza_criar(request):
 
     if request.method == "POST":
@@ -364,6 +412,12 @@ def pizza_criar(request):
     )
 
 # Update - Pizzas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.change_pizza",
+    raise_exception=True,
+)
 def pizza_editar(request, pk):
 
     pizza = get_object_or_404(
@@ -409,6 +463,12 @@ def pizza_editar(request, pk):
     )
 
 # Delete - Pizzas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.delete_pizza",
+    raise_exception=True,
+)
 def pizza_excluir(request, pk):
 
     pizza = get_object_or_404(
@@ -456,6 +516,12 @@ def pizza_excluir(request, pk):
 
 # CRUD de receitas de pizza
 # Read - List - Receitas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.view_receitapizza",
+    raise_exception=True,
+)
 def receita_geral_lista(request):
     busca = request.GET.get("q", "").strip()
 
@@ -488,6 +554,12 @@ def receita_geral_lista(request):
     )
 
 # Read - List - Receitas de uma pizza específica
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.view_receitapizza",
+    raise_exception=True,
+)
 def receita_lista(request, pizza_pk):
 
     pizza = get_object_or_404(
@@ -518,6 +590,12 @@ def receita_lista(request, pizza_pk):
     )
 
 # Create - Receitas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.add_receitapizza",
+    raise_exception=True,
+)
 def receita_adicionar(request, pizza_pk):
 
     pizza = get_object_or_404(
@@ -571,6 +649,12 @@ def receita_adicionar(request, pizza_pk):
     )
 
 # Update - Receitas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.change_receitapizza",
+    raise_exception=True,
+)
 def receita_editar(
     request,
     pizza_pk,
@@ -631,6 +715,12 @@ def receita_editar(
     )
 
 # Delete - Receitas
+@login_required
+@funcionario_required
+@permission_required(
+    "cardapio.delete_receitapizza",
+    raise_exception=True,
+)
 def receita_excluir(
     request,
     pizza_pk,
