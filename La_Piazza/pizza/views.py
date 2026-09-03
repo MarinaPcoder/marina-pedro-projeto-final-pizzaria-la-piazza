@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import (
     login_required,
     permission_required,
 )
+
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
@@ -25,6 +26,7 @@ from .models import (
     Pizza,
     ReceitaPizza,
 )
+
 from usuarios.permissions import funcionario_required
 
 
