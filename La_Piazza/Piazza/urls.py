@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-
+from . import dashboard
 
 admin.site.site_header = "La Piazza"
 admin.site.site_title = "Administração La Piazza"
@@ -10,39 +10,52 @@ admin.site.index_title = "Gerenciamento da Pizzaria"
 
 
 urlpatterns = [
+    # Página de Administração
     path(
         "admin/",
         admin.site.urls,
     ),
 
+    # Página Inicial (index)
     path(
         "",
         include("pizza.urls"),
     ),
 
+    # Página de Cadastro e Login
     path(
         "conta/",
         include("usuarios.urls"),
     ),
 
+    # Página de Gerenciamento de Estoque
     path(
-    "gerenciamento/estoque/",
-    include("estoque.urls"),
+        "gerenciamento/estoque/",
+        include("estoque.urls"),
     ),
 
     path(
-    "gerenciamento/pedidos/",
-    include("pedidos.urls"),
+        "gerenciamento/pedidos/",
+        include("pedidos.urls"),
     ),
 
+    # Página de Gerenciamento de Usuários
     path(
         "gerenciamento/usuarios/",
         include("usuarios.management_urls"),
     ),
 
+    # Painel de gerenciamento
     path(
-    "painel/",
-    include("painel.urls"),
+        "painel/",
+        dashboard.dashboard,
+        name="dashboard",
+    ),
+
+    path(
+        "painel/dados/",
+        dashboard.dashboard_dados,
+        name="dashboard_dados",
     ),
 
 ]

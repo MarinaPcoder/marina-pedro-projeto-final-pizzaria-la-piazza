@@ -629,6 +629,7 @@ def gerar_dados_dashboard(periodo=7):
     "pedidos.view_pedido",
     raise_exception=True,
 )
+
 def dashboard(request):
 
     hoje = timezone.localdate()

@@ -29,8 +29,6 @@ INSTALLED_APPS = [
     "pizza.apps.PizzaConfig",
     "estoque",
     "pedidos",
-    "painel",
-
 ]
 
 

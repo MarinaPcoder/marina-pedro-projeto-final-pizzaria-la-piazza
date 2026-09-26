@@ -24,7 +24,7 @@
           <h2 class="ftco-heading-2">Administração</h2>
           <ul class="list-unstyled">
             {% if perms.pedidos.view_pedido %}
-              <li><a href="{% url 'painel:dashboard' %}" class="py-2 d-block">Painel</a></li>
+              <li><a href="{% url 'dashboard' %}" class="py-2 d-block">Painel</a></li>
             {% endif %}
             {% if perms.cardapio.view_pizza %}
               <li><a href="{% url 'pizza_lista' %}" class="py-2 d-block">Pizzas</a></li>
