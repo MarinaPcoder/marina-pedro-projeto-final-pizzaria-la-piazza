@@ -1,4 +1,4 @@
-from .permissions import usuario_eh_funcionario
+from .permissions import usuario_eh_cliente, usuario_eh_funcionario
 
 
 def acesso_administrativo(request):
@@ -37,5 +37,6 @@ def acesso_administrativo(request):
         "eh_funcionario": usuario_eh_funcionario(
             request.user
         ),
+        "eh_cliente": usuario_eh_cliente(request.user),
         "secao_gerencia": secao_gerencia,
     }

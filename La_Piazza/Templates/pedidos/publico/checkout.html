@@ -1,0 +1,34 @@
+{% extends "pedidos/publico/base.html" %}
+{% block title %}Finalizar pedido | La Piazza{% endblock %}
+{% block loja_content %}
+<h1>Finalizar pedido</h1>
+<div class="loja-resumo">
+  <section>
+    <form method="post" class="loja-form">{% csrf_token %}
+      {{ form.non_field_errors }}
+      {{ form.checkout_token }}
+      <p>{{ form.tipo_atendimento.label_tag }} {{ form.tipo_atendimento }} {{ form.tipo_atendimento.errors }}</p>
+      <div id="campo-endereco-entrega" {% if form.tipo_atendimento.value != 'ENTREGA' %}hidden{% endif %}>
+        <p>{{ form.endereco_entrega.label_tag }} {{ form.endereco_entrega }} {{ form.endereco_entrega.errors }}</p>
+        <a class="btn btn-outline-light" href="{% url 'usuarios:meu_endereco_criar' %}?voltar=checkout">Cadastrar endereço de entrega</a>
+      </div>
+      <p>{{ form.observacoes.label_tag }} {{ form.observacoes }} {{ form.observacoes.errors }}</p>
+      <div class="loja-acoes"><button type="submit" class="btn btn-primary">Enviar pedido · R$ {{ total|floatformat:2 }}</button><a href="{% url 'compras:carrinho' %}" class="btn btn-outline-light">Voltar</a></div>
+    </form>
+  </section>
+  <section><h2>Resumo</h2>
+    {% for item in itens %}<p>{{ item.quantidade }} × {{ item.pizza.nome }}<br>R$ {{ item.subtotal|floatformat:2 }}</p>{% endfor %}
+    <p><strong>Total: R$ {{ total|floatformat:2 }}</strong></p>
+    <p>Pagamento na entrega ou retirada.</p>
+  </section>
+</div>
+<script>
+  const tipoAtendimento = document.getElementById('id_tipo_atendimento');
+  const campoEnderecoEntrega = document.getElementById('campo-endereco-entrega');
+  function atualizarCampoEndereco() {
+    campoEnderecoEntrega.hidden = tipoAtendimento.value !== 'ENTREGA';
+  }
+  tipoAtendimento.addEventListener('change', atualizarCampoEndereco);
+  atualizarCampoEndereco();
+</script>
+{% endblock %}

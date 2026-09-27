@@ -3,19 +3,11 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.db import models, transaction
+from django.db import models
 
 from pizza.models import Pizza
-from estoque.models import (
-    ItemEstoque,
-    MovimentacaoEstoque,
-    TIPO_MOVIMENTACAO_SAIDA,
-)
 from usuarios.models import EnderecoUsuario
-from usuarios.permissions import (
-    GRUPO_CLIENTE,
-    GRUPO_FUNCIONARIO,
-)
+from usuarios.permissions import GRUPO_CLIENTE
 
 STATUS_PEDIDO_PENDENTE = "PENDENTE"
 STATUS_PEDIDO_CONFIRMADO = "CONFIRMADO"
@@ -53,6 +45,22 @@ class Pedido(models.Model):
         verbose_name="usuário",
     )
 
+    registrado_por = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="pedidos_registrados",
+        verbose_name="registrado por",
+    )
+
+    origem = models.CharField(
+        max_length=10,
+        choices=(("SITE", "Site"), ("BALCAO", "Balcão")),
+        default="BALCAO",
+        verbose_name="origem",
+    )
+
     status = models.CharField(
         max_length=15,
         choices=STATUS_PEDIDO_CHOICES,
@@ -75,6 +83,21 @@ class Pedido(models.Model):
         related_name="pedidos",
         verbose_name="endereço de entrega",
     )
+
+    endereco_entrega_texto = models.TextField(
+        blank=True,
+        verbose_name="endereço de entrega no pedido",
+    )
+
+    estoque_baixado_em = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="estoque baixado em",
+    )
+
+    checkout_token = models.UUIDField(null=True, blank=True, unique=True, editable=False)
+
+    concluido_em = models.DateTimeField(null=True, blank=True, editable=False)
 
     observacoes = models.TextField(
         blank=True,
@@ -103,6 +126,20 @@ class Pedido(models.Model):
         )
 
         return f"Pedido #{self.pk} — {nome}"
+
+    @staticmethod
+    def texto_endereco(endereco):
+        if endereco is None:
+            return ""
+
+        partes = [
+            f"{endereco.logradouro}, {endereco.numero}".strip(", "),
+            endereco.complemento,
+            endereco.bairro,
+            f"{endereco.cidade}/{endereco.estado}",
+            endereco.referencia,
+        ]
+        return " - ".join(parte for parte in partes if parte)
 
     def clean(self):
         erros = {}
@@ -134,17 +171,6 @@ class Pedido(models.Model):
                 "Selecione um usuário do grupo Cliente."
             )
 
-        if (
-            self.usuario_id
-            and self.usuario.groups.filter(
-                name=GRUPO_FUNCIONARIO
-            ).exists()
-        ):
-            erros["usuario"] = (
-                "Funcionários não devem ser usados "
-                "como comprador do pedido."
-            )
-
         if erros:
             raise ValidationError(erros)
 
@@ -159,77 +185,13 @@ class Pedido(models.Model):
         )
 
     def baixar_estoque(self, responsavel=None):
+        from .services import confirmar_pedido
+
         if not self.pk:
-            raise ValidationError(
-                "Salve o pedido antes de baixar "
-                "o estoque."
-            )
-
-        with transaction.atomic():
-            pedido = (
-                Pedido.objects
-                .select_for_update()
-                .get(pk=self.pk)
-            )
-
-            for item_pedido in pedido.itens.select_related(
-                "pizza"
-            ):
-                receitas = (
-                    item_pedido
-                    .pizza
-                    .receita
-                    .select_related("item_estoque")
-                )
-
-                for receita in receitas:
-                    quantidade = (
-                        receita.quantidade_utilizada
-                        * item_pedido.quantidade
-                    )
-
-                    item_estoque = (
-                        ItemEstoque.objects
-                        .select_for_update()
-                        .get(
-                            pk=receita.item_estoque_id
-                        )
-                    )
-
-                    if (
-                        item_estoque.quantidade_atual
-                        < quantidade
-                    ):
-                        raise ValidationError(
-                            {
-                                "estoque": (
-                                    "Estoque insuficiente para "
-                                    f"{item_estoque.nome}."
-                                )
-                            }
-                        )
-
-                    item_estoque.quantidade_atual -= (
-                        quantidade
-                    )
-
-                    item_estoque.save(
-                        update_fields=[
-                            "quantidade_atual",
-                            "atualizado_em",
-                        ]
-                    )
-
-                    MovimentacaoEstoque.objects.create(
-                        item=item_estoque,
-                        tipo=TIPO_MOVIMENTACAO_SAIDA,
-                        quantidade=quantidade,
-                        responsavel=responsavel,
-                        motivo=(
-                            "Baixa automática do "
-                            f"Pedido #{pedido.pk}"
-                        ),
-                    )
+            raise ValidationError("Salve o pedido antes de confirmar.")
+        pedido = confirmar_pedido(self.pk, responsavel)
+        self.status = pedido.status
+        self.estoque_baixado_em = pedido.estoque_baixado_em
 
 
 
@@ -308,7 +270,8 @@ class ItemPedido(models.Model):
         ]
 
     def save(self, *args, **kwargs):
-        if self.preco_unitario is None:
+        pizza_alterada = self.pk and ItemPedido.objects.filter(pk=self.pk).exclude(pizza_id=self.pizza_id).exists()
+        if self.preco_unitario is None or pizza_alterada:
             self.preco_unitario = self.pizza.preco
 
         super().save(*args, **kwargs)

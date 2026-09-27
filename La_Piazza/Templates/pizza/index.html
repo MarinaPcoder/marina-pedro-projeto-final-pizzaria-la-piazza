@@ -3,43 +3,35 @@
 
 {% block content %}
     <section class="home-slider owl-carousel img" style="background-image: url({% static 'images/bg_1.jpg' %});">
+      {% for destaque in destaques_carrossel %}
       <div class="slider-item">
-      	<div class="overlay"></div>
+        <div class="overlay"></div>
         <div class="container">
           <div class="row slider-text align-items-center" data-scrollax-parent="true">
-
-            <div class="col-md-6 col-sm-12 ftco-animate">
-            	<span class="subheading">Delicious</span>
-              <h1 class="mb-4">Culinária italiana</h1>
-              <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="{% url 'menu' %}" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
+            <div class="col-md-6 col-sm-12 {% if not forloop.first %}order-md-last {% endif %}ftco-animate">
+              <span class="subheading">{% if destaque.pk in mais_vendidas_ids %}Mais vendidas{% else %}Destaque do cardápio{% endif %}</span>
+              <h1 class="mb-4">{{ destaque.nome }}</h1>
+              <p class="mb-3">{{ destaque.descricao|default:"Pizza preparada para você na La Piazza."|truncatechars:130 }}</p>
+              <p class="mb-4">R$ {{ destaque.preco|floatformat:2 }}</p>
+              <form method="post" action="{% url 'compras:adicionar' destaque.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="quantidade" value="1">
+                <button type="submit" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</button>
+              </form>
             </div>
             <div class="col-md-6 ftco-animate">
-            	<img src="{% static 'images/bg_1.png' %}" class="img-fluid" alt="">
+              {% if destaque.imagem %}
+              <img src="{{ destaque.imagem.url }}" class="img-fluid hero-pizza-image hero-pizza-image--photo" alt="{{ destaque.nome }}">
+              {% elif forloop.first %}
+              <img src="{% static 'images/bg_1.png' %}" class="img-fluid hero-pizza-image hero-pizza-image--cutout" alt="Imagem ilustrativa de {{ destaque.nome }}">
+              {% else %}
+              <img src="{% static 'images/bg_2.png' %}" class="img-fluid hero-pizza-image hero-pizza-image--cutout" alt="Imagem ilustrativa de {{ destaque.nome }}">
+              {% endif %}
             </div>
-
           </div>
         </div>
       </div>
-
-      <div class="slider-item">
-      	<div class="overlay"></div>
-        <div class="container">
-          <div class="row slider-text align-items-center" data-scrollax-parent="true">
-
-            <div class="col-md-6 col-sm-12 order-md-last ftco-animate">
-            	<span class="subheading">Crunchy</span>
-              <h1 class="mb-4">Pizza italiana</h1>
-              <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="{% url 'menu' %}" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
-            </div>
-            <div class="col-md-6 ftco-animate">
-            	<img src="{% static 'images/bg_2.png' %}" class="img-fluid" alt="">
-            </div>
-
-          </div>
-        </div>
-      </div>
+      {% endfor %}
 
       <div class="slider-item" style="background-image: url({% static 'images/bg_3.jpg' %});">
       	<div class="overlay"></div>
@@ -49,8 +41,8 @@
             <div class="col-md-7 col-sm-12 text-center ftco-animate">
             	<span class="subheading">Bem-vindo</span>
               <h1 class="mb-4">Preparamos a receita de pizza que você deseja</h1>
-              <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="{% url 'menu' %}" class="btn btn-primary p-3 px-xl-4 py-xl-3">Pedir agora</a> <a href="{% url 'menu' %}" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
+              <p class="mb-4 mb-md-5">Do cardápio à sua mesa, cada pedido é preparado com atenção aos detalhes.</p>
+              <p><a href="{% url 'menu' %}" class="btn btn-primary p-3 px-xl-4 py-xl-3">Ver cardápio</a></p>
             </div>
 
           </div>
@@ -67,21 +59,21 @@
 	    					<div class="icon"><span class="icon-phone"></span></div>
 	    					<div class="text">
 	    						<h3>000 (123) 456 7890</h3>
-	    						<p>A small river named Duden flows</p>
+                <p>Telefone a confirmar</p>
 	    					</div>
 	    				</div>
 	    				<div class="col-md-4 d-flex ftco-animate">
 	    					<div class="icon"><span class="icon-my_location"></span></div>
 	    					<div class="text">
-	    						<h3>198 West 21th Street</h3>
-	    						<p>Suite 721 New York NY 10016</p>
+                <h3>Endereço a confirmar</h3>
+                <p>Localização da pizzaria</p>
 	    					</div>
 	    				</div>
 	    				<div class="col-md-4 d-flex ftco-animate">
 	    					<div class="icon"><span class="icon-clock-o"></span></div>
 	    					<div class="text">
 	    						<h3>Aberto de segunda a sexta-feira</h3>
-	    						<p>8:00am - 9:00pm</p>
+                <p>8h às 21h</p>
 	    					</div>
 	    				</div>
 	    			</div>
@@ -104,7 +96,7 @@
           <h2 class="mb-4">Bem-vindo ao restaurante <span class="flaticon-pizza">La Piazza</span></h2>
         </div>
         <div>
-  				<p>On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their.</p>
+				<p>Na La Piazza, o cardápio reúne receitas clássicas e combinações para diferentes gostos. Escolha sua pizza, faça o pedido pelo site e acompanhe cada etapa do preparo.</p>
   			</div>
     	</div>
     </section>
@@ -115,7 +107,7 @@
     		<div class="row justify-content-center mb-5 pb-3">
           <div class="col-md-7 heading-section ftco-animate text-center">
             <h2 class="mb-4">Nossos serviços</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+            <p>Da escolha dos ingredientes à entrega do pedido, buscamos tornar cada refeição especial.</p>
           </div>
         </div>
     		<div class="row">
@@ -126,7 +118,7 @@
               </div>
               <div class="media-body">
                 <h3 class="heading">Alimentos saudáveis</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
+                <p>Selecionamos os ingredientes de cada receita e acompanhamos a qualidade dos produtos em estoque.</p>
               </div>
             </div>      
           </div>
@@ -137,7 +129,7 @@
               </div>
               <div class="media-body">
                 <h3 class="heading">Entrega rápida</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
+                <p>Peça pelo site e escolha entre receber sua pizza no endereço cadastrado ou retirá-la no local.</p>
               </div>
             </div>      
           </div>
@@ -146,7 +138,7 @@
               <div class="icon d-flex justify-content-center align-items-center mb-5"><span class="flaticon-pizza-1"></span></div>
               <div class="media-body">
                 <h3 class="heading">Receitas originais</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
+                <p>As pizzas são preparadas conforme suas receitas, com atenção às quantidades e aos sabores.</p>
               </div>
             </div>    
           </div>
@@ -155,192 +147,23 @@
     </section>
 
     <section class="ftco-section">
-    	<div class="container">
-    		<div class="row justify-content-center mb-5 pb-3">
-          <div class="col-md-7 heading-section ftco-animate text-center">
-            <h2 class="mb-4">Pizzas especiais</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-          </div>
-        </div>
-    	</div>
-    	<div class="container-wrap">
-    		<div class="row no-gutters d-flex">
-    			<div class="col-lg-4 d-flex ftco-animate">
-    				<div class="services-wrap d-flex">
-					<a href="#" class="img" style="background-image: url({% static 'images/pizza-1.jpg' %});"></a>
-    					<div class="text p-4">
-    						<h3>Pizza italiana</h3>
-    						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia </p>
-    						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Pedir</a></p>
-    					</div>
-    				</div>
-    			</div>
-    			<div class="col-lg-4 d-flex ftco-animate">
-    				<div class="services-wrap d-flex">
-					<a href="#" class="img" style="background-image: url({% static 'images/pizza-2.jpg' %});"></a>
-    					<div class="text p-4">
-    						<h3>Pizza grega</h3>
-    						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-    						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Pedir</a></p>
-    					</div>
-    				</div>
-    			</div>
-    			<div class="col-lg-4 d-flex ftco-animate">
-    				<div class="services-wrap d-flex">
-					<a href="#" class="img" style="background-image: url({% static 'images/pizza-3.jpg' %});"></a>
-    					<div class="text p-4">
-    						<h3>Pizza caucasiana</h3>
-    						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-    						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Pedir</a></p>
-    					</div>
-    				</div>
-    			</div>
-
-    			<div class="col-lg-4 d-flex ftco-animate">
-    				<div class="services-wrap d-flex">
-					<a href="#" class="img order-lg-last" style="background-image: url({% static 'images/pizza-4.jpg' %});"></a>
-    					<div class="text p-4">
-    						<h3>Pizza americana</h3>
-    						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia </p>
-    						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Pedir</a></p>
-    					</div>
-    				</div>
-    			</div>
-    			<div class="col-lg-4 d-flex ftco-animate">
-    				<div class="services-wrap d-flex">
-					<a href="#" class="img order-lg-last" style="background-image: url({% static 'images/pizza-5.jpg' %});"></a>
-    					<div class="text p-4">
-    						<h3>Torta de tomate</h3>
-    						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-    						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Pedir</a></p>
-    					</div>
-    				</div>
-    			</div>
-    			<div class="col-lg-4 d-flex ftco-animate">
-    				<div class="services-wrap d-flex">
-					<a href="#" class="img order-lg-last" style="background-image: url({% static 'images/pizza-6.jpg' %});"></a>
-    					<div class="text p-4">
-    						<h3>Margherita</h3>
-    						<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-    						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Pedir</a></p>
-    					</div>
-    				</div>
-    			</div>
-    		</div>
-    	</div>
-
-    	<div class="container">
-    		<div class="row justify-content-center mb-5 pb-3 mt-5 pt-5">
-          <div class="col-md-7 heading-section text-center ftco-animate">
-            <h2 class="mb-4">Preços do cardápio</h2>
-            <p class="flip"><span class="deg1"></span><span class="deg2"></span><span class="deg3"></span></p>
-            <p class="mt-5">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-          </div>
-        </div>
+      <div class="container">
+        <h2 class="mb-4">Pizzas La Piazza</h2>
         <div class="row">
-        	<div class="col-md-6">
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-1.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Pizza italiana</span></h3>
-	        				<span class="price">$20.00</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-        			</div>
-        		</div>
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-2.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Pizza havaiana</span></h3>
-	        				<span class="price">$29.00</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-	        		</div>
-        		</div>
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-3.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Pizza grega</span></h3>
-	        				<span class="price">$20.00</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-	        		</div>
-        		</div>
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-4.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Tiras crocantes de bacon</span></h3>
-	        				<span class="price">$20.00</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-	        		</div>
-        		</div>
-        	</div>
-
-        	<div class="col-md-6">
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-5.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Especial havaiana</span></h3>
-	        				<span class="price">$49.91</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-	        		</div>
-        		</div>
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-6.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Ultimate Overload</span></h3>
-	        				<span class="price">$20.00</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-	        		</div>
-        		</div>
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-7.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Pizza de bacon</span></h3>
-	        				<span class="price">$20.00</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-	        		</div>
-        		</div>
-        		<div class="pricing-entry d-flex ftco-animate">
-				<div class="img" style="background-image: url({% static 'images/pizza-8.jpg' %});"></div>
-        			<div class="desc pl-3">
-	        			<div class="d-flex text align-items-center">
-	        				<h3><span>Presunto e abacaxi</span></h3>
-	        				<span class="price">$20.00</span>
-	        			</div>
-	        			<div class="d-block">
-	        				<p>A small river named Duden flows by their place and supplies</p>
-	        			</div>
-	        		</div>
-        		</div>
-        	</div>
+          {% for pizza in pizzas|slice:":6" %}
+          <article class="col-md-6 col-lg-4 mb-4">
+            {% if pizza.imagem %}<img src="{{ pizza.imagem.url }}" alt="{{ pizza.nome }}" class="img-fluid mb-3" style="width:100%;aspect-ratio:4/3;object-fit:cover">
+            {% else %}<img src="{% static 'images/pizza-1.jpg' %}" alt="Imagem ilustrativa de pizza" class="img-fluid mb-3" style="width:100%;aspect-ratio:4/3;object-fit:cover">{% endif %}
+            <h3>{{ pizza.nome }}</h3><p>{{ pizza.descricao }}</p><p>R$ {{ pizza.preco|floatformat:2 }}</p>
+            <form method="post" action="{% url 'compras:adicionar' pizza.pk %}">
+              {% csrf_token %}<input type="hidden" name="quantidade" value="1">
+              <button type="submit" class="btn btn-primary">Adicionar ao carrinho</button>
+            </form>
+          </article>
+          {% empty %}<p class="col-12">Nenhuma pizza disponível no momento.</p>{% endfor %}
         </div>
-    	</div>
+        <a href="{% url 'menu' %}" class="btn btn-outline-light">Ver cardápio completo</a>
+      </div>
     </section>
 
     <section class="ftco-gallery">
@@ -427,193 +250,13 @@
       </div>
     </section>
 
-    <section class="ftco-menu">
-    	<div class="container-fluid">
-    		<div class="row d-md-flex">
-	    		    	<div class="col-lg-4 ftco-animate img f-menu-img mb-5 mb-md-0" style="background-image: url({% static 'images/about.jpg' %});">
-	    		</div>
-	    		<div class="col-lg-8 ftco-animate p-md-5">
-		    		<div class="row">
-		          <div class="col-md-12 nav-link-wrap mb-5">
-		            <div class="nav ftco-animate nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-		              <a class="nav-link active" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="true">Pizza</a>
-
-		              <a class="nav-link" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false">Bebidas</a>
-
-		              <a class="nav-link" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab" aria-controls="v-pills-3" aria-selected="false">Hambúrgueres</a>
-
-		              <a class="nav-link" id="v-pills-4-tab" data-toggle="pill" href="#v-pills-4" role="tab" aria-controls="v-pills-4" aria-selected="false">Massas</a>
-		            </div>
-		          </div>
-		          <div class="col-md-12 d-flex align-items-center">
-		            
-		            <div class="tab-content ftco-animate" id="v-pills-tabContent">
-
-		              <div class="tab-pane fade show active" id="v-pills-1" role="tabpanel" aria-labelledby="v-pills-1-tab">
-		              	<div class="row">
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/pizza-1.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/pizza-2.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/pizza-3.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              	</div>
-		              </div>
-
-		              <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-2-tab">
-		                <div class="row">
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/drink-1.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Limonada</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/drink-2.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Suco de abacaxi</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/drink-3.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Refrigerantes</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              	</div>
-		              </div>
-
-		              <div class="tab-pane fade" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-3-tab">
-		                <div class="row">
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/burger-1.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/burger-2.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/burger-3.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              	</div>
-		              </div>
-
-		              <div class="tab-pane fade" id="v-pills-4" role="tabpanel" aria-labelledby="v-pills-4-tab">
-		                <div class="row">
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/pasta-1.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/pasta-2.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              		<div class="col-md-4 text-center">
-		              			<div class="menu-wrap">
-								<a href="#" class="menu-img img mb-4" style="background-image: url({% static 'images/pasta-3.jpg' %});"></a>
-		              				<div class="text">
-		              					<h3><a href="#">Pizza italiana</a></h3>
-		              					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="#" class="btn btn-white btn-outline-white">Adicionar ao carrinho</a></p>
-		              				</div>
-		              			</div>
-		              		</div>
-		              	</div>
-		              </div>
-		            </div>
-		          </div>
-		        </div>
-		      </div>
-		    </div>
-    	</div>
-    </section>
 
     <section class="ftco-section">
       <div class="container">
         <div class="row justify-content-center mb-5 pb-3">
           <div class="col-md-7 heading-section ftco-animate text-center">
             <h2 class="mb-4">Publicações recentes</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+            <p>Conheça algumas histórias e novidades do universo da pizza.</p>
           </div>
         </div>
         <div class="row d-flex">
@@ -622,12 +265,12 @@
               <div class="block-20" style="background-image: url({% static 'images/image_1.jpg' %});"></div>
               <div class="text py-4 d-block">
               	<div class="meta">
-                  <div><a href="#">Sept 10, 2018</a></div>
-                  <div><a href="#">Admin</a></div>
+                  <div><a href="#">10 de setembro de 2018</a></div>
+                  <div><a href="#">Administração</a></div>
                   <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
                 </div>
-                <h3 class="heading mt-2"><a href="#">The Delicious Pizza</a></h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <h3 class="heading mt-2"><a href="#">O sabor da pizza artesanal</a></h3>
+                <p>Uma boa pizza começa pela escolha dos ingredientes e pelo cuidado no preparo.</p>
               </div>
             </div>
           </div>
@@ -636,12 +279,12 @@
               <div class="block-20" style="background-image: url({% static 'images/image_2.jpg' %});"></div>
               <div class="text py-4 d-block">
               	<div class="meta">
-                  <div><a href="#">Sept 10, 2018</a></div>
-                  <div><a href="#">Admin</a></div>
+                  <div><a href="#">10 de setembro de 2018</a></div>
+                  <div><a href="#">Administração</a></div>
                   <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
                 </div>
-                <h3 class="heading mt-2"><a href="#">The Delicious Pizza</a></h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <h3 class="heading mt-2"><a href="#">Combinações para experimentar</a></h3>
+                <p>Descubra sabores que combinam com diferentes momentos e preferências.</p>
               </div>
             </div>
           </div>
@@ -650,12 +293,12 @@
               <div class="block-20" style="background-image: url({% static 'images/image_3.jpg' %});"></div>
               <div class="text py-4 d-block">
               	<div class="meta">
-                  <div><a href="#">Sept 10, 2018</a></div>
-                  <div><a href="#">Admin</a></div>
+                  <div><a href="#">10 de setembro de 2018</a></div>
+                  <div><a href="#">Administração</a></div>
                   <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
                 </div>
-                <h3 class="heading mt-2"><a href="#">The Delicious Pizza</a></h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <h3 class="heading mt-2"><a href="#">Da cozinha para sua mesa</a></h3>
+                <p>Escolha a entrega ou a retirada e acompanhe o andamento do seu pedido.</p>
               </div>
             </div>
           </div>
@@ -669,7 +312,9 @@
       <div class="container-wrap">
         <div class="row no-gutters d-md-flex align-items-center">
           <div class="col-md-6 d-flex align-self-stretch">
-            <div id="map"></div>
+            <div id="map">
+              <a class="map-fallback" href="https://www.google.com/maps/search/?api=1&amp;query=-12.9777%2C-38.5016" target="_blank" rel="noopener noreferrer">Abrir localização no Google Maps</a>
+            </div>
           </div>
           <div class="col-md-6 appointment ftco-animate">
             <h3 class="mb-3">Entre em contato</h3>
@@ -701,6 +346,8 @@
 {% endblock content %}
 
 {% block extra_js %}
+  {% if google_maps_api_key %}
   <script src="{% static 'js/google-map.js' %}"></script>
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&callback=initPiazzaMap"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key|urlencode }}&amp;callback=initPiazzaMap"></script>
+  {% endif %}
 {% endblock %}

@@ -182,6 +182,14 @@ Painel Administrativo | La Piazza
 
     <section class="dashboard-kpis">
 
+        <article class="dashboard-kpi" data-search="pedidos pendentes">
+            <div class="kpi-icon kpi-orders"><i class="bi bi-clock"></i></div>
+            <div class="kpi-content"><span class="kpi-label">Pedidos pendentes</span>
+                <strong class="kpi-number">{{ pedidos_pendentes }}</strong>
+                <a href="{% url 'pedidos:pedido_lista' %}?status=PENDENTE">Ver fila de confirmação</a>
+            </div>
+        </article>
+
 
         <article
             class="dashboard-kpi lp-reveal"
@@ -245,7 +253,7 @@ Painel Administrativo | La Piazza
                 </strong>
 
                 <small>
-                    Pedidos não cancelados
+                    Pedidos concluídos hoje
                 </small>
 
             </div>
@@ -281,7 +289,7 @@ Painel Administrativo | La Piazza
                 </strong>
 
                 <small>
-                    Média por pedido hoje
+                    Média dos pedidos concluídos hoje
                 </small>
 
             </div>

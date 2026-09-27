@@ -157,6 +157,15 @@
 }
 
 @media (max-width: 1199.98px) {
+    .site-navbar .nav-link {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .site-navbar .navbar-collapse {
+        flex-wrap: wrap;
+    }
+
     .management-brand {
         max-width: 230px;
         font-size: 15px !important;

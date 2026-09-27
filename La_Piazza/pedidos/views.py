@@ -1,5 +1,6 @@
+from uuid import UUID, uuid4
+
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.views.decorators.http import require_POST
 
 from django.contrib import messages
@@ -7,7 +8,9 @@ from django.contrib.auth.decorators import (
     login_required,
     permission_required,
 )
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import (
     get_object_or_404,
@@ -15,21 +18,26 @@ from django.shortcuts import (
     render,
 )
 
-from usuarios.permissions import funcionario_required
+from pizza.models import Pizza
+from usuarios.permissions import cliente_required, funcionario_required
 
 # Forms
-from .forms import ItemPedidoForm, PedidoForm
+from .forms import CheckoutForm, ItemPedidoForm, PedidoForm, QuantidadeForm
+from .cart import CART_KEY, itens_carrinho, salvar_carrinho, total_carrinho
+from .decorators import pedido_editavel
+from .services import alterar_status, confirmar_pedido, proximos_status
 
 # Modelos
 from .models import (
     ItemPedido,
     Pedido,
     STATUS_PEDIDO_CHOICES,
-    STATUS_PEDIDO_CONFIRMADO,
+    STATUS_PEDIDO_PENDENTE,
     TIPO_ATENDIMENTO_CHOICES,
 )
 
 
+# Gerenciamento de pedidos e itens
 # CRUD de pedidos
 # Read - List - Pedidos
 @login_required
@@ -154,6 +162,7 @@ def pedido_detalhe(request, pk):
         "pedidos/detalhe.html",
         {
             "pedido": pedido,
+            "proximos_status": [(valor, dict(STATUS_PEDIDO_CHOICES)[valor]) for valor in proximos_status(pedido)],
         },
     )
 
@@ -175,7 +184,15 @@ def pedido_criar(request):
 
         if form.is_valid():
 
-            pedido = form.save()
+            pedido = form.save(commit=False)
+            pedido.registrado_por = request.user
+            pedido.origem = "BALCAO"
+            pedido.status = STATUS_PEDIDO_PENDENTE
+            pedido.endereco_entrega_texto = Pedido.texto_endereco(
+                pedido.endereco_entrega
+            )
+            pedido.full_clean()
+            pedido.save()
 
             messages.success(
                 request,
@@ -208,6 +225,7 @@ def pedido_criar(request):
     "pedidos.change_pedido",
     raise_exception=True,
 )
+@pedido_editavel
 def pedido_editar(request, pk):
 
     pedido = get_object_or_404(
@@ -224,7 +242,12 @@ def pedido_editar(request, pk):
 
         if form.is_valid():
 
-            form.save()
+            pedido = form.save(commit=False)
+            if "endereco_entrega" in form.changed_data:
+                pedido.endereco_entrega_texto = Pedido.texto_endereco(
+                    pedido.endereco_entrega
+                )
+            pedido.save()
 
             messages.success(
                 request,
@@ -260,6 +283,7 @@ def pedido_editar(request, pk):
     "pedidos.delete_pedido",
     raise_exception=True,
 )
+@pedido_editavel
 def pedido_excluir(request, pk):
 
     pedido = get_object_or_404(
@@ -341,6 +365,7 @@ def item_lista(request):
     "pedidos.add_itempedido",
     raise_exception=True,
 )
+@pedido_editavel
 def item_adicionar(request, pedido_pk):
 
     pedido = get_object_or_404(
@@ -401,6 +426,7 @@ def item_adicionar(request, pedido_pk):
     "pedidos.change_itempedido",
     raise_exception=True,
 )
+@pedido_editavel
 def item_editar(request, pedido_pk, item_pk):
 
     pedido = get_object_or_404(
@@ -464,6 +490,7 @@ def item_editar(request, pedido_pk, item_pk):
     "pedidos.delete_itempedido",
     raise_exception=True,
 )
+@pedido_editavel
 def item_excluir(request, pedido_pk, item_pk):
 
     pedido = get_object_or_404(
@@ -539,20 +566,7 @@ def pedido_confirmar(request, pk):
 
     try:
 
-        with transaction.atomic():
-
-            pedido.baixar_estoque(
-                responsavel=request.user
-            )
-
-            pedido.status = STATUS_PEDIDO_CONFIRMADO
-
-            pedido.save(
-                update_fields=[
-                    "status",
-                    "atualizado_em",
-                ]
-            )
+        confirmar_pedido(pedido.pk, responsavel=request.user)
 
     except ValidationError as erro:
 
@@ -590,3 +604,154 @@ def pedido_confirmar(request, pk):
         "pedidos:pedido_detalhe",
         pk=pedido.pk,
     )
+
+
+@login_required
+@funcionario_required
+@permission_required("pedidos.change_pedido", raise_exception=True)
+@require_POST
+def pedido_status(request, pk):
+    get_object_or_404(Pedido, pk=pk)
+    try:
+        alterar_status(pk, request.POST.get("status"))
+        messages.success(request, "Status atualizado.")
+    except ValidationError as erro:
+        messages.error(request, " ".join(erro.messages))
+    return redirect("pedidos:pedido_detalhe", pk=pk)
+
+
+# Compra pública: carrinho, checkout e acompanhamento do cliente
+def carrinho(request):
+    itens = itens_carrinho(request.session)
+    return render(request, "pedidos/publico/carrinho.html", {
+        "itens": itens, "total": total_carrinho(itens),
+    })
+
+
+@require_POST
+def carrinho_adicionar(request, pizza_pk):
+    pizza = get_object_or_404(Pizza, pk=pizza_pk, disponivel=True, categoria__ativa=True)
+    form = QuantidadeForm(request.POST)
+    if form.is_valid():
+        dados = request.session.get(CART_KEY, {})
+        quantidade = dados.get(str(pizza.pk), {}).get("quantidade", 0) + form.cleaned_data["quantidade"]
+        if quantidade <= 99:
+            dados[str(pizza.pk)] = {"quantidade": quantidade, "preco": str(pizza.preco)}
+            salvar_carrinho(request.session, dados)
+            messages.success(request, "Pizza adicionada ao carrinho.")
+        else:
+            messages.error(request, "Limite de 99 unidades por pizza.")
+    else:
+        messages.error(request, "Informe uma quantidade inteira entre 1 e 99.")
+    return redirect("compras:carrinho")
+
+
+@require_POST
+def carrinho_atualizar(request, pizza_pk):
+    dados = request.session.get(CART_KEY, {})
+    chave = str(pizza_pk)
+    if chave not in dados:
+        return redirect("compras:carrinho")
+    if request.POST.get("remover") == "1":
+        del dados[chave]
+        salvar_carrinho(request.session, dados)
+    else:
+        form = QuantidadeForm(request.POST)
+        if form.is_valid():
+            dados[chave]["quantidade"] = form.cleaned_data["quantidade"]
+            salvar_carrinho(request.session, dados)
+        else:
+            messages.error(request, "Informe uma quantidade inteira entre 1 e 99.")
+    return redirect("compras:carrinho")
+
+
+@login_required
+@cliente_required
+def checkout(request):
+    # A chave persistida torna o reenvio do mesmo checkout idempotente.
+    try:
+        token_recebido = UUID(request.POST.get("checkout_token", ""))
+    except (ValueError, TypeError):
+        token_recebido = None
+    if request.method == "POST" and token_recebido:
+        existente = Pedido.objects.filter(checkout_token=token_recebido, usuario=request.user).first()
+        if existente:
+            return redirect("compras:detalhe", pk=existente.pk)
+    itens = itens_carrinho(request.session)
+    if not itens:
+        messages.error(request, "Seu carrinho esta vazio.")
+        return redirect("compras:carrinho")
+    token = request.session.get("checkout_token") or str(uuid4())
+    request.session["checkout_token"] = token
+    form = CheckoutForm(
+        request.POST if request.method == "POST" else None, usuario=request.user,
+        initial={"checkout_token": token, "endereco_entrega": request.user.enderecos.filter(ativo=True, principal=True).first()},
+    )
+    if request.method == "POST" and form.is_valid():
+        if str(form.cleaned_data["checkout_token"]) != token:
+            form.add_error(None, "O carrinho mudou. Atualize a pagina antes de enviar.")
+        else:
+            try:
+                with transaction.atomic():
+                    User.objects.select_for_update().get(pk=request.user.pk)
+                    existente = Pedido.objects.filter(checkout_token=token, usuario=request.user).first()
+                    if existente:
+                        return redirect("compras:detalhe", pk=existente.pk)
+                    dados = request.session[CART_KEY]
+                    pizzas = {str(p.pk): p for p in Pizza.objects.select_for_update().filter(pk__in=dados).select_related("categoria")}
+                    if len(pizzas) != len(dados) or any(not p.disponivel or not p.categoria.ativa for p in pizzas.values()):
+                        raise ValidationError("Ha pizzas indisponiveis. Revise o carrinho.")
+                    if any(str(p.preco) != dados[chave]["preco"] for chave, p in pizzas.items()):
+                        for chave, pizza in pizzas.items():
+                            dados[chave]["preco"] = str(pizza.preco)
+                        request.session[CART_KEY] = dados
+                        raise ValidationError("Os precos mudaram. Confira o novo total e envie novamente.")
+                    endereco = form.cleaned_data["endereco_entrega"]
+                    if endereco:
+                        endereco = request.user.enderecos.select_for_update().filter(pk=endereco.pk, ativo=True).first()
+                        if not endereco:
+                            raise ValidationError("O endereco nao esta mais disponivel.")
+                    pedido = Pedido(
+                        usuario=request.user, registrado_por=None, origem="SITE", checkout_token=token,
+                        tipo_atendimento=form.cleaned_data["tipo_atendimento"], endereco_entrega=endereco,
+                        endereco_entrega_texto=Pedido.texto_endereco(endereco),
+                        observacoes=form.cleaned_data["observacoes"],
+                    )
+                    pedido.full_clean()
+                    pedido.save()
+                    for chave, pizza in pizzas.items():
+                        ItemPedido.objects.create(pedido=pedido, pizza=pizza, quantidade=dados[chave]["quantidade"], preco_unitario=pizza.preco)
+                salvar_carrinho(request.session, {})
+                messages.success(request, "Pedido enviado. Aguarde a confirmacao da pizzaria.")
+                return redirect("compras:detalhe", pk=pedido.pk)
+            except ValidationError as erro:
+                form.add_error(None, " ".join(erro.messages))
+                itens = itens_carrinho(request.session)
+    return render(request, "pedidos/publico/checkout.html", {"form": form, "itens": itens, "total": total_carrinho(itens)})
+
+
+@login_required
+@cliente_required
+def meus_pedidos(request):
+    pedidos = Pedido.objects.filter(usuario=request.user).prefetch_related("itens")
+    return render(request, "pedidos/publico/lista.html", {"page_obj": Paginator(pedidos, 10).get_page(request.GET.get("page"))})
+
+
+@login_required
+@cliente_required
+def detalhe(request, pk):
+    pedido = get_object_or_404(Pedido.objects.prefetch_related("itens__pizza"), pk=pk, usuario=request.user)
+    return render(request, "pedidos/publico/detalhe.html", {"pedido": pedido})
+
+
+@login_required
+@cliente_required
+@require_POST
+def cancelar(request, pk):
+    get_object_or_404(Pedido, pk=pk, usuario=request.user)
+    try:
+        alterar_status(pk, "CANCELADO", usuario=request.user)
+        messages.success(request, "Pedido cancelado.")
+    except ValidationError as erro:
+        messages.error(request, " ".join(erro.messages))
+    return redirect("compras:detalhe", pk=pk)

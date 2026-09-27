@@ -1,0 +1,23 @@
+{% extends "pedidos/publico/base.html" %}
+{% block title %}Carrinho | La Piazza{% endblock %}
+{% block loja_content %}
+<h1>Seu carrinho</h1>
+{% for item in itens %}
+<section class="loja-linha">
+  <h2>{{ item.pizza.nome }}</h2>
+  <p>R$ {{ item.pizza.preco|floatformat:2 }} cada · Subtotal: R$ {{ item.subtotal|floatformat:2 }}</p>
+  {% if not item.disponivel %}<p class="text-warning">Pizza indisponível. Remova para continuar.</p>{% endif %}
+  {% if item.preco_alterado %}<p class="text-warning">O preço foi atualizado. Confira o valor antes de enviar.</p>{% endif %}
+  <form method="post" action="{% url 'compras:atualizar' item.pizza.pk %}" class="loja-acoes">
+    {% csrf_token %}<label for="q-{{ item.pizza.pk }}">Quantidade</label>
+    <input class="form-control loja-quantidade" name="quantidade" id="q-{{ item.pizza.pk }}" type="number" min="1" max="99" value="{{ item.quantidade }}" required>
+    <button class="btn btn-primary" type="submit">Atualizar</button>
+    <button class="btn btn-outline-light" type="submit" name="remover" value="1" formnovalidate title="Remover pizza" aria-label="Remover {{ item.pizza.nome }}"><span class="icon-trash" aria-hidden="true"></span></button>
+  </form>
+</section>
+{% empty %}<p>Seu carrinho está vazio.</p>{% endfor %}
+<div class="loja-acoes">
+  <a class="btn btn-outline-light" href="{% url 'menu' %}">Continuar comprando</a>
+  {% if itens %}<strong>Total: R$ {{ total|floatformat:2 }}</strong><a class="btn btn-primary" href="{% url 'compras:checkout' %}">Finalizar pedido</a>{% endif %}
+</div>
+{% endblock %}

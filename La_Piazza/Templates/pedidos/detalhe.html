@@ -20,6 +20,16 @@ Pedido #{{ pedido.pk }} | La Piazza
             {{ pedido.usuario }}
         </p>
 
+        <p>
+            <strong>Registrado por:</strong>
+            {{ pedido.registrado_por|default:"Não registrado" }}
+        </p>
+
+        <p>
+            <strong>Origem:</strong>
+            {{ pedido.get_origem_display }}
+        </p>
+
 
         <p>
             <strong>Status:</strong>
@@ -33,11 +43,11 @@ Pedido #{{ pedido.pk }} | La Piazza
         </p>
 
 
-        {% if pedido.endereco_entrega %}
+        {% if pedido.endereco_entrega_texto or pedido.endereco_entrega %}
 
             <p>
                 <strong>Endereço:</strong>
-                {{ pedido.endereco_entrega }}
+                {{ pedido.endereco_entrega_texto|default:pedido.endereco_entrega }}
             </p>
 
         {% endif %}
@@ -67,7 +77,7 @@ Pedido #{{ pedido.pk }} | La Piazza
             </h3>
 
 
-            {% if perms.pedidos.add_itempedido %}
+            {% if perms.pedidos.add_itempedido and pedido.status == 'PENDENTE' %}
 
                 <a
                     href="{% url 'pedidos:item_adicionar' pedido.pk %}"
@@ -128,7 +138,7 @@ Pedido #{{ pedido.pk }} | La Piazza
 
                                 <td>
 
-                                    {% if perms.pedidos.change_itempedido %}
+                                    {% if perms.pedidos.change_itempedido and pedido.status == 'PENDENTE' %}
 
                                         <a
                                             href="{% url 'pedidos:item_editar' pedido.pk item.pk %}"
@@ -139,7 +149,7 @@ Pedido #{{ pedido.pk }} | La Piazza
 
                                     {% endif %}
 
-                                    {% if perms.pedidos.delete_itempedido %}
+                                    {% if perms.pedidos.delete_itempedido and pedido.status == 'PENDENTE' %}
 
                                         <a
                                             href="{% url 'pedidos:item_excluir' pedido.pk item.pk %}"
@@ -179,7 +189,7 @@ Pedido #{{ pedido.pk }} | La Piazza
 
         </h4>
 
-        {% if pedido.itens.exists %}
+        {% if pedido.itens.exists and pedido.status == 'PENDENTE' and perms.pedidos.change_pedido and perms.estoque.add_movimentacaoestoque %}
 
             <form
                 method="post"
@@ -201,33 +211,17 @@ Pedido #{{ pedido.pk }} | La Piazza
         {% endif %}
 
 
-        {% for item in pedido.itens.all %}
-
-            <p>
-
-                {{ item.quantidade }}
-                ×
-                {{ item.pizza.nome }}
-
-                — R$ {{ item.subtotal }}
-
-            </p>
-
-        {% empty %}
-
-            <p>
-                Este pedido ainda não possui pizzas.
-            </p>
-
-        {% endfor %}
-
-
-        <h4>
-            Total: R$ {{ pedido.valor_total }}
-        </h4>
-
-
         {% if perms.pedidos.change_pedido %}
+            {% for valor, rotulo in proximos_status %}
+                <form method="post" action="{% url 'pedidos:pedido_status' pedido.pk %}" class="my-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="{{ valor }}">
+                    <button type="submit" class="btn btn-primary">{{ rotulo }}</button>
+                </form>
+            {% endfor %}
+        {% endif %}
+
+        {% if perms.pedidos.change_pedido and pedido.status == 'PENDENTE' %}
 
             <a
                 href="{% url 'pedidos:pedido_editar' pedido.pk %}"
@@ -239,7 +233,7 @@ Pedido #{{ pedido.pk }} | La Piazza
         {% endif %}
 
 
-        {% if perms.pedidos.delete_pedido %}
+        {% if perms.pedidos.delete_pedido and pedido.status == 'PENDENTE' %}
 
             <a
                 href="{% url 'pedidos:pedido_excluir' pedido.pk %}"

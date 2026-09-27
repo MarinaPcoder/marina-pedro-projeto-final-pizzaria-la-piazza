@@ -19,6 +19,48 @@
         #0e0e0e;
 }
 
+.auth-page--cadastro {
+    grid-template-columns: minmax(0, 2fr) minmax(520px, 3fr);
+}
+
+.auth-page--cadastro .auth-showcase {
+    padding-inline: 40px;
+}
+
+.auth-page--cadastro .auth-showcase-content h1 {
+    font-size: 58px;
+    letter-spacing: 0;
+}
+
+.auth-page--cadastro .auth-panel {
+    padding-inline: 36px;
+}
+
+.auth-page--cadastro .auth-panel-inner {
+    max-width: 680px;
+}
+
+@media (min-width: 1001px) {
+    .auth-page--cadastro .auth-panel {
+        justify-content: flex-start;
+        padding-left: 24px;
+    }
+
+    .auth-page--cadastro .auth-panel-inner {
+        max-width: none;
+    }
+}
+
+@media (min-width: 1001px) and (max-width: 1199px) {
+    .auth-page--cadastro .auth-showcase-content h1 {
+        font-size: 40px;
+    }
+
+    .auth-page--cadastro .auth-features {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 
 /* =========================================================
    LADO VISUAL
@@ -547,6 +589,81 @@
     flex-direction: column;
 
     gap: 19px;
+}
+
+.auth-page--cadastro .auth-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 18px;
+    row-gap: 14px;
+    align-items: start;
+}
+
+.auth-page--cadastro .auth-global-error,
+.auth-page--cadastro .auth-submit {
+    grid-column: 1 / -1;
+}
+
+.auth-page--cadastro .auth-field {
+    min-width: 0;
+}
+
+.auth-page--cadastro .auth-form-header {
+    margin-bottom: 24px;
+}
+
+.auth-page--cadastro .auth-input-wrapper input {
+    height: 44px !important;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.auth-page--cadastro .auth-field label {
+    font-size: 14px;
+}
+
+.auth-page--cadastro .auth-help-text,
+.auth-page--cadastro .password-strength-copy,
+.auth-page--cadastro .auth-error {
+    color: #bdb4a8;
+    font-size: 12px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.auth-page--cadastro .auth-help-text {
+    display: block;
+    margin-top: 6px;
+}
+
+.auth-page--cadastro .auth-error {
+    color: #f1a2a2;
+}
+
+.auth-page--cadastro .auth-form-header p,
+.auth-page--cadastro .auth-switch {
+    font-size: 14px;
+}
+
+.auth-page--cadastro .auth-submit {
+    color: #16110d;
+    font-size: 15px;
+}
+
+.auth-page--cadastro .auth-submit .auth-submit-text,
+.auth-page--cadastro .auth-submit > i {
+    color: #16110d;
+}
+
+.auth-page--cadastro .auth-password-toggle {
+    width: 32px;
+    height: 32px;
+}
+
+@media (max-width: 700px) {
+    .auth-page--cadastro .auth-form {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 
@@ -1087,6 +1204,10 @@
             1fr;
     }
 
+    .auth-page--cadastro {
+        grid-template-columns: 1fr;
+    }
+
 
     .auth-showcase {
         display: none;
@@ -1098,6 +1219,10 @@
 
         padding:
             40px 24px;
+    }
+
+    .auth-page--cadastro .auth-panel {
+        padding-inline: 24px;
     }
 
 
@@ -1115,6 +1240,10 @@
     .auth-panel {
         padding:
             28px 20px;
+    }
+
+    .auth-page--cadastro .auth-panel {
+        padding-inline: 20px;
     }
 
 

@@ -7,19 +7,18 @@ from django.contrib.auth.models import User
 from pizza.models import Pizza
 
 from usuarios.models import EnderecoUsuario
-from usuarios.permissions import (
-    GRUPO_CLIENTE,
-    GRUPO_FUNCIONARIO,
-)
+from usuarios.permissions import GRUPO_CLIENTE
 
 from .models import (
     ItemPedido,
     Pedido,
+    TIPO_ATENDIMENTO_CHOICES,
     TIPO_ATENDIMENTO_ENTREGA,
     TIPO_ATENDIMENTO_RETIRADA,
 )
 
 
+# Formulários do gerenciamento de pedidos
 class EnderecoEntregaChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, endereco):
         usuario = (
@@ -42,7 +41,6 @@ class PedidoForm(forms.ModelForm):
 
         fields = [
             "usuario",
-            "status",
             "tipo_atendimento",
             "endereco_entrega",
             "observacoes",
@@ -50,12 +48,6 @@ class PedidoForm(forms.ModelForm):
 
         widgets = {
             "usuario": forms.Select(
-                attrs={
-                    "class": "form-control",
-                }
-            ),
-
-            "status": forms.Select(
                 attrs={
                     "class": "form-control",
                 }
@@ -84,9 +76,6 @@ class PedidoForm(forms.ModelForm):
             User.objects
             .filter(
                 groups__name=GRUPO_CLIENTE
-            )
-            .exclude(
-                groups__name=GRUPO_FUNCIONARIO
             )
             .distinct()
             .order_by(
@@ -237,3 +226,31 @@ class ItemPedidoForm(forms.ModelForm):
                 )
 
         return pizza
+
+
+# Formulários da compra pública
+class QuantidadeForm(forms.Form):
+    quantidade = forms.IntegerField(min_value=1, max_value=99)
+
+
+class CheckoutForm(forms.Form):
+    tipo_atendimento = forms.ChoiceField(choices=TIPO_ATENDIMENTO_CHOICES, label="Atendimento")
+    endereco_entrega = forms.ModelChoiceField(
+        queryset=EnderecoUsuario.objects.none(), required=False, label="Endereco de entrega"
+    )
+    observacoes = forms.CharField(required=False, max_length=1000, widget=forms.Textarea, label="Observacoes")
+    checkout_token = forms.UUIDField(widget=forms.HiddenInput)
+
+    def __init__(self, *args, usuario, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["endereco_entrega"].queryset = usuario.enderecos.filter(ativo=True)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+
+    def clean(self):
+        dados = super().clean()
+        if dados.get("tipo_atendimento") == "ENTREGA" and not dados.get("endereco_entrega"):
+            self.add_error("endereco_entrega", "Escolha um endereco para a entrega.")
+        if dados.get("tipo_atendimento") == "RETIRADA":
+            dados["endereco_entrega"] = None
+        return dados

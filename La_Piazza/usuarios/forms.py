@@ -7,9 +7,10 @@ from django.contrib.auth.models import User
 
 from .models import Usuario
 from .models import EnderecoUsuario
-from .permissions import GRUPO_CLIENTE, GRUPO_FUNCIONARIO
+from .permissions import GRUPO_CLIENTE
 
 
+# Formulários de autenticação e gerenciamento
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
         label="Usuário",
@@ -150,6 +151,7 @@ class ClienteEdicaoForm(forms.ModelForm):
                     "form-control"
                 )
 
+
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()
         usuarios = User.objects.filter(email__iexact=email)
@@ -200,7 +202,6 @@ class EnderecoUsuarioForm(forms.ModelForm):
 
         self.fields["usuario"].queryset = (
             Usuario.objects.filter(groups__name=GRUPO_CLIENTE)
-            .exclude(groups__name=GRUPO_FUNCIONARIO)
             .distinct()
             .order_by("first_name", "username")
         )
@@ -217,3 +218,22 @@ class EnderecoUsuarioForm(forms.ModelForm):
                 campo.widget.attrs["class"] = (
                     "form-control"
                 )
+
+
+# Formulário de endereços do cliente no site
+class MeuEnderecoForm(forms.ModelForm):
+    class Meta:
+        model = EnderecoUsuario
+        fields = ["logradouro", "numero", "bairro", "cidade", "estado", "complemento", "referencia", "principal"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if not isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs["class"] = "form-control"
+
+    def clean_estado(self):
+        estado = self.cleaned_data["estado"].upper()
+        if estado not in "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split():
+            raise forms.ValidationError("Informe uma UF valida.")
+        return estado

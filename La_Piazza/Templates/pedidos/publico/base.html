@@ -1,0 +1,9 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/compras.css' %}">{% endblock %}
+{% block content %}
+<main class="loja container py-5">
+  {% for message in messages %}<div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}" role="status">{{ message }}</div>{% endfor %}
+  {% block loja_content %}{% endblock %}
+</main>
+{% endblock %}

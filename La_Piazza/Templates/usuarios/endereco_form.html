@@ -1,0 +1,6 @@
+{% extends "pedidos/publico/base.html" %}
+{% block title %}Endereço | La Piazza{% endblock %}
+{% block loja_content %}
+<h1>{% if endereco %}Editar{% else %}Novo{% endif %} endereço</h1>
+<form method="post" {% if voltar_checkout %}action="?voltar=checkout"{% endif %} class="loja-form">{% csrf_token %}{{ form.as_p }}<div class="loja-acoes"><button class="btn btn-primary" type="submit">Salvar endereço</button><a href="{% if voltar_checkout %}{% url 'compras:checkout' %}{% else %}{% url 'usuarios:meus_enderecos' %}{% endif %}" class="btn btn-outline-light">Voltar</a></div></form>
+{% endblock %}

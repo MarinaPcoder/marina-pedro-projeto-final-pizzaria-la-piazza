@@ -7520,6 +7520,23 @@ h1, h2, h3, h4, h5,
     position: relative;
     height: 750px;
     z-index: 0; }
+  .owl-carousel.home-slider .hero-pizza-image {
+    display: block;
+    width: min(100%, 500px);
+    aspect-ratio: 1;
+    margin-inline: auto; }
+  .owl-carousel.home-slider .hero-pizza-image--cutout {
+    object-fit: contain;
+    filter: drop-shadow(0 22px 30px rgba(0, 0, 0, .42)); }
+  .owl-carousel.home-slider .hero-pizza-image--photo {
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    box-shadow: 0 22px 42px rgba(0, 0, 0, .42); }
+  @media (max-width: 767.98px) {
+    .owl-carousel.home-slider .hero-pizza-image {
+      width: min(72vw, 320px);
+      margin-top: 24px; } }
     .owl-carousel.home-slider .slider-item {
       background-size: cover;
       background-repeat: no-repeat;
@@ -8206,15 +8223,23 @@ textarea.form-control {
 
 .ftco-footer {
   font-size: 16px;
-  padding: 7em 0;
+  padding: 3.5em 0 2em;
   background: #101315; }
+  .ftco-footer > .container > .row:first-child {
+    margin-bottom: 0.5rem !important; }
+  .ftco-footer > .container > .row:first-child > [class*="col-"] {
+    margin-bottom: 1rem !important; }
+  .ftco-footer .ftco-footer-widget {
+    margin-bottom: 0.5rem !important; }
+  .ftco-footer .block-21:last-child {
+    margin-bottom: 0 !important; }
   .ftco-footer .ftco-footer-logo {
     text-transform: uppercase;
     letter-spacing: .1em; }
   .ftco-footer .ftco-footer-widget h2 {
     font-weight: normal;
     color: #fff;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
     font-size: 16px;
     font-weight: 400;
     position: relative;
@@ -8276,7 +8301,20 @@ textarea.form-control {
       color: #fff; }
 
 #map {
-  width: 100%; }
+  width: 100%;
+  min-height: 380px;
+  height: 100%;
+  position: relative;
+  background: #202020; }
+  #map .map-fallback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    color: #fac564;
+    text-align: center;
+    padding: 24px; }
   @media (max-width: 767.98px) {
     #map {
       height: 300px;

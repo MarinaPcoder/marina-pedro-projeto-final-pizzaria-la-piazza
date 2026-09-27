@@ -1,0 +1,11 @@
+{% extends "pedidos/publico/base.html" %}
+{% block title %}Meus endereços | La Piazza{% endblock %}
+{% block loja_content %}
+<h1>Meus endereços</h1>
+<div class="loja-acoes"><a href="{% url 'usuarios:meu_endereco_criar' %}" class="btn btn-primary">Novo endereço</a><a href="{% url 'compras:checkout' %}" class="btn btn-outline-light">Voltar ao pedido</a></div>
+{% for endereco in enderecos %}
+<article class="loja-linha"><h2>{{ endereco.logradouro }}, {{ endereco.numero }}</h2><p>{{ endereco.bairro }} · {{ endereco.cidade }}/{{ endereco.estado }}<br>{{ endereco.complemento }} {{ endereco.referencia }}{% if endereco.principal %}<br>Endereço principal{% endif %}</p>
+<div class="loja-acoes"><a class="btn btn-outline-light" href="{% url 'usuarios:meu_endereco_editar' endereco.pk %}">Editar</a>
+<form method="post" action="{% url 'usuarios:meu_endereco_desativar' endereco.pk %}">{% csrf_token %}<button class="btn btn-outline-light" type="submit">Remover</button></form></div></article>
+{% empty %}<p>Nenhum endereço cadastrado.</p>{% endfor %}
+{% endblock %}

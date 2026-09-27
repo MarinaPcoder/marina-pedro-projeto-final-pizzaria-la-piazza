@@ -1,11 +1,12 @@
 from django.contrib import messages
+from django.conf import settings
 from django.contrib.auth.decorators import (
     login_required,
     permission_required,
 )
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.db.models.deletion import ProtectedError
 from django.shortcuts import (
     get_object_or_404,
@@ -28,13 +29,36 @@ from .models import (
 )
 
 from usuarios.permissions import funcionario_required
+from pedidos.models import ItemPedido, STATUS_PEDIDO_ENTREGUE
 
 
 # Views de páginas públicas
 def index(request):
+    pizzas_disponiveis = Pizza.objects.filter(disponivel=True, categoria__ativa=True)
+    mais_vendidas_ids = list(
+        ItemPedido.objects.filter(
+            pedido__status=STATUS_PEDIDO_ENTREGUE,
+            pizza__disponivel=True,
+            pizza__categoria__ativa=True,
+        )
+        .values("pizza_id")
+        .annotate(total_vendido=Sum("quantidade"))
+        .order_by("-total_vendido", "pizza_id")
+        .values_list("pizza_id", flat=True)[:2]
+    )
+    pizzas_por_id = Pizza.objects.in_bulk(mais_vendidas_ids)
+    destaques_carrossel = [pizzas_por_id[pk] for pk in mais_vendidas_ids]
+    if len(destaques_carrossel) < 2:
+        destaques_carrossel.extend(
+            pizzas_disponiveis.exclude(pk__in=mais_vendidas_ids).order_by("nome")[:2 - len(destaques_carrossel)]
+        )
+
     context = {
-        "categorias": CategoriaPizza.objects.all(),
-        "pizzas": Pizza.objects.all(),
+        "categorias": CategoriaPizza.objects.filter(ativa=True),
+        "pizzas": pizzas_disponiveis,
+        "destaques_carrossel": destaques_carrossel,
+        "mais_vendidas_ids": mais_vendidas_ids,
+        "google_maps_api_key": settings.GOOGLE_MAPS_API_KEY,
     }
 
     return render(
@@ -45,9 +69,14 @@ def index(request):
 
 
 def menu(request):
+    pizzas = Pizza.objects.filter(disponivel=True, categoria__ativa=True).select_related("categoria")
+    categoria = request.GET.get("categoria", "")
+    if categoria.isdigit():
+        pizzas = pizzas.filter(categoria_id=categoria)
     context = {
-        "categorias": CategoriaPizza.objects.all(),
-        "pizzas": Pizza.objects.all(),
+        "categorias": CategoriaPizza.objects.filter(ativa=True),
+        "pizzas": pizzas,
+        "categoria_selecionada": categoria,
     }
 
     return render(
@@ -61,6 +90,7 @@ def sobre(request):
     return render(
         request,
         "pizza/sobre.html",
+        {"google_maps_api_key": settings.GOOGLE_MAPS_API_KEY},
     )
 
 

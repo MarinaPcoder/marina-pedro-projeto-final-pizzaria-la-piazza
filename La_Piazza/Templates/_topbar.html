@@ -23,6 +23,11 @@
           <a href="{% url 'sobre' %}" class="nav-link">Sobre</a>
         </li>
 
+        <li class="nav-item"><a href="{% url 'compras:carrinho' %}" class="nav-link">Carrinho</a></li>
+        {% if eh_cliente %}
+          <li class="nav-item"><a href="{% url 'compras:lista' %}" class="nav-link">Meus pedidos</a></li>
+          <li class="nav-item"><a href="{% url 'usuarios:meus_enderecos' %}" class="nav-link">Endereços</a></li>
+        {% endif %}
         {% if not user.is_authenticated %}
           <li class="nav-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
             <a href="{% url 'usuarios:login' %}" class="nav-link">Entrar</a>

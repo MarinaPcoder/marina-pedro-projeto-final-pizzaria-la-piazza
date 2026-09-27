@@ -4,6 +4,8 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "").strip()
+
 
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",

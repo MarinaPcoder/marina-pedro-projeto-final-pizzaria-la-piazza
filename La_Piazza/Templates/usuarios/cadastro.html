@@ -15,7 +15,7 @@ Criar conta | La Piazza
 
 <link
     rel="stylesheet"
-    href="{% static 'css/auth.css' %}"
+    href="{% static 'css/auth.css' %}?v=2"
 >
 
 {% endblock %}
@@ -23,7 +23,7 @@ Criar conta | La Piazza
 
 {% block content %}
 
-<div class="auth-page">
+<div class="auth-page auth-page--cadastro">
 
 
     <section
@@ -374,14 +374,7 @@ Criar conta | La Piazza
 
                         {% if field.help_text %}
 
-                            <small
-                                style="
-                                    display:block;
-                                    margin-top:6px;
-                                    color:#66615c;
-                                    font-size:9px;
-                                "
-                            >
+                            <small class="auth-help-text">
 
                                 {{ field.help_text|safe }}
 

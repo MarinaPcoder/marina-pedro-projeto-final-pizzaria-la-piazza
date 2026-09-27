@@ -2,6 +2,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from pedidos.urls import compras_urlpatterns
+from usuarios.urls import management_urlpatterns
+
 from . import dashboard
 
 admin.site.site_header = "La Piazza"
@@ -10,6 +13,7 @@ admin.site.index_title = "Gerenciamento da Pizzaria"
 
 
 urlpatterns = [
+    path("compras/", include((compras_urlpatterns, "compras"), namespace="compras")),
     # Página de Administração
     path(
         "admin/",
@@ -42,7 +46,7 @@ urlpatterns = [
     # Página de Gerenciamento de Usuários
     path(
         "gerenciamento/usuarios/",
-        include("usuarios.management_urls"),
+        include((management_urlpatterns, "usuarios_gerenciamento")),
     ),
 
     # Painel de gerenciamento

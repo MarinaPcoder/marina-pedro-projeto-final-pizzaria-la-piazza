@@ -5,7 +5,9 @@ from django.contrib.auth.decorators import (
     permission_required,
 )
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.shortcuts import (
@@ -22,6 +24,7 @@ from .forms import (
     ClienteEdicaoForm,
     EnderecoUsuarioForm,
     LoginForm,
+    MeuEnderecoForm,
 )
 
 # Modelos
@@ -30,12 +33,12 @@ from .models import EnderecoUsuario, Usuario
 # Permissões e grupos
 from .permissions import (
     GRUPO_CLIENTE,
-    GRUPO_FUNCIONARIO,
+    cliente_required,
     funcionario_required,
 )
 
 
-# Autenticação de usuários
+# Site público: autenticação de usuários
 # Login
 def login_usuario(request):
     if request.user.is_authenticated:
@@ -154,11 +157,11 @@ def logout_usuario(request):
     return redirect("index")
 
 
+# Gerenciamento interno: clientes e endereços
 # Funções auxiliares de clientes
 def _clientes():
     return (
         Usuario.objects.filter(groups__name=GRUPO_CLIENTE)
-        .exclude(groups__name=GRUPO_FUNCIONARIO)
         .distinct()
     )
 
@@ -515,3 +518,41 @@ def endereco_excluir(request, pk):
         "usuarios/gerenciamento/enderecos/confirmar_exclusao.html",
         {"endereco": endereco},
     )
+
+
+# Endereços do cliente no site público
+@login_required
+@cliente_required
+def meus_enderecos(request):
+    return render(request, "usuarios/enderecos.html", {"enderecos": request.user.enderecos.filter(ativo=True)})
+
+
+@login_required
+@cliente_required
+@transaction.atomic
+def meu_endereco_salvar(request, pk=None):
+    User.objects.select_for_update().get(pk=request.user.pk)
+    voltar_checkout = request.GET.get("voltar") == "checkout"
+    endereco = get_object_or_404(EnderecoUsuario, pk=pk, usuario=request.user, ativo=True) if pk else None
+    form = MeuEnderecoForm(request.POST if request.method == "POST" else None, instance=endereco)
+    if request.method == "POST" and form.is_valid():
+        endereco = form.save(commit=False)
+        endereco.usuario = request.user
+        if endereco.principal:
+            request.user.enderecos.exclude(pk=endereco.pk).update(principal=False)
+        endereco.save()
+        messages.success(request, "Endereco salvo.")
+        return redirect("compras:checkout" if voltar_checkout else "usuarios:meus_enderecos")
+    return render(request, "usuarios/endereco_form.html", {"form": form, "endereco": endereco, "voltar_checkout": voltar_checkout})
+
+
+@login_required
+@cliente_required
+@require_POST
+def meu_endereco_desativar(request, pk):
+    endereco = get_object_or_404(EnderecoUsuario, pk=pk, usuario=request.user, ativo=True)
+    endereco.ativo = False
+    endereco.principal = False
+    endereco.save(update_fields=["ativo", "principal", "atualizado_em"])
+    messages.success(request, "Endereco removido dos seus enderecos ativos.")
+    return redirect("usuarios:meus_enderecos")

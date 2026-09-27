@@ -1,10 +1,18 @@
 from django.contrib import admin
 
-# Register your models here.
-
-from django.contrib import admin
-
 from .models import ItemPedido, Pedido
+
+
+class ConsultaPedidoAdmin(admin.ModelAdmin):
+    # Alteracoes operacionais passam pelas views que bloqueiam o pedido e validam o fluxo.
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class ItemPedidoInline(admin.TabularInline):
@@ -18,15 +26,28 @@ class ItemPedidoInline(admin.TabularInline):
     )
 
     readonly_fields = (
+        "pizza",
+        "quantidade",
         "preco_unitario",
     )
 
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(Pedido)
-class PedidoAdmin(admin.ModelAdmin):
+class PedidoAdmin(ConsultaPedidoAdmin):
     list_display = (
         "id",
         "usuario",
+        "registrado_por",
+        "origem",
         "status",
         "tipo_atendimento",
         "endereco_entrega",
@@ -51,6 +72,11 @@ class PedidoAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = (
+        "registrado_por",
+        "origem",
+        "endereco_entrega_texto",
+        "estoque_baixado_em",
+        "concluido_em",
         "valor_total_admin",
         "criado_em",
         "atualizado_em",
@@ -81,6 +107,11 @@ class PedidoAdmin(admin.ModelAdmin):
             "Auditoria",
             {
                 "fields": (
+                    "registrado_por",
+                    "origem",
+                    "endereco_entrega_texto",
+                    "estoque_baixado_em",
+                    "concluido_em",
                     "criado_em",
                     "atualizado_em",
                 )
@@ -102,7 +133,7 @@ class PedidoAdmin(admin.ModelAdmin):
 
 
 @admin.register(ItemPedido)
-class ItemPedidoAdmin(admin.ModelAdmin):
+class ItemPedidoAdmin(ConsultaPedidoAdmin):
     list_display = (
         "pedido",
         "pizza",

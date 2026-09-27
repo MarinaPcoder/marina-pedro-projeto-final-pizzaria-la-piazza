@@ -6,7 +6,9 @@ from . import views
 app_name = "pedidos"
 
 
+# Rotas do gerenciamento de pedidos
 urlpatterns = [
+    path("<int:pk>/status/", views.pedido_status, name="pedido_status"),
     path(
         "",
         views.pedido_lista,
@@ -70,4 +72,16 @@ urlpatterns = [
     views.pedido_confirmar,
     name="pedido_confirmar",
     ),
+]
+
+
+# Rotas da compra pública (incluídas com o namespace "compras")
+compras_urlpatterns = [
+    path("carrinho/", views.carrinho, name="carrinho"),
+    path("carrinho/adicionar/<int:pizza_pk>/", views.carrinho_adicionar, name="adicionar"),
+    path("carrinho/atualizar/<int:pizza_pk>/", views.carrinho_atualizar, name="atualizar"),
+    path("checkout/", views.checkout, name="checkout"),
+    path("meus-pedidos/", views.meus_pedidos, name="lista"),
+    path("meus-pedidos/<int:pk>/", views.detalhe, name="detalhe"),
+    path("meus-pedidos/<int:pk>/cancelar/", views.cancelar, name="cancelar"),
 ]

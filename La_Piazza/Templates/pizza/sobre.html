@@ -31,21 +31,21 @@
 	    					<div class="icon"><span class="icon-phone"></span></div>
 	    					<div class="text">
 	    						<h3>000 (123) 456 7890</h3>
-	    						<p>A small river named Duden flows</p>
+                <p>Telefone a confirmar</p>
 	    					</div>
 	    				</div>
 	    				<div class="col-md-4 d-flex ftco-animate">
 	    					<div class="icon"><span class="icon-my_location"></span></div>
 	    					<div class="text">
-	    						<h3>198 West 21th Street</h3>
-	    						<p>Suite 721 New York NY 10016</p>
+                <h3>Endereço a confirmar</h3>
+                <p>Localização da pizzaria</p>
 	    					</div>
 	    				</div>
 	    				<div class="col-md-4 d-flex ftco-animate">
 	    					<div class="icon"><span class="icon-clock-o"></span></div>
 	    					<div class="text">
 	    						<h3>Aberto de segunda a sexta-feira</h3>
-	    						<p>8:00am - 9:00pm</p>
+                <p>8h às 21h</p>
 	    					</div>
 	    				</div>
 	    			</div>
@@ -68,7 +68,7 @@
           <h2 class="mb-4">Bem-vindo ao restaurante <span class="flaticon-pizza">La Piazza</span></h2>
         </div>
         <div>
-  				<p>On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their.</p>
+				<p>Na La Piazza, cada pizza é uma oportunidade de reunir pessoas à mesa. Nosso cardápio oferece receitas para diferentes gostos, com a praticidade de pedir pelo site e acompanhar o preparo.</p>
   			</div>
     	</div>
     </section>
@@ -79,7 +79,7 @@
           <div class="col-md-7 heading-section ftco-animate text-center">
             <h2 class="mb-4">Nosso chef</h2>
             <p class="flip"><span class="deg1"></span><span class="deg2"></span><span class="deg3"></span></p>
-            <p class="mt-5">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+            <p class="mt-5">Conheça quem participa do preparo das pizzas e cuida de cada pedido.</p>
           </div>
         </div>
         <div class="row">
@@ -90,7 +90,7 @@
 					<h3>Tom Smith</h3>
       					<span class="position">Especialista em cabelos</span>
       					<div class="text">
-	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                  <p>Cuidado com os ingredientes e atenção em cada etapa do preparo.</p>
 	        			</div>
       				</div>
         		</div>
@@ -102,7 +102,7 @@
 					<h3>Mark Wilson</h3>
       					<span class="position">Especialista em barba</span>
       					<div class="text">
-	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                  <p>Receitas pensadas para valorizar os sabores da pizza.</p>
 	        			</div>
       				</div>
         		</div>
@@ -114,7 +114,7 @@
 					<h3>Patrick Jacobson</h3>
       					<span class="position">Cabeleireiro</span>
       					<div class="text">
-	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                  <p>Da massa ao forno, cada detalhe faz parte da experiência.</p>
 	        			</div>
       				</div>
         		</div>
@@ -126,7 +126,7 @@
 					<h3>Ivan Dorchsner</h3>
       					<span class="position">Especialista em barba</span>
       					<div class="text">
-	        				<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                  <p>Organização e dedicação para que o pedido chegue como esperado.</p>
 	        			</div>
       				</div>
         		</div>
@@ -190,7 +190,9 @@
       <div class="container-wrap">
         <div class="row no-gutters d-md-flex align-items-center">
           <div class="col-md-6 d-flex align-self-stretch">
-            <div id="map"></div>
+            <div id="map">
+              <a class="map-fallback" href="https://www.google.com/maps/search/?api=1&amp;query=-12.9777%2C-38.5016" target="_blank" rel="noopener noreferrer">Abrir localização no Google Maps</a>
+            </div>
           </div>
           <div class="col-md-6 appointment ftco-animate">
             <h3 class="mb-3">Entre em contato</h3>
@@ -222,6 +224,8 @@
 {% endblock content %}
 
 {% block extra_js %}
+  {% if google_maps_api_key %}
   <script src="{% static 'js/google-map.js' %}"></script>
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&callback=initPiazzaMap"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key|urlencode }}&amp;callback=initPiazzaMap"></script>
+  {% endif %}
 {% endblock %}

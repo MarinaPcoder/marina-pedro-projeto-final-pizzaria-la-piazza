@@ -1,0 +1,13 @@
+{% extends "pedidos/publico/base.html" %}
+{% block title %}Meus pedidos | La Piazza{% endblock %}
+{% block loja_content %}
+<h1>Meus pedidos</h1>
+{% for pedido in page_obj %}
+<article class="loja-linha"><h2><a href="{% url 'compras:detalhe' pedido.pk %}">Pedido #{{ pedido.pk }}</a></h2><p>{{ pedido.criado_em|date:'d/m/Y H:i' }} · {{ pedido.get_status_display }} · R$ {{ pedido.valor_total|floatformat:2 }}</p></article>
+{% empty %}<p>Você ainda não fez pedidos.</p><a class="btn btn-primary" href="{% url 'menu' %}">Ver cardápio</a>{% endfor %}
+<nav class="loja-acoes" aria-label="Paginação">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Anterior</a>{% endif %}
+<span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Próxima</a>{% endif %}
+</nav>
+{% endblock %}

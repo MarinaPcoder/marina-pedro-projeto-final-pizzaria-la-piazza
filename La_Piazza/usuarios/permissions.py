@@ -29,6 +29,24 @@ def funcionario_required(view_func):
 
     return wrapper
 
+
+def usuario_eh_cliente(usuario):
+    return usuario.is_authenticated and usuario.groups.filter(
+        name=GRUPO_CLIENTE
+    ).exists()
+
+
+def cliente_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if usuario_eh_cliente(request.user):
+            return view_func(request, *args, **kwargs)
+
+        raise PermissionDenied
+
+    return wrapper
+
+
 PERMISSOES_CLIENTE = [
     "view_categoriapizza",
     "view_pizza",

@@ -1,0 +1,16 @@
+{% extends "pedidos/publico/base.html" %}
+{% block title %}Pedido #{{ pedido.pk }} | La Piazza{% endblock %}
+{% block loja_content %}
+<h1>Pedido #{{ pedido.pk }}</h1>
+<p class="loja-status">{{ pedido.get_status_display }}</p>
+<p>Atualizado em {{ pedido.atualizado_em|date:'d/m/Y H:i' }}</p>
+<p>{{ pedido.get_tipo_atendimento_display }}{% if pedido.endereco_entrega_texto %}: {{ pedido.endereco_entrega_texto }}{% endif %}</p>
+{% for item in pedido.itens.all %}<p>{{ item.quantidade }} × {{ item.pizza.nome }} · R$ {{ item.subtotal|floatformat:2 }}</p>{% endfor %}
+<p><strong>Total: R$ {{ pedido.valor_total|floatformat:2 }}</strong></p>
+{% if pedido.observacoes %}<p>{{ pedido.observacoes }}</p>{% endif %}
+<div class="loja-acoes">
+  <a href="{% url 'compras:detalhe' pedido.pk %}" class="btn btn-primary"><span class="icon-refresh" aria-hidden="true"></span> Atualizar status</a>
+  <a href="{% url 'compras:lista' %}" class="btn btn-outline-light">Meus pedidos</a>
+  {% if pedido.status == 'PENDENTE' %}<form method="post" action="{% url 'compras:cancelar' pedido.pk %}">{% csrf_token %}<button class="btn btn-outline-light" type="submit">Cancelar pedido</button></form>{% endif %}
+</div>
+{% endblock %}

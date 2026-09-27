@@ -1,0 +1,66 @@
+.loja { min-height: 60vh; letter-spacing: 0; }
+.loja h1 { font-size: 30px; margin-bottom: 24px; }
+.loja h2 { font-size: 22px; }
+.loja h3 { font-size: 19px; }
+.loja p, .loja td, .loja li, .loja dd { color: #eee; overflow-wrap: anywhere; }
+.loja .form-control {
+    min-height: 34px;
+    height: 34px;
+    padding: 6px 10px;
+    border: 1px solid rgba(250, 197, 100, .28) !important;
+    border-radius: 3px;
+    background: rgba(18, 22, 24, .92) !important;
+    color: #f3e8d8 !important;
+    box-shadow: none !important;
+    font-size: 14px;
+}
+.loja .form-control:focus {
+    border-color: #fac564 !important;
+    box-shadow: 0 0 0 2px rgba(250, 197, 100, .16) !important;
+}
+.loja .form-control::placeholder { color: rgba(243, 232, 216, .5); }
+.loja textarea.form-control { min-height: 96px; height: auto; resize: vertical; }
+.loja select.form-control { color-scheme: dark; }
+.loja select.form-control option { background: #121618; color: #f3f3f3; }
+.loja label { color: #eee; }
+.loja .errorlist { color: #ffb0b0; padding-left: 20px; }
+.loja-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 24px; }
+.pizza-produto { border-bottom: 1px solid #6d6d6d; padding-bottom: 24px; min-width: 0; }
+.pizza-produto img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: 16px; border-radius: 4px; }
+.loja-acoes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+.loja .loja-quantidade {
+    width: 62px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 2px 5px !important;
+    border: 1px solid rgba(250, 197, 100, .62) !important;
+    border-radius: 3px !important;
+    background: rgba(18, 22, 24, .92) !important;
+    color: #f3e8d8 !important;
+    box-shadow: none !important;
+    font-size: 13px;
+    line-height: 1;
+    text-align: center;
+    appearance: auto;
+}
+
+.loja .loja-quantidade:focus {
+    border-color: #fac564 !important;
+    outline: 0;
+    box-shadow: 0 0 0 2px rgba(250, 197, 100, .16) !important;
+}
+
+.loja .loja-quantidade::-webkit-inner-spin-button,
+.loja .loja-quantidade::-webkit-outer-spin-button {
+    opacity: .65;
+}
+
+.pizza-produto .loja-quantidade {
+    width: 54px !important;
+}
+.loja .btn { white-space: normal; overflow-wrap: anywhere; }
+.loja-resumo { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 36px; }
+.loja-linha { padding: 20px 0; border-bottom: 1px solid #606060; }
+.loja-form { max-width: 640px; }
+.loja-status { display: inline-block; padding: 6px 12px; background: #fff; color: #202020 !important; border-radius: 4px; }
+@media (max-width: 767px) { .loja-resumo { grid-template-columns: minmax(0, 1fr); } .loja h1 { font-size: 26px; } }
