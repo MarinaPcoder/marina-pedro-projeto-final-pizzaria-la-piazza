@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/banner.png" width="100%" alt="La Piazza Banner">
+<img src="./La_Piazza/docs/banner.png" width="100%" alt="La Piazza">
 
 # 🍕 La Piazza
 
