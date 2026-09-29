@@ -7,7 +7,6 @@ from django.db import models
 
 from pizza.models import Pizza
 from usuarios.models import EnderecoUsuario
-from usuarios.permissions import GRUPO_CLIENTE
 
 STATUS_PEDIDO_PENDENTE = "PENDENTE"
 STATUS_PEDIDO_CONFIRMADO = "CONFIRMADO"
@@ -142,6 +141,9 @@ class Pedido(models.Model):
         return " - ".join(parte for parte in partes if parte)
 
     def clean(self):
+        # Import local para não carregar views durante a inicialização dos models.
+        from usuarios.views import GRUPO_CLIENTE
+
         erros = {}
 
         if (
@@ -185,7 +187,7 @@ class Pedido(models.Model):
         )
 
     def baixar_estoque(self, responsavel=None):
-        from .services import confirmar_pedido
+        from .views import confirmar_pedido
 
         if not self.pk:
             raise ValidationError("Salve o pedido antes de confirmar.")
