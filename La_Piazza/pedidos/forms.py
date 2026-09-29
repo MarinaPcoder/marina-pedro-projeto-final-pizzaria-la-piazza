@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from pizza.models import Pizza
 
 from usuarios.models import EnderecoUsuario
-from usuarios.permissions import GRUPO_CLIENTE
 
 from .models import (
     ItemPedido,
@@ -71,6 +70,9 @@ class PedidoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+
+        # Import local para evitar dependência circular com as views.
+        from usuarios.views import GRUPO_CLIENTE
 
         clientes = (
             User.objects

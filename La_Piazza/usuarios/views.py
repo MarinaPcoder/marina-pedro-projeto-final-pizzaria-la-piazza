@@ -1,3 +1,6 @@
+from functools import wraps
+
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import (
@@ -30,142 +33,114 @@ from .forms import (
 # Modelos
 from .models import EnderecoUsuario, Usuario
 
-# Permissões e grupos
-from .permissions import (
-    GRUPO_CLIENTE,
-    cliente_required,
-    funcionario_required,
-)
+
+# Permissões e grupos: identificação de perfis e controle de acesso
+GRUPO_CLIENTE = "Cliente"
+GRUPO_FUNCIONARIO = "Funcionario"
 
 
-# Site público: autenticação de usuários
-# Login
-def login_usuario(request):
-    if request.user.is_authenticated:
-        return redirect("index")
+def usuario_eh_funcionario(usuario):
+    if not usuario.is_authenticated:
+        return False
 
-    form = LoginForm(
-        request=request,
-        data=request.POST or None,
-    )
-
-    if request.method == "POST" and form.is_valid():
-        usuario = form.get_user()
-
-        login(
-            request,
-            usuario,
-        )
-
-        messages.success(
-            request,
-            "Login realizado com sucesso.",
-        )
-
-        proxima_pagina = (
-            request.POST.get("next")
-            or request.GET.get("next")
-        )
-
-        if (
-            proxima_pagina
-            and url_has_allowed_host_and_scheme(
-                url=proxima_pagina,
-                allowed_hosts={
-                    request.get_host()
-                },
-                require_https=request.is_secure(),
-            )
-        ):
-            return redirect(proxima_pagina)
-
-        return redirect("index")
-
-    context = {
-        "form": form,
-        "next": request.GET.get(
-            "next",
-            "",
-        ),
-    }
-
-    return render(
-        request,
-        "usuarios/login.html",
-        context,
+    return (
+        usuario.is_superuser
+        or usuario.groups.filter(
+            name=GRUPO_FUNCIONARIO
+        ).exists()
     )
 
 
-# Cadastro
-def cadastro_usuario(request):
-    if request.user.is_authenticated:
-        return redirect("index")
+def funcionario_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if usuario_eh_funcionario(request.user):
+            return view_func(request, *args, **kwargs)
 
-    if request.method == "POST":
-        form = CadastroUsuarioForm(
-            request.POST
-        )
+        raise PermissionDenied
 
-        if form.is_valid():
-            usuario = form.save()
-
-            grupo_cliente, _ = (
-                Group.objects.get_or_create(
-                    name=GRUPO_CLIENTE
-                )
-            )
-
-            usuario.groups.add(
-                grupo_cliente
-            )
-
-            login(
-                request,
-                usuario,
-            )
-
-            messages.success(
-                request,
-                "Sua conta foi criada com sucesso.",
-            )
-
-            return redirect("index")
-
-    else:
-        form = CadastroUsuarioForm()
-
-    return render(
-        request,
-        "usuarios/cadastro.html",
-        {
-            "form": form,
-        },
-    )
+    return wrapper
 
 
-# Logout
-@login_required
-@require_POST
-def logout_usuario(request):
-    logout(request)
+def usuario_eh_cliente(usuario):
+    return usuario.is_authenticated and usuario.groups.filter(
+        name=GRUPO_CLIENTE
+    ).exists()
 
-    messages.success(
-        request,
-        "Você saiu da sua conta.",
-    )
 
-    return redirect("index")
+def cliente_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if usuario_eh_cliente(request.user):
+            return view_func(request, *args, **kwargs)
+
+        raise PermissionDenied
+
+    return wrapper
+
+
+PERMISSOES_CLIENTE = [
+    "view_categoriapizza",
+    "view_pizza",
+    "add_pedido",
+    "view_pedido",
+    "add_itempedido",
+    "view_itempedido",
+    "add_enderecousuario",
+    "change_enderecousuario",
+    "delete_enderecousuario",
+    "view_enderecousuario",
+]
+
+PERMISSOES_FUNCIONARIO = [
+    "add_user",
+    "change_user",
+    "delete_user",
+    "view_user",
+    "add_usuario",
+    "change_usuario",
+    "delete_usuario",
+    "view_usuario",
+    "add_enderecousuario",
+    "change_enderecousuario",
+    "delete_enderecousuario",
+    "view_enderecousuario",
+    "add_categoriaestoque",
+    "change_categoriaestoque",
+    "delete_categoriaestoque",
+    "view_categoriaestoque",
+    "add_itemestoque",
+    "change_itemestoque",
+    "delete_itemestoque",
+    "view_itemestoque",
+    "add_movimentacaoestoque",
+    "change_movimentacaoestoque",
+    "delete_movimentacaoestoque",
+    "view_movimentacaoestoque",
+    "add_categoriapizza",
+    "change_categoriapizza",
+    "delete_categoriapizza",
+    "view_categoriapizza",
+    "add_pizza",
+    "change_pizza",
+    "delete_pizza",
+    "view_pizza",
+    "add_receitapizza",
+    "change_receitapizza",
+    "delete_receitapizza",
+    "view_receitapizza",
+    "add_pedido",
+    "change_pedido",
+    "delete_pedido",
+    "view_pedido",
+    "add_itempedido",
+    "change_itempedido",
+    "delete_itempedido",
+    "view_itempedido",
+]
 
 
 # Gerenciamento interno: clientes e endereços
-# Funções auxiliares de clientes
-def _clientes():
-    return (
-        Usuario.objects.filter(groups__name=GRUPO_CLIENTE)
-        .distinct()
-    )
-
-
 # CRUD de clientes
 # Read - List - Clientes
 @login_required
@@ -397,18 +372,6 @@ def endereco_detalhe(request, pk):
     )
 
 
-# Função auxiliar para salvar endereços
-def _salvar_endereco(form):
-    endereco = form.save()
-
-    if endereco.principal:
-        EnderecoUsuario.objects.filter(
-            usuario=endereco.usuario,
-        ).exclude(pk=endereco.pk).update(principal=False)
-
-    return endereco
-
-
 # Create - Endereços
 @login_required
 @funcionario_required
@@ -520,6 +483,125 @@ def endereco_excluir(request, pk):
     )
 
 
+# Site público: autenticação de usuários
+# Login
+def login_usuario(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+
+    form = LoginForm(
+        request=request,
+        data=request.POST or None,
+    )
+
+    if request.method == "POST" and form.is_valid():
+        usuario = form.get_user()
+
+        login(
+            request,
+            usuario,
+        )
+
+        messages.success(
+            request,
+            "Login realizado com sucesso.",
+        )
+
+        proxima_pagina = (
+            request.POST.get("next")
+            or request.GET.get("next")
+        )
+
+        if (
+            proxima_pagina
+            and url_has_allowed_host_and_scheme(
+                url=proxima_pagina,
+                allowed_hosts={
+                    request.get_host()
+                },
+                require_https=request.is_secure(),
+            )
+        ):
+            return redirect(proxima_pagina)
+
+        return redirect("index")
+
+    context = {
+        "form": form,
+        "next": request.GET.get(
+            "next",
+            "",
+        ),
+    }
+
+    return render(
+        request,
+        "usuarios/login.html",
+        context,
+    )
+
+
+# Cadastro
+def cadastro_usuario(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+
+    if request.method == "POST":
+        form = CadastroUsuarioForm(
+            request.POST
+        )
+
+        if form.is_valid():
+            usuario = form.save()
+
+            grupo_cliente, _ = (
+                Group.objects.get_or_create(
+                    name=GRUPO_CLIENTE
+                )
+            )
+
+            usuario.groups.add(
+                grupo_cliente
+            )
+
+            login(
+                request,
+                usuario,
+            )
+
+            messages.success(
+                request,
+                "Sua conta foi criada com sucesso.",
+            )
+
+            return redirect("index")
+
+    else:
+        form = CadastroUsuarioForm()
+
+    return render(
+        request,
+        "usuarios/cadastro.html",
+        {
+            "form": form,
+        },
+    )
+
+
+# Logout
+@login_required
+@require_POST
+def logout_usuario(request):
+    logout(request)
+
+    messages.success(
+        request,
+        "Você saiu da sua conta.",
+    )
+
+    return redirect("index")
+
+
 # Endereços do cliente no site público
 @login_required
 @cliente_required
@@ -556,3 +638,65 @@ def meu_endereco_desativar(request, pk):
     endereco.save(update_fields=["ativo", "principal", "atualizado_em"])
     messages.success(request, "Endereco removido dos seus enderecos ativos.")
     return redirect("usuarios:meus_enderecos")
+
+
+# Funções auxiliares de clientes
+def _clientes():
+    return (
+        Usuario.objects.filter(groups__name=GRUPO_CLIENTE)
+        .distinct()
+    )
+
+
+# Função auxiliar para salvar endereços
+def _salvar_endereco(form):
+    endereco = form.save()
+
+    if endereco.principal:
+        EnderecoUsuario.objects.filter(
+            usuario=endereco.usuario,
+        ).exclude(pk=endereco.pk).update(principal=False)
+
+    return endereco
+
+
+# Contexto dos templates: perfis do usuário e seção ativa do gerenciamento
+def acesso_administrativo(request):
+    resolver = getattr(request, "resolver_match", None)
+    namespace = resolver.namespace if resolver else ""
+    url_name = resolver.url_name if resolver else ""
+
+    if namespace == "estoque":
+        secao_gerencia = "estoque"
+    elif namespace == "pedidos":
+        secao_gerencia = "pedido"
+    elif namespace == "usuarios_gerenciamento":
+        secao_gerencia = "usuario"
+    elif url_name in {
+        "categoria_lista",
+        "categoria_detalhe",
+        "categoria_criar",
+        "categoria_editar",
+        "categoria_excluir",
+        "pizza_lista",
+        "pizza_detalhe",
+        "pizza_criar",
+        "pizza_editar",
+        "pizza_excluir",
+        "receita_lista",
+        "receita_geral_lista",
+        "receita_adicionar",
+        "receita_editar",
+        "receita_excluir",
+    }:
+        secao_gerencia = "pizza"
+    else:
+        secao_gerencia = ""
+
+    return {
+        "eh_funcionario": usuario_eh_funcionario(
+            request.user
+        ),
+        "eh_cliente": usuario_eh_cliente(request.user),
+        "secao_gerencia": secao_gerencia,
+    }

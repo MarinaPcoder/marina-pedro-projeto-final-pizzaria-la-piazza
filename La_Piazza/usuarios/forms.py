@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 
 from .models import Usuario
 from .models import EnderecoUsuario
-from .permissions import GRUPO_CLIENTE
 
 
 # Formulários de autenticação e gerenciamento
@@ -199,6 +198,9 @@ class EnderecoUsuarioForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Import local para evitar dependência circular com as views.
+        from .views import GRUPO_CLIENTE
 
         self.fields["usuario"].queryset = (
             Usuario.objects.filter(groups__name=GRUPO_CLIENTE)

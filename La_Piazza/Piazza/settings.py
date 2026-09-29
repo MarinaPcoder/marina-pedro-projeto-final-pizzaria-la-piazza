@@ -73,7 +73,7 @@ TEMPLATES = [
                     "context_processors.messages"
                 ),
                 (
-                    "usuarios.context_processors."
+                    "usuarios.views."
                     "acesso_administrativo"
                 ),
             ],

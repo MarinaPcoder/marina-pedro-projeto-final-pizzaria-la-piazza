@@ -5,7 +5,7 @@ from django.urls import include, path
 from pedidos.urls import compras_urlpatterns
 from usuarios.urls import management_urlpatterns
 
-from . import dashboard
+from . import views
 
 admin.site.site_header = "La Piazza"
 admin.site.site_title = "Administração La Piazza"
@@ -52,13 +52,13 @@ urlpatterns = [
     # Painel de gerenciamento
     path(
         "painel/",
-        dashboard.dashboard,
+        views.dashboard,
         name="dashboard",
     ),
 
     path(
         "painel/dados/",
-        dashboard.dashboard_dados,
+        views.dashboard_dados,
         name="dashboard_dados",
     ),
 
