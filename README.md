@@ -152,53 +152,6 @@ Inclui:
 
 ---
 
-# 🏗️ Arquitetura do Sistema
-
-O projeto utiliza o padrão arquitetural **MVT (Model - View - Template)** do Django.
-
-Estrutura principal:
-
-```
-La_Piazza
-│
-├── cardapio
-│   ├── models.py
-│   ├── views.py
-│   ├── forms.py
-│   └── templates
-│
-├── estoque
-│   ├── models.py
-│   ├── views.py
-│   ├── forms.py
-│   └── templates
-│
-├── pedidos
-│   ├── models.py
-│   ├── views.py
-│   └── templates
-│
-├── usuarios
-│   ├── autenticação
-│   └── permissões
-│
-├── painel
-│   └── dashboard administrativo
-│
-├── static
-│   ├── css
-│   └── js
-│
-├── Templates
-│
-├── docs
-│   └── diagramas
-│
-└── manage.py
-```
-
----
-
 # 🚀 Como Executar o Projeto Localmente
 
 ## 1. Clonar o repositório
